@@ -46,5 +46,6 @@ a.btn.abu { background: #e5e7eb; color: #111; }
   #panel { position: absolute; left: 0; right: 0; bottom: 0; width: auto; max-height: 55%; z-index: 900; border-left: 0; border-top: 1px solid var(--garis); border-radius: 14px 14px 0 0; box-shadow: 0 -2px 12px rgba(0,0,0,.2); display: none; }
   #panel.buka { display: block; }
   .legend { bottom: 18px; font-size: 11px; }
-  header .judul b { font-size: 15px; }
+  header .judul b { font-size: 15px; white-space: nowrap; }
+  .teks-hp { display: none; }
 }
