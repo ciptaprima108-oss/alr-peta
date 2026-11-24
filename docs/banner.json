@@ -1,0 +1,7 @@
+{
+  "keterangan": "Banner di beranda ALR. Pimpinan bisa ubah teks di sini. tema: kuning, biru, hijau, merah. buka: trigger, km, km200, rr, hujan, grafik, laporan (boleh kosong). gambar: truk, kamera, rambu, helm.",
+  "banner": [
+    { "judul": "Utamakan keselamatan", "isi": "Jaga jarak aman. Pelan di tanjakan IJAP dan di KM 14 sampai 15.", "tema": "kuning", "gambar": "helm", "tombol": "", "buka": "" },
+    { "judul": "Lihat jalan rusak? Lapor!", "isi": "Foto langsung dari HP, tim Road Maintenance langsung dapat info.", "tema": "biru", "gambar": "kamera", "tombol": "Lapor", "buka": "laporan" }
+  ]
+}

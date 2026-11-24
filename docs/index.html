@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="ALR">
 <meta name="application-name" content="ALR">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#23282A">
+<meta name="theme-color" content="#16263A">
 <link rel="apple-touch-icon" href="ikon/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="ikon/favicon-32.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -21,22 +21,72 @@
 <link rel="stylesheet" href="kondisi.css?v=202611240419">
 <link rel="stylesheet" href="cuaca.css?v=202611240419">
 <link rel="stylesheet" href="aplikasi.css?v=202611240419">
+<link rel="stylesheet" href="beranda.css?v=202611240419">
 </head>
 <body>
 <div id="splash" aria-hidden="true"><div class="sp-isi"><span class="sp-logo"><img src="ikon/logo_alr.png" alt=""></span><b>ALR</b><small>Jalan hauling BSR ke 107</small><i class="sp-bar"><i></i></i></div></div>
-<header class="appbar"><div class="appbar-isi">
-  <a class="merek" href="./"><span class="logo logo-alr"><img src="ikon/logo_alr.png" alt="Logo ALR"></span><span><b>ALR</b><small id="info">memuat data...</small></span></a>
-  <div class="kanan tombol">
-    <button id="btnLokasi" title="Cari posisi saya di jalan ALR"><svg class="ik"><use href="#i-lokasi"/></svg><span class="teks-hp">Lokasi saya</span></button>
-    <button id="btnProfil" class="ikon-saja profil-btn" type="button" title="Profil & pengaturan" aria-label="Profil & pengaturan"><span id="profilInisial"><svg class="ik"><use href="#i-orang"/></svg></span><i class="titik-merah" id="profilTitik" hidden></i></button>
-    <button id="btnPengawas" hidden title="Pengguna ALR"><svg class="ik"><use href="#i-orang"/></svg><span class="teks-hp">Pengguna</span></button>
-    <button id="btnPanel" class="utama"><svg class="ik"><use href="#i-awas"/></svg><span class="teks-hp">Trigger</span> <span id="nTrig" class="badge">0</span></button>
-  </div>
-</div></header>
+<section id="beranda" class="beranda" aria-label="Beranda ALR">
+  <header class="atas-ber">
+    <div class="hero-atas">
+      <span class="hero-logo"><img src="ikon/logo_alr.png" alt="Logo ALR"></span>
+      <div class="hero-merek"><small>Jalan Hauling ALR</small><b>Pusat ALR</b></div>
+      <button type="button" class="hero-btn" id="btnLonceng" aria-label="Kotak masuk"><svg class="ik"><use href="#i-lonceng"/></svg><i class="hero-badge" id="nKotakAtas" hidden>0</i></button>
+      <button id="btnProfil" class="hero-btn profil-btn" type="button" title="Akun & pengaturan" aria-label="Akun & pengaturan"><span id="profilInisial"><svg class="ik"><use href="#i-orang"/></svg></span><i class="titik-merah" id="profilTitik" hidden></i></button>
+    </div>
+    <h1 id="sapaSalam">Selamat datang</h1>
+    <p class="hero-waktu" id="sapaWaktu">&nbsp;</p>
+    <label class="cari"><svg class="ik"><use href="#i-cari"/></svg><input id="cariInput" type="search" placeholder="Cari KM atau menu, contoh: 16" autocomplete="off" enterkeyhint="search"></label>
+    <div class="cari-hasil" id="cariHasil" hidden></div>
+  </header>
+  <div class="isi-beranda">
+    <div class="segar" id="segar"><i class="putar"></i><span id="info">Memuat data jalan...</span></div>
 
-<main id="petaArea">
-  <div id="map"></div>
-  <div class="legend" id="legend" title="Ketuk untuk lihat semua warna">
+    <article class="kartu-hari skel" id="kartuHari" aria-live="polite">
+      <div class="kh-atas">
+        <div class="kh-cincin" id="khCincin"></div>
+        <div class="kh-teks"><small id="khTgl">Nilai jalan hari ini</small><h2 id="khJudul">Memuat...</h2><div id="khBanding"></div></div>
+      </div>
+      <div class="kh-batang" id="khBatang"></div>
+      <p class="kh-isi" id="khIsi"></p>
+      <button type="button" class="kh-lihat" data-buka="grafik">Lihat grafik <svg class="ik"><use href="#i-kanan"/></svg></button>
+    </article>
+
+    <section class="blok hari-ini">
+      <div class="ki-kepala"><b>Hari ini</b><button type="button" class="ki-link" data-buka="km" id="hiUpdate">Jalan per KM <svg class="ik"><use href="#i-kanan"/></svg></button></div>
+      <div class="hi-grid">
+        <button type="button" class="hi hi-merah" data-buka="trigger"><small>Jalan merah</small><b id="hiTrig">-</b></button>
+        <button type="button" class="hi hi-kuning" data-buka="km"><small>Paling lama berhenti</small><b id="hiKm">-</b></button>
+        <button type="button" class="hi hi-biru" data-buka="laporan"><small>Laporan</small><b id="hiLap">-</b></button>
+        <button type="button" class="hi hi-hujan" data-buka="hujan"><small>Hujan</small><b id="subHujan">-</b></button>
+      </div>
+    </section>
+
+    <section class="banner" id="banner" aria-roledescription="carousel" aria-label="Info ALR">
+      <div class="bn-rel" id="bnRel"></div>
+      <div class="bn-titik" id="bnTitik"></div>
+    </section>
+
+    <section class="blok menu-kartu">
+      <div class="menu" id="menu">
+        <button type="button" class="mi" data-buka="trigger"><span class="u-gb" data-ikon="trigger"></span><i class="u-badge" id="ubinTrig" hidden>0</i><b>Trigger</b></button>
+        <button type="button" class="mi" data-buka="km"><span class="u-gb" data-ikon="km"></span><b>Per KM</b></button>
+        <button type="button" class="mi" data-buka="km" data-pita="200"><span class="u-gb" data-ikon="m200"></span><i class="u-badge baru">Baru</i><b>Per 200 m</b></button>
+        <button type="button" class="mi" data-buka="rr"><span class="u-gb" data-ikon="rr"></span><b>RR &amp; traksi</b></button>
+        <button type="button" class="mi" data-buka="hujan"><span class="u-gb" data-ikon="hujan"></span><b>Hujan</b></button>
+        <button type="button" class="mi" data-buka="grafik"><span class="u-gb" data-ikon="grafik"></span><b>Nilai jalan</b></button>
+        <button type="button" class="mi" data-buka="laporan"><span class="u-gb" data-ikon="laporan"></span><i class="u-badge" id="ubinLap" hidden>0</i><b>Laporan</b></button>
+        <button type="button" class="mi" data-buka="pengguna"><span class="u-gb" data-ikon="pengguna"></span><b>Pengguna</b></button>
+      </div>
+    </section>
+
+    <section class="peringatan" id="peringatan" aria-label="Peringatan jalan"></section>
+
+    <section class="blok kartu-peta">
+      <div class="ki-kepala"><b>Peta jalan ALR</b><button type="button" class="ki-link" data-tab="peta">Layar penuh <svg class="ik"><use href="#i-kanan"/></svg></button></div>
+      <main id="petaArea">
+        <div id="map"></div>
+        <button type="button" id="btnLokasi" class="peta-lokasi" title="Cari posisi saya di jalan ALR"><svg class="ik"><use href="#i-lokasi"/></svg><span>Lokasi saya</span></button>
+        <div class="legend" id="legend" title="Ketuk untuk lihat semua warna">
   <b>Arti warna jalan</b>
   <div><i style="background:#E5341F"></i>Merah: melambat / tertahan</div>
   <div><i style="background:#F2B705"></i>Kuning: agak pelan</div>
@@ -45,8 +95,31 @@
   <div class="lengkap"><i style="background:#5E665F"></i>Abu gelap: belum ada data GPS</div>
 </div>
 </main>
+    </section>
+  </div>
+  <div hidden><button id="btnPengawas"></button><button id="btnPanel"><span id="nTrig">0</span></button></div>
+</section>
 
+<nav class="tabbar" id="tabbar" aria-label="Menu utama">
+  <button type="button" data-tab="beranda" class="aktif"><svg class="ik"><use href="#i-rumah"/></svg><span>Beranda</span></button>
+  <button type="button" data-tab="peta"><svg class="ik"><use href="#i-peta"/></svg><span>Peta</span></button>
+  <button type="button" data-tab="forum"><svg class="ik"><use href="#i-chat"/></svg><span>Forum</span></button>
+  <button type="button" data-tab="kotak"><svg class="ik"><use href="#i-kotak"/></svg><span>Kotak masuk</span><i class="tab-badge" id="nKotak" hidden>0</i></button>
+  <button type="button" data-tab="akun"><svg class="ik"><use href="#i-orang"/></svg><span>Akun</span></button>
+</nav>
 
+<section class="lyr kondisi" id="lyr-kotak" hidden aria-labelledby="lyrJ-kotak">
+  <div class="lyr-atas"><button type="button" class="kembali" data-tutup><svg class="ik"><use href="#i-kiri"/></svg><span>Kembali</span></button>
+    <h2 id="lyrJ-kotak"><span class="lyr-gb" style="--w:#2a78d6"><svg class="ik"><use href="#i-kotak"/></svg></span>Kotak masuk</h2></div>
+  <div class="lyr-badan"><div id="listKotak" class="list-kotak"></div></div>
+</section>
+<section class="lyr kondisi" id="lyr-forum" hidden aria-labelledby="lyrJ-forum">
+  <div class="lyr-atas"><button type="button" class="kembali" data-tutup><svg class="ik"><use href="#i-kiri"/></svg><span>Kembali</span></button>
+    <h2 id="lyrJ-forum"><span class="lyr-gb" style="--w:#7c4dff"><svg class="ik"><use href="#i-chat"/></svg></span>Forum ALR</h2></div>
+  <div class="lyr-badan"><div class="kosong-besar"><span class="kb-gb" data-ikon="forum"></span><h3>Forum segera hadir</h3>
+    <p>Nanti di sini tim ALR bisa ngobrol per topik: kondisi jalan, perbaikan, dan logistik. Sementara itu, kirim info jalan lewat Laporan lapangan.</p>
+    <button type="button" class="pf-tombol" data-buka="laporan">Buka Laporan lapangan</button></div></div>
+</section>
 
 <div class="layar" id="layarPengawas" hidden role="dialog" aria-modal="true" aria-labelledby="lpJudul">
   <div class="layar-isi">
@@ -87,22 +160,6 @@
   </div>
 </div>
 
-<section id="beranda" class="beranda" aria-label="Menu ALR">
-  <div class="sapa" id="sapa">
-    <div class="sapa-atas"><span class="sapa-lampu" id="sapaLampu"></span><div><small id="sapaTgl">Memuat data jalan...</small><h2 id="sapaJudul">Kondisi jalan ALR</h2></div>
-      <div class="sapa-nilai" id="sapaNilai" hidden><b>-</b><span>nilai jalan</span></div></div>
-    <p id="sapaIsi"></p>
-  </div>
-  <div class="menu" id="menu">
-    <button type="button" class="ubin u-merah" data-buka="trigger"><span class="u-gb"><svg class="ik"><use href="#i-awas"/></svg><i class="u-badge" id="ubinTrig" hidden>0</i></span><b>Trigger jalan</b><small id="subTrig">Jalan merah yang perlu dicek</small></button>
-    <button type="button" class="ubin u-kuning" data-buka="km"><span class="u-gb"><svg class="ik"><use href="#i-jalan"/></svg></span><b>Jalan per KM</b><small id="subKm">Di KM mana DT berhenti lama</small></button>
-    <button type="button" class="ubin u-hijau" data-buka="rr"><span class="u-gb"><svg class="ik"><use href="#i-truk"/></svg></span><b>RR &amp; traksi</b><small id="subRr">Berat jalan dan rawan selip</small></button>
-    <button type="button" class="ubin u-hujan" data-buka="hujan"><span class="u-gb"><svg class="ik" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.4 1.5A3.3 3.3 0 0 0 7 14z"/><path d="M8 17l-1 3M12 17l-1 3M16 17l-1 3"/></svg></span><b>Hujan di jalan</b><small id="subHujan">Section mana yang hujan</small></button>
-    <button type="button" class="ubin u-biru" data-buka="grafik"><span class="u-gb"><svg class="ik"><use href="#i-grafik"/></svg></span><b>Nilai &amp; grafik</b><small id="subGrafik">Kerja DT per hari</small></button>
-    <button type="button" class="ubin u-biru2" data-buka="laporan"><span class="u-gb"><svg class="ik"><use href="#i-kamera"/></svg><i class="u-badge" id="ubinLap" hidden>0</i></span><b>Laporan lapangan</b><small id="subLap">Foto dan video dari pengawas</small></button>
-    <button type="button" class="ubin u-abu" data-buka="pengguna"><span class="u-gb"><svg class="ik"><use href="#i-orang"/></svg></span><b>Pengguna</b><small id="subPengguna">ID card per divisi</small></button>
-  </div>
-</section>
 <section class="lyr kondisi" id="lyr-trigger" hidden aria-labelledby="lyrJ-trigger">
   <div class="lyr-atas"><button type="button" class="kembali" data-tutup><svg class="ik"><use href="#i-kiri"/></svg><span>Kembali</span></button>
     <h2 id="lyrJ-trigger"><span class="lyr-gb" style="--w:#C8321F"><svg class="ik"><use href="#i-awas"/></svg></span>Trigger jalan</h2></div>
@@ -133,11 +190,13 @@
     <h2 id="lyrJ-km"><span class="lyr-gb" style="--w:#F2B705"><svg class="ik"><use href="#i-jalan"/></svg></span>Jalan per KM</h2></div>
   <div class="lyr-badan"><div class="lyr-filter"></div>
   <section class="jalur" aria-labelledby="jJudul"><div class="dalam">
-    <div class="judul-bagian"><span class="gb"><svg class="ik"><use href="#i-jalan"/></svg></span><div><h2 id="jJudul">Di KM mana DT berhenti lama</h2>
-    <p>Jalan ALR dari BSR (STA 29) sampai 107 (STA 0), per 1 KM, mengikuti tanggal yang dipilih. Jalur atas untuk DT bermuatan, jalur bawah untuk DT kosongan.</p></div></div>
+    <div class="judul-bagian"><span class="gb"><svg class="ik"><use href="#i-jalan"/></svg></span><div><h2 id="jJudul">Di mana DT berhenti lama</h2>
+    <p>Jalan ALR dari BSR (STA 29) sampai 107 (STA 0). Jalur atas untuk DT bermuatan, jalur bawah untuk DT kosongan.</p></div></div>
+    <div class="pita-mode" role="group" aria-label="Ukuran kotak"><button type="button" class="aktif" data-pita="km">Per 1 KM</button><button type="button" data-pita="200">Per 200 meter</button></div>
+    <p class="pita-hint" id="pitaHint">Pencet kotak untuk rincian. Pilih <b>Per 200 meter</b> untuk lihat titik berhenti lebih detail.</p>
     <div class="gulir"><svg id="strip" viewBox="0 0 1000 180" role="img" aria-label="Jalur ALR per kilometer"></svg></div>
     <div id="stripHp" hidden></div>
-    <div class="geser-hint">Geser pita ke kiri untuk melihat sampai 107</div>
+    <div class="geser-hint" id="geserHint">Geser pita ke kiri untuk melihat sampai 107</div>
     <div class="leg-strip"><span><i class="h"></i>Hijau: sedikit berhenti</span><span><i class="k"></i>Kuning: cukup lama berhenti</span><span><i class="m"></i>Merah: paling lama berhenti</span><span><i class="z"></i>Arsir: zona antre / parkir</span></div>
     <div class="ket-strip"><p><b>Kotak berwarna</b> = total jam DT berhenti di KM itu, semua unit dijumlah selama tanggal yang dipilih. Makin merah, makin banyak jam berhenti.</p>
       <p><b>Tulisan abu-abu di bawah kotak</b> = kecepatan rata-rata DT saat sedang jalan, dan kira-kira berapa menit untuk melewati 1 KM itu.</p>
@@ -156,7 +215,7 @@
     <p>Seberapa berat jalan dilawan ban DT, dan di KM mana DT bisa selip kalau jalan basah. Ini perkiraan dari kecepatan DT bermuatan dan tanjakan, bukan hasil ukur alat.</p></div></div>
     <div id="rrTiles" class="rr-tiles"></div>
     <div class="gulir"><svg id="rrStrip" viewBox="0 0 1000 300" role="img" aria-label="RR dan traksi per kilometer"></svg></div>
-    <div class="geser-hint">Geser pita ke kiri untuk melihat sampai 107</div>
+    <div class="geser-hint" id="geserHint">Geser pita ke kiri untuk melihat sampai 107</div>
     <div class="leg-strip"><span><i class="h"></i>RR ringan / traksi aman</span><span><i class="k"></i>RR sedang / waspada saat basah</span><span><i class="m"></i>RR berat / rawan selip saat basah</span><span><i class="z"></i>Arsir: zona antre / parkir</span></div>
     <details class="cara-rr"><summary>Cara menghitung dan angka yang dipakai</summary><div id="rrCara"></div></details>
   </div></section>
@@ -299,5 +358,6 @@
 <script src="grafik.js?v=202611240419"></script>
 <script src="cuaca.js?v=202611240419"></script>
 <script src="aplikasi.js?v=202611240419"></script>
+<script src="beranda.js?v=202611240419"></script>
 </body>
 </html>

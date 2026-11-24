@@ -61,7 +61,7 @@
     wadahToast.appendChild(t); requestAnimationFrame(() => t.classList.add("masuk"));
     setTimeout(() => { t.classList.remove("masuk"); setTimeout(() => t.remove(), 400); }, 5200);
   }
-  window.ALR_toast = toast;
+  window.ALR_toast = toast; window.ALR_klik = klik; window.ALR_umumkan = umumkan;
   // iPhone: suara baru boleh bunyi setelah ketukan pertama, jadi "buka kunci" suara di ketukan pertama
   document.addEventListener("pointerdown", function bukaKunci() {
     try { ctx = ctx || new (window.AudioContext || window.webkitAudioContext)(); ctx.resume(); } catch {}
@@ -83,15 +83,18 @@
     aktif = l;
     setTimeout(() => window.Chart && Object.values(Chart.instances).forEach((c) => c.resize()), 320);
     if (!dariRiwayat) history.pushState({ lyr: nama }, "", "#" + nama);
+    kabar();
   }
   function tutup() {
     const l = aktif; if (!l) return;
     l.classList.remove("tampil"); document.body.classList.remove("ada-lyr"); aktif = null;
-    setTimeout(() => { if (!l.classList.contains("tampil")) l.hidden = true; }, 320);
+    setTimeout(() => { if (!l.classList.contains("tampil")) l.hidden = true; }, 320); kabar();
     speechSynthesis?.cancel?.();
   }
-  window.ALR_buka = buka;
-  document.querySelectorAll("[data-buka]").forEach((b) => b.addEventListener("click", () => { klik(); buka(b.dataset.buka); }));
+  window.ALR_buka = buka; window.ALR_tutup = () => history.state?.lyr ? history.back() : tutup();
+  window.ALR_tutupSemua = () => { closeSheet(true); if (aktif) tutup(); if (location.hash) history.replaceState(null, "", location.pathname); };
+  const kabar = () => window.dispatchEvent(new CustomEvent("alr:layar", { detail: { aktif: aktif ? aktif.id.replace("lyr-", "") : null } }));
+  document.querySelectorAll("[data-buka]").forEach((b) => b.addEventListener("click", () => { klik(); if (b.dataset.pita) window.ALR_setPita?.(b.dataset.pita); else if (b.dataset.buka === "km" && b.classList.contains("mi")) window.ALR_setPita?.("km"); buka(b.dataset.buka); }));
   document.querySelectorAll("[data-tutup]").forEach((b) => b.addEventListener("click", () => { klik(); history.state?.lyr ? history.back() : tutup(); }));
   window.addEventListener("popstate", () => {
     closeSheet(true);
@@ -142,14 +145,14 @@
     $("shPeta").onclick = () => { closeSheet(true); history.state?.lyr ? history.back() : tutup(); setTimeout(() => { window.ALR_keSta?.(tengah, 15); window.scrollTo({ top: 0, behavior: "smooth" }); }, 340); };
     const ll = window.ALR_posisiSta?.(tengah);
     if (ll && window.ALR_linkLapor) $("shLapor").href = window.ALR_linkLapor(fmtSta(tengah), ll[0], ll[1]); else $("shLapor").hidden = true;
-    isi200(km, D, r.dataset.lajur);
+    isi200(km, D, r.dataset.lajur, r.dataset.sta);
   });
 
   // ---------- rincian per 200 meter di dalam pop-up KM ----------
   let P200 = null;
   const muat200 = () => P200 || (P200 = fetch("data/per_200m.json", { cache: "no-cache" }).then((r) => r.ok ? r.json() : null).catch(() => null));
   const isoTgl = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-  async function isi200(km, D, lajurDiketuk) {
+  async function isi200(km, D, lajurDiketuk, staDiketuk) {
     const el = $("m200"), d = await muat200();
     if (!el || !el.isConnected) return;
     if (!d) { el.innerHTML = `<h4>Per 200 meter</h4><p class="kecil">Data per 200 meter belum tersedia.</p>`; return; }
@@ -167,7 +170,7 @@
         const maks = Math.max(3, ...d.seg.filter((s) => !s.zona).map((s) => tot[s.i][1] + tot[s.i][2]));
         return `<div class="m200-lajur"><b>${nama}</b><div class="m200-grid">${segKm.map((s) => {
           const t = tot[s.i], j = t[1] + t[2], sp = t[4] ? Math.round(t[3] / t[4]) : null, c = s.zona ? "z" : kelas(j, maks);
-          return `<button type="button" class="m200-kotak ${c}" data-sta="${s.sta_awal}" title="STA ${fmtSta(s.sta_awal)} - ${fmtSta(s.sta_awal + 0.2)}">
+          return `<button type="button" class="m200-kotak ${c}${staDiketuk != null && Math.abs(+staDiketuk - s.sta_awal) < 1e-6 && (nama.includes(lajurDiketuk) || !D.totM) ? " pilih" : ""}" data-sta="${s.sta_awal}" title="STA ${fmtSta(s.sta_awal)} - ${fmtSta(s.sta_awal + 0.2)}">
             <small>${fmtSta(s.sta_awal)}</small><span class="j">${s.zona ? "parkir" : j}</span><span class="s">${s.zona ? "" : "jam"}</span>
             <span class="v">${!s.zona && sp ? sp + " km/j" : "&nbsp;"}</span></button>`; }).join("")}</div></div>`;
       }).join("");
@@ -177,24 +180,14 @@
     });
   }
 
-  // ---------- beranda: isi kartu status & sub-judul menu ----------
+  // ---------- angka badge (beranda baru ada di beranda.js) ----------
   let nTrig = 0, nLap = 0;
-  window.addEventListener("alr:status", (e) => {
-    const s = e.detail, warna = { LAYAK: "hijau", KURANG: "kuning", TIDAK: "merah" }[s.kode] || "abu";
-    $("sapa").className = "sapa sp-" + warna;
-    $("sapaJudul").textContent = s.judul; $("sapaTgl").textContent = s.rentang;
-    $("sapaIsi").innerHTML = s.kalimat; $("sapaNilai").hidden = false; $("sapaNilai").querySelector("b").textContent = s.nilai;
-    $("subGrafik").textContent = `Nilai jalan ${s.nilai} dari 100`;
-  });
-  window.addEventListener("alr:km", (e) => { const t = e.detail.top; $("subKm").textContent = t.length ? `Paling lama berhenti: ${t.slice(0, 2).map((k) => k.label).join(", ")}` : "Tidak ada KM bermasalah"; });
-  window.addEventListener("alr:rr", (e) => { const d = e.detail, n = d.km.filter((k) => k.traksi && k.traksi !== "aman").length; $("subRr").textContent = `RR rata-rata ${koma(d.rr_rata)}%, ${n} KM waspada selip`; });
   const angkaUbin = () => {
-    $("ubinTrig").hidden = !nTrig; $("ubinTrig").textContent = nTrig; $("subTrig").textContent = nTrig ? `${nTrig} jalan merah perlu dicek` : "Tidak ada jalan merah";
-    $("ubinLap").hidden = !nLap; $("ubinLap").textContent = nLap; $("subLap").textContent = nLap ? `${nLap} laporan belum selesai` : "Foto dan video dari pengawas";
+    $("ubinTrig").hidden = !nTrig; $("ubinTrig").textContent = nTrig;
+    $("ubinLap").hidden = !nLap; $("ubinLap").textContent = nLap;
+    window.dispatchEvent(new CustomEvent("alr:angka", { detail: { nTrig, nLap } }));
     try { if (navigator.setAppBadge) nTrig ? navigator.setAppBadge(nTrig) : navigator.clearAppBadge(); } catch {}
   };
-  // jumlah pengguna dari daftar ID card
-  new MutationObserver(() => { const n = document.querySelectorAll("#listPengawas .idc").length; if (n) $("subPengguna").textContent = `${n} orang, ID card per divisi`; }).observe($("listPengawas"), { childList: true, subtree: true });
 
   // ---------- notifikasi: trigger & laporan baru ----------
   const DILIHAT = "alr_dilihat";
@@ -202,6 +195,7 @@
   const pertamaKali = dilihat === null;           // null = pertama kali buka: jangan bunyikan yang lama
   function periksa(daftar) {
     const diam = pertamaKali && Date.now() - mulai < 20000;   // pertama kali buka aplikasi: catat saja, jangan bunyi
+    window.dispatchEvent(new CustomEvent("alr:daftar", { detail: daftar }));
     const baru = daftar.filter((x) => !diam && dilihat && !dilihat.includes(x.kunci));
     dilihat = [...new Set([...(dilihat || []), ...daftar.map((x) => x.kunci)])].slice(-400); simpan.set(DILIHAT, dilihat);
     if (!baru.length) return;
@@ -304,8 +298,9 @@
     if (on && !dariRiwayat) history.pushState({ peta: 1 }, "", "#peta");
     setTimeout(() => window.ALR_PETA?.map.invalidateSize(), 60);
     setTimeout(() => window.ALR_PETA?.map.invalidateSize(), 400);
+    window.dispatchEvent(new CustomEvent("alr:layar", { detail: { aktif: on ? "peta" : (aktif ? aktif.id.replace("lyr-", "") : null) } }));
   }
-  pasangPenuh();
+  pasangPenuh(); window.ALR_penuh = (on) => on ? penuh(true) : (history.state?.peta ? history.back() : penuh(false));
   window.addEventListener("popstate", () => { if (document.body.classList.contains("peta-penuh") && location.hash !== "#peta") penuh(false, true); });
   if (location.hash === "#peta") { history.replaceState(null, "", location.pathname); setTimeout(() => penuh(true), 300); }
 
@@ -317,6 +312,8 @@
     hujan: ["#8FD3FF", "#2A78D6", '<path d="M20 38h24a8 8 0 0 0 .8-16 11 11 0 0 0-21.2 2.6A6.8 6.8 0 0 0 20 38z" fill="#fff"/><path d="M22 36h21a6 6 0 0 0 4.4-2" stroke="#D6ECFF" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M24 43l-2.5 6M32 43l-2.5 6M40 43l-2.5 6" stroke="#E3F4FF" stroke-width="3.4" stroke-linecap="round"/>'],
     grafik: ["#A5B4FF", "#4B4FD6", '<rect x="15" y="32" width="9" height="17" rx="2.5" fill="#fff"/><rect x="27.5" y="23" width="9" height="26" rx="2.5" fill="#fff"/><rect x="40" y="28" width="9" height="21" rx="2.5" fill="#fff"/><rect x="15" y="32" width="9" height="5" rx="2.5" fill="#FFB74D"/><rect x="27.5" y="23" width="9" height="5" rx="2.5" fill="#4ADE80"/><rect x="40" y="28" width="9" height="5" rx="2.5" fill="#F87171"/><path d="M14 20 26 15l9 5 13-7" stroke="#FFE082" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'],
     laporan: ["#6EE7F0", "#0E8FA0", '<path d="M14 24a4 4 0 0 1 4-4h6l3-4h10l3 4h6a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4z" fill="#fff"/><circle cx="32" cy="34" r="9.5" fill="#0E5E6A"/><circle cx="32" cy="34" r="6" fill="#26C6DA"/><circle cx="29.8" cy="31.8" r="2" fill="#fff" opacity=".85"/><circle cx="44" cy="26" r="2" fill="#FFB74D"/>'],
+    m200: ["#FFD27A", "#E08A00", '<rect x="9" y="27" width="46" height="12" rx="3" fill="#2B3134"/><path d="M13 27v5M20 27v3M27 27v5M34 27v3M41 27v5M48 27v3" stroke="#FFD54F" stroke-width="2"/><rect x="11" y="42" width="8" height="8" rx="2" fill="#4ADE80"/><rect x="21" y="42" width="8" height="8" rx="2" fill="#4ADE80"/><rect x="31" y="42" width="8" height="8" rx="2" fill="#F87171"/><rect x="41" y="42" width="8" height="8" rx="2" fill="#FFE082"/><path d="M35 12a6 6 0 0 1 6 6c0 4.5-6 9-6 9s-6-4.5-6-9a6 6 0 0 1 6-6z" fill="#fff"/><circle cx="35" cy="18" r="2.4" fill="#E5341F"/>'],
+    forum: ["#C3A6FF", "#6C3FE0", '<path d="M12 16h28a4 4 0 0 1 4 4v14a4 4 0 0 1-4 4H24l-8 6v-6h-4a4 4 0 0 1-4-4V20a4 4 0 0 1 4-4z" fill="#fff"/><path d="M46 24h4a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4h-2v5l-7-5h-9" fill="#FFD54F"/><circle cx="18" cy="27" r="2.4" fill="#6C3FE0"/><circle cx="26" cy="27" r="2.4" fill="#6C3FE0"/><circle cx="34" cy="27" r="2.4" fill="#6C3FE0"/>'],
     pengguna: ["#FFC48A", "#E86A1A", '<rect x="16" y="13" width="32" height="40" rx="5" fill="#fff"/><rect x="27" y="10" width="10" height="6" rx="2" fill="#5D4037"/><circle cx="32" cy="28" r="6.5" fill="#FFB074"/><path d="M21.5 44c1.6-6 5.6-8.5 10.5-8.5S41 38 42.5 44z" fill="#E86A1A"/><rect x="22" y="47" width="20" height="2.6" rx="1.3" fill="#FFD9BD"/>'],
   };
   function ikon3d(nama) {
@@ -330,8 +327,9 @@
       <path d="M2 19A17 17 0 0 1 19 2h26a17 17 0 0 1 17 17v3c-19 7-41 7-60 0z" fill="url(#${id}-k)"/>
       <g filter="url(#${id}-s)">${isi}</g></svg>`;
   }
-  document.querySelectorAll(".ubin[data-buka]").forEach((u) => { const n = u.dataset.buka, g = u.querySelector(".u-gb"); if (IKON3D[n] && g) { const badge = g.querySelector(".u-badge"); g.innerHTML = ikon3d(n); if (badge) u.appendChild(badge); } });
+  window.ALR_ikon3d = (n) => IKON3D[n] ? ikon3d(n) : "";
+  document.querySelectorAll("[data-ikon]").forEach((g) => { if (IKON3D[g.dataset.ikon]) g.innerHTML = ikon3d(g.dataset.ikon); });
 
   // klik halus untuk tombol-tombol lain
-  document.addEventListener("click", (e) => { if (e.target.closest(".chip, .chip-d, details > summary, .appbar button:not(#btnProfil):not(#btnPanel)")) klik(); });
+  document.addEventListener("click", (e) => { if (e.target.closest(".chip, .chip-d, details > summary, .pita-mode button")) klik(); });
 })();

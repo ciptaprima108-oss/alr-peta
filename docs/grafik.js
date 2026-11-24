@@ -233,50 +233,88 @@
   }
 
   // pita jalur BSR (kiri) -> 107 (kanan), dua lajur: atas muatan (BSR -> 107), bawah kosongan (107 -> BSR)
-  function strip(urut, totM, totK, totSemua) {
-    const L2 = totM ? [{ tot: totM, nama: "muatan" }, { tot: totK, nama: "kosongan" }] : [{ tot: totSemua, nama: "semua" }];
-    const jamOf = (t, k) => k.zona ? 0 : t[k.km][1] + t[k.km][2];
-    const maks = Math.max(6, ...L2.flatMap((l) => urut.map((k) => jamOf(l.tot, k))));
-    // tiga warna tegas: hijau sedikit tertahan, kuning sedang, merah lama
-    const kelas = (k, j) => k.zona ? "z" : j >= maks * 0.6 ? "m" : j >= maks * 0.25 ? "k" : "h";
+  // PITA "km" = kotak per 1 KM, "200" = kotak per 200 meter
+  let PITA = "km", P200 = null, ARGS = null;
+  const fmtSta = (v) => { let km = Math.floor(v + 1e-9), m = Math.round((v - km) * 1000); if (m === 1000) { km++; m = 0; } return `${km}+${String(m).padStart(3, "0")}`; };
+  const muat200 = () => P200 || (P200 = fetch("data/per_200m.json", { cache: "no-cache" }).then((r) => r.ok ? r.json() : null).catch(() => null));
+  function jumlah200(src, n, dari, sampai) {
+    const tot = Array.from({ length: n }, () => [0, 0, 0, 0, 0]);
+    if (src) for (let d = new Date(dari); d <= sampai; d = tambah(d, 1)) { const h = src[iso(d)]; if (h) for (const i in h) for (let j = 0; j < 5; j++) tot[i][j] += h[i][j]; }
+    return tot;
+  }
+  window.ALR_setPita = (m) => {
+    PITA = m;
+    document.querySelectorAll("[data-pita]").forEach((x) => x.classList.contains("mi") || x.classList.toggle("aktif", x.dataset.pita === m));
+    if (ARGS) strip(...ARGS);
+  };
+  document.querySelectorAll(".pita-mode [data-pita]").forEach((b) => b.onclick = () => window.ALR_setPita(b.dataset.pita));
+
+  async function strip(urut, totM, totK, totSemua) {
+    ARGS = [urut, totM, totK, totSemua];
+    let units, LT;
+    if (PITA === "200") {
+      const d = await muat200();
+      if (!d) { PITA = "km"; return strip(...ARGS); }
+      if (PITA !== "200") return;
+      const [dari, sampai] = RENTANG, n = d.seg.length;
+      units = [...d.seg].reverse().map((sg) => ({ key: sg.i, km: Math.floor(sg.sta_awal + 1e-9), sta: sg.sta_awal, label: `STA ${fmtSta(sg.sta_awal)}`, zona: sg.zona, kiri: Math.round((sg.sta_awal + 0.2) * 10) / 10 }));
+      LT = totM ? [{ tot: jumlah200(d.arah?.muatan, n, dari, sampai), nama: "muatan" }, { tot: jumlah200(d.arah?.kosongan, n, dari, sampai), nama: "kosongan" }] : [{ tot: jumlah200(d.hari, n, dari, sampai), nama: "semua" }];
+    } else {
+      units = urut.map((k) => ({ key: k.km, km: k.km, label: k.label, zona: k.zona, kiri: k.km + 1 }));
+      LT = totM ? [{ tot: totM, nama: "muatan" }, { tot: totK, nama: "kosongan" }] : [{ tot: totSemua, nama: "semua" }];
+    }
+    const per200 = PITA === "200";
+    const jamOf = (t, u) => u.zona ? 0 : t[u.key][1] + t[u.key][2];
+    const maks = Math.max(per200 ? 3 : 6, ...LT.flatMap((l) => units.map((u) => jamOf(l.tot, u))));
+    // tiga warna tegas: hijau sedikit berhenti, kuning sedang, merah lama
+    const kelas = (u, j) => u.zona ? "z" : j >= maks * 0.6 ? "m" : j >= maks * 0.25 ? "k" : "h";
     const WK = { h: "#3FA34D", k: "#F2B705", m: "#E5341F" }, TK = { h: "#fff", k: "#23282A", m: "#fff" };
-    const judul = (k, l, j) => `${k.label}, jalur ${l.nama}${k.zona ? ", " + k.zona + " (tidak dihitung)" : ": " + j + " jam unit tertahan"}`;
-    // --- pita mendatar dua lajur. Kotak berwarna = jam berhenti; tulisan abu di bawah kotak = kecepatan & menit lewat ---
-    const n = urut.length, x0 = 50, x1 = 950, w = (x1 - x0) / n, hgt = 42;
-    const dua = L2.length > 1, yA = 66, gap = 36, yB = yA + hgt + gap + 14;
-    const laju = (t, k) => t[k.km][4] ? t[k.km][3] / t[k.km][4] : null;
+    const judul = (u, l, j) => `${u.label}, jalur ${l.nama}${u.zona ? ", " + u.zona + " (tidak dihitung)" : ": " + j + " jam DT berhenti"}`;
+    const n = units.length, x0 = 50, w = per200 ? 40 : 900 / n, x1 = x0 + n * w, VB = x1 + 50, hgt = 42;
+    const dua = LT.length > 1, yA = 66, gap = per200 ? 24 : 36, yB = yA + hgt + gap + 14;
+    const laju = (t, u) => t[u.key][4] ? t[u.key][3] / t[u.key][4] : null;
     let g = `<defs><pattern id="arsir" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#454B4D"/><line x1="0" y1="0" x2="0" y2="7" stroke="#7A8183" stroke-width="2.5"/></pattern>
       <marker id="panah" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#F2B705"/></marker></defs>`;
     const lajurY = dua ? [yA, yB] : [yA];
-    L2.forEach((l, li) => urut.forEach((k, i) => {
-      const x = x0 + i * w, j = jamOf(l.tot, k), c = kelas(k, j), y = lajurY[li], cx = x + w / 2;
-      g += `<rect class="kotak-km" data-km="${k.km}" data-lajur="${l.nama}" x="${x + 1.5}" y="${y}" width="${w - 3}" height="${hgt}" rx="4" fill="${c === "z" ? "url(#arsir)" : WK[c]}"><title>${judul(k, l, j)}</title></rect>`;
+    LT.forEach((l, li) => units.forEach((u, i) => {
+      const x = x0 + i * w, j = jamOf(l.tot, u), c = kelas(u, j), y = lajurY[li], cx = x + w / 2;
+      g += `<rect class="kotak-km" data-km="${u.km}"${per200 ? ` data-sta="${u.sta}"` : ""} data-lajur="${l.nama}" x="${x + 1.5}" y="${y}" width="${w - 3}" height="${hgt}" rx="4" fill="${c === "z" ? "url(#arsir)" : WK[c]}"><title>${judul(u, l, j)}</title></rect>`;
       if (c === "z") return;
       g += `<text x="${cx}" y="${y + 22}" text-anchor="middle" font-size="${j >= 100 ? 15 : 17}" font-weight="700" fill="${TK[c]}" pointer-events="none">${j}</text>`;
       g += `<text x="${cx}" y="${y + 35}" text-anchor="middle" font-size="10" fill="${TK[c]}" pointer-events="none">jam</text>`;
-      const v = laju(l.tot, k);
-      if (v) g += `<text x="${cx}" y="${y + hgt + 13}" text-anchor="middle" font-size="10.5" fill="#AEB6AE" pointer-events="none">${Math.round(v)}km/j</text><text x="${cx}" y="${y + hgt + 26}" text-anchor="middle" font-size="10.5" fill="#AEB6AE" pointer-events="none">${Math.max(1, Math.round(60 / v))} mnt</text>`;
+      const v = laju(l.tot, u);
+      if (v) g += `<text x="${cx}" y="${y + hgt + 13}" text-anchor="middle" font-size="10.5" fill="#AEB6AE" pointer-events="none">${Math.round(v)}km/j</text>` +
+        (per200 ? "" : `<text x="${cx}" y="${y + hgt + 26}" text-anchor="middle" font-size="10.5" fill="#AEB6AE" pointer-events="none">${Math.max(1, Math.round(60 / v))} mnt</text>`);
     }));
     if (dua) g += `<line x1="${x0}" y1="${yB - 8}" x2="${x1}" y2="${yB - 8}" stroke="#F2B705" stroke-width="2.5" stroke-dasharray="12 8"/>`;
-    urut.forEach((k, i) => {
-      const x = x0 + i * w, sta = k.km + 1, besar = sta % 5 === 0 || i === 0;
+    units.forEach((u, i) => {
+      const x = x0 + i * w, sta = u.kiri, bulat = Math.abs(sta - Math.round(sta)) < 1e-6;
+      const besar = per200 ? bulat : (sta % 5 === 0 || i === 0);
       g += `<line x1="${x}" y1="${yA - 4}" x2="${x}" y2="${yA - (besar ? 12 : 7)}" stroke="#B8BFB7" stroke-width="1.5"/>`;
-      if (besar) g += `<text x="${x}" y="${yA - 16}" text-anchor="${i === 0 ? "start" : "middle"}" font-size="14" fill="#D7DCD5">STA ${sta}</text>`;
+      if (besar) g += `<text x="${x}" y="${yA - 16}" text-anchor="${i === 0 ? "start" : "middle"}" font-size="14" fill="#D7DCD5">STA ${Math.round(sta)}</text>`;
     });
     g += `<text x="${x1}" y="${yA - 16}" text-anchor="end" font-size="14" fill="#D7DCD5">STA 0</text>`;
-    const yAkhir = lajurY[lajurY.length - 1] + hgt + 30, ym = dua ? yB - 4 : yA + hgt / 2 + 7;
+    const yAkhir = lajurY[lajurY.length - 1] + hgt + (per200 ? 18 : 30), ym = dua ? yB - 4 : yA + hgt / 2 + 7;
     g += `<text x="${x0 - 8}" y="${ym}" text-anchor="end" font-size="20" font-weight="700" fill="#F2B705">BSR</text><text x="${x1 + 8}" y="${ym}" font-size="20" font-weight="700" fill="#F2B705">107</text>`;
     g += `<text x="${x0}" y="20" font-size="17" font-weight="700" fill="#fff">${dua ? "JALUR MUATAN" : "SEMUA ARAH"}</text>` + (dua ? `<text x="${x0 + 118}" y="20" font-size="15" fill="#C3C9C3">BSR ke 107</text><line x1="${x0 + 195}" y1="15" x2="${x0 + 260}" y2="15" stroke="#F2B705" stroke-width="3" marker-end="url(#panah)"/>` : "");
     if (dua) g += `<line x1="${x0 + 65}" y1="${yAkhir + 14}" x2="${x0}" y2="${yAkhir + 14}" stroke="#F2B705" stroke-width="3" marker-end="url(#panah)"/><text x="${x0 + 80}" y="${yAkhir + 20}" font-size="17" font-weight="700" fill="#fff">JALUR KOSONGAN</text><text x="${x0 + 215}" y="${yAkhir + 20}" font-size="15" fill="#C3C9C3">107 ke BSR</text>`;
-    $("strip").setAttribute("viewBox", `0 0 1000 ${yAkhir + (dua ? 30 : 4)}`);
-    $("strip").innerHTML = g;
-    // --- HP: daftar tegak, satu baris per KM ---
-    const sel = (k, l) => { const j = jamOf(l.tot, k), c = kelas(k, j);
-      return `<span class="sel ${c}" title="${judul(k, l, j)}">${c === "z" ? "parkir" : j ? j + " jam" : "lancar"}</span>`; };
-    $("stripHp").innerHTML = `<div class="sh-kepala"><span></span>${L2.map((l) => l.nama === "muatan" ? `<span>Jalur muatan<br><small>BSR ke 107 ↓</small></span>` : l.nama === "kosongan" ? `<span>Jalur kosongan<br><small>107 ke BSR ↑</small></span>` : `<span>Semua</span>`).join("")}</div>
-      <div class="sh-ujung">BSR (STA 29)</div>
-      ${urut.map((k) => `<div class="sh-baris"><span class="sh-km">${k.label}</span>${L2.map((l) => sel(k, l)).join("")}</div>`).join("")}
-      <div class="sh-ujung">107 (STA 0)</div>`;
+    const sv = $("strip");
+    sv.setAttribute("viewBox", `0 0 ${VB} ${yAkhir + (dua ? 30 : 4)}`);
+    sv.style.minWidth = per200 ? `${VB}px` : ""; sv.style.width = per200 ? `${VB}px` : "";
+    sv.classList.toggle("per200", per200);
+    sv.innerHTML = g;
+    if ($("geserHint")) $("geserHint").textContent = per200 ? `Geser pita ke kiri. ${n} kotak, tiap kotak 200 meter, dari BSR sampai 107.` : "Geser pita ke kiri untuk melihat sampai 107";
+    if ($("pitaHint")) $("pitaHint").innerHTML = per200 ? "Tiap kotak = 200 meter. Pencet kotak untuk rincian KM-nya. GPS tercatat per jam, jadi ini petunjuk titik yang paling sering dipakai berhenti." : "Pencet kotak untuk rincian. Pilih <b>Per 200 meter</b> untuk lihat titik berhenti lebih detail.";
+    if (per200) { const gl = sv.parentElement, i0 = units.findIndex((u) => !u.zona); if (gl) requestAnimationFrame(() => gl.scrollLeft = Math.max(0, x0 + i0 * w - 70)); }
+    // --- HP: daftar tegak, satu baris per KM (cadangan) ---
+    if (!per200) {
+      const sel = (u, l) => { const j = jamOf(l.tot, u), c = kelas(u, j);
+        return `<span class="sel ${c}" title="${judul(u, l, j)}">${c === "z" ? "parkir" : j ? j + " jam" : "lancar"}</span>`; };
+      $("stripHp").innerHTML = `<div class="sh-kepala"><span></span>${LT.map((l) => l.nama === "muatan" ? `<span>Jalur muatan<br><small>BSR ke 107 ↓</small></span>` : l.nama === "kosongan" ? `<span>Jalur kosongan<br><small>107 ke BSR ↑</small></span>` : `<span>Semua</span>`).join("")}</div>
+        <div class="sh-ujung">BSR (STA 29)</div>
+        ${units.map((u) => `<div class="sh-baris"><span class="sh-km">${u.label}</span>${LT.map((l) => sel(u, l)).join("")}</div>`).join("")}
+        <div class="sh-ujung">107 (STA 0)</div>`;
+    }
   }
 
   const ik = (n) => `<svg class="ik"><use href="#i-${n}"/></svg>`;
@@ -359,6 +397,19 @@
           : `<tr><td>${p.judul}</td><td colspan="6" style="text-align:left;color:#94a3b8">tidak ada data</td></tr>`; }).join("");
   }
 
+  // nilai jalan per hari untuk beranda: tiap hari ada kegiatan & perbaikan, jadi dinilai per hari
+  function harian(d, km) {
+    const hari = d.hari.map((h) => ({ tanggal: h.tanggal, r: ringkas([h]) })).filter((x) => x.r && x.r.nilai != null);
+    let kmTop = null;
+    if (km && km.hari) {
+      const tg = Object.keys(km.hari).sort().pop(), h = km.hari[tg] || {};
+      const daftar = km.km.filter((k) => !k.zona).map((k) => { const v = h[k.km]; return { label: k.label, km: k.km, jam: v ? v[1] + v[2] : 0 }; }).sort((a, b) => b.jam - a.jam);
+      if (daftar.length && daftar[0].jam) kmTop = { ...daftar[0], tanggal: tg };
+    }
+    window.ALR_HARIAN = { hari: hari.slice(-14), kmTop, telat: TELAT };
+    window.dispatchEvent(new CustomEvent("alr:harian", { detail: window.ALR_HARIAN }));
+  }
+
   Promise.all([fetch("data/performa.json", { cache: "no-cache" }).then((r) => r.json()), fetch("data/per_km.json", { cache: "no-cache" }).then((r) => r.ok ? r.json() : null).catch(() => null)]).then(([d, km]) => {
     KM = km;
     KL = d.kelayakan || {}; TELAT = d.rit_lambat_menit || 195;
@@ -376,5 +427,6 @@
     const hariIni = iso(new Date()) === iso(akhirData);
     if (!hariIni) $("pHariIni").textContent = "Hari terakhir";
     document.querySelector('[data-p="semua"]').click();
+    harian(d, km);
   }).catch((e) => { $("status").innerHTML = `<div><h2>Gagal memuat data</h2><p>${e.message}. Coba muat ulang halaman.</p></div>`; });
 })();

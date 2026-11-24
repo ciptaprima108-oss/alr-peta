@@ -23,6 +23,10 @@
     s("suara", '<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>'),
     s("bisu", '<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="m17 9 5 6M22 9l-5 6"/>'),
     s("lonceng", '<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/>'),
+    s("cari", '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>'),
+    s("rumah", '<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>'),
+    s("chat", '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/>'),
+    s("kotak", '<path d="M3 13l3-8h12l3 8v6H3z"/><path d="M3 13h5l1 2h6l1-2h5"/>'),
     s("kiri", '<path d="M15 6l-6 6 6 6"/>'), s("naik", '<path d="m6 15 6-6 6 6"/>'), s("turun", '<path d="m6 9 6 6 6-6"/>'),
   ].join("");
   const d = document.createElement("div");
