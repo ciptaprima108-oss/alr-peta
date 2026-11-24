@@ -32,10 +32,23 @@
     "durasi": 100.0,
     "rit_lambat": 100.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 81.0,
+    "trigger": null
    },
-   "indeks": 100,
-   "status": "Kondisi baik"
+   "indeks": 94,
+   "status": "Kondisi baik",
+   "hujan_mm": 4.7,
+   "hujan_malam_mm": 0.1,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [
+    "Hujan 5 mm"
+   ],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-09-25",
@@ -55,10 +68,23 @@
     "durasi": 100.0,
     "rit_lambat": 100.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": 100.0,
+    "hujan": 65.0,
+    "trigger": null
    },
-   "indeks": 100,
-   "status": "Kondisi baik"
+   "indeks": 91,
+   "status": "Kondisi baik",
+   "hujan_mm": 8.8,
+   "hujan_malam_mm": 4.4,
+   "km_lambat": 0,
+   "yakin": "sedang",
+   "alasan": [
+    "Hujan 9 mm, 4 mm semalam"
+   ],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-09-26",
@@ -78,10 +104,21 @@
     "durasi": 100.0,
     "rit_lambat": 81.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 99.0,
+    "trigger": null
    },
-   "indeks": 91,
-   "status": "Kondisi baik"
+   "indeks": 94,
+   "status": "Kondisi baik",
+   "hujan_mm": 0.2,
+   "hujan_malam_mm": 0.0,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-09-27",
@@ -101,10 +138,23 @@
     "durasi": 100.0,
     "rit_lambat": 53.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 52.0,
+    "trigger": null
    },
-   "indeks": 76,
-   "status": "Kondisi baik"
+   "indeks": 68,
+   "status": "Perlu perhatian",
+   "hujan_mm": 11.9,
+   "hujan_malam_mm": 0.8,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [
+    "Hujan 12 mm"
+   ],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-09-28",
@@ -124,10 +174,23 @@
     "durasi": 100.0,
     "rit_lambat": 82.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 82.0,
+    "trigger": null
    },
-   "indeks": 91,
-   "status": "Kondisi baik"
+   "indeks": 88,
+   "status": "Kondisi baik",
+   "hujan_mm": 4.4,
+   "hujan_malam_mm": 3.3,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [
+    "Hujan 4 mm, 3 mm semalam"
+   ],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-09-29",
@@ -147,10 +210,19 @@
     "durasi": 100.0,
     "rit_lambat": 52.0,
     "speed": 100.0,
-    "berhenti": 78.0
+    "berhenti": 78.0,
+    "km_lambat": 100.0,
+    "hujan": 96.0,
+    "trigger": null
    },
-   "indeks": 82,
-   "status": "Kondisi baik"
+   "indeks": 88,
+   "status": "Kondisi baik",
+   "hujan_mm": 0.9,
+   "hujan_malam_mm": 0.3,
+   "km_lambat": 0,
+   "yakin": "tinggi",
+   "alasan": [],
+   "kurang": []
   },
   {
    "tanggal": "2026-09-30",
@@ -170,10 +242,21 @@
     "durasi": 92.0,
     "rit_lambat": 21.0,
     "speed": 100.0,
-    "berhenti": 72.0
+    "berhenti": 72.0,
+    "km_lambat": 80.0,
+    "hujan": 100.0,
+    "trigger": null
    },
-   "indeks": 71,
-   "status": "Perlu perhatian"
+   "indeks": 78,
+   "status": "Kondisi baik",
+   "hujan_mm": 0.0,
+   "hujan_malam_mm": 0.0,
+   "km_lambat": 1,
+   "yakin": "tinggi",
+   "alasan": [
+    "1 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-10-01",
@@ -193,10 +276,22 @@
     "durasi": 100.0,
     "rit_lambat": 20.0,
     "speed": 100.0,
-    "berhenti": 72.0
+    "berhenti": 72.0,
+    "km_lambat": 17.0,
+    "hujan": 91.0,
+    "trigger": null
    },
-   "indeks": 73,
-   "status": "Perlu perhatian"
+   "indeks": 67,
+   "status": "Perlu perhatian",
+   "hujan_mm": 2.2,
+   "hujan_malam_mm": 0.1,
+   "km_lambat": 2,
+   "yakin": "tinggi",
+   "alasan": [
+    "Hujan 2 mm",
+    "2 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-10-02",
@@ -216,10 +311,23 @@
     "durasi": 100.0,
     "rit_lambat": 20.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": 5.0,
+    "hujan": 94.0,
+    "trigger": null
    },
-   "indeks": 60,
-   "status": "Perlu perhatian"
+   "indeks": 55,
+   "status": "Perlu perhatian",
+   "hujan_mm": 1.4,
+   "hujan_malam_mm": 1.2,
+   "km_lambat": 2,
+   "yakin": "sedang",
+   "alasan": [
+    "2 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-10-03",
@@ -239,10 +347,19 @@
     "durasi": 100.0,
     "rit_lambat": 33.0,
     "speed": 100.0,
-    "berhenti": 84.0
+    "berhenti": 84.0,
+    "km_lambat": 100.0,
+    "hujan": 97.0,
+    "trigger": null
    },
-   "indeks": 79,
-   "status": "Kondisi baik"
+   "indeks": 86,
+   "status": "Kondisi baik",
+   "hujan_mm": 0.7,
+   "hujan_malam_mm": 0.3,
+   "km_lambat": 0,
+   "yakin": "tinggi",
+   "alasan": [],
+   "kurang": []
   },
   {
    "tanggal": "2026-10-04",
@@ -262,10 +379,22 @@
     "durasi": 100.0,
     "rit_lambat": 42.0,
     "speed": 100.0,
-    "berhenti": 85.0
+    "berhenti": 85.0,
+    "km_lambat": 86.0,
+    "hujan": 89.0,
+    "trigger": null
    },
-   "indeks": 82,
-   "status": "Kondisi baik"
+   "indeks": 84,
+   "status": "Kondisi baik",
+   "hujan_mm": 2.8,
+   "hujan_malam_mm": 2.6,
+   "km_lambat": 1,
+   "yakin": "tinggi",
+   "alasan": [
+    "Hujan 3 mm, 3 mm semalam",
+    "1 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-10-05",
@@ -285,10 +414,21 @@
     "durasi": 100.0,
     "rit_lambat": 59.0,
     "speed": 100.0,
-    "berhenti": 75.0
+    "berhenti": 75.0,
+    "km_lambat": 58.0,
+    "hujan": 99.0,
+    "trigger": null
    },
-   "indeks": 83,
-   "status": "Kondisi baik"
+   "indeks": 82,
+   "status": "Kondisi baik",
+   "hujan_mm": 0.2,
+   "hujan_malam_mm": 0.1,
+   "km_lambat": 3,
+   "yakin": "tinggi",
+   "alasan": [
+    "3 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-10-06",
@@ -308,10 +448,22 @@
     "durasi": 83.0,
     "rit_lambat": 11.0,
     "speed": 94.0,
-    "berhenti": 47.0
+    "berhenti": 47.0,
+    "km_lambat": 57.0,
+    "hujan": 100.0,
+    "trigger": null
    },
-   "indeks": 59,
-   "status": "Perlu perhatian"
+   "indeks": 65,
+   "status": "Perlu perhatian",
+   "hujan_mm": 0.0,
+   "hujan_malam_mm": 0.0,
+   "km_lambat": 3,
+   "yakin": "tinggi",
+   "alasan": [
+    "3 KM DT jalan pelan (13 km/jam ke bawah)",
+    "DT berhenti 21% waktu"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-10-07",
@@ -331,10 +483,21 @@
     "durasi": 83.0,
     "rit_lambat": 18.0,
     "speed": 86.0,
-    "berhenti": 84.0
+    "berhenti": 84.0,
+    "km_lambat": 85.0,
+    "hujan": 96.0,
+    "trigger": null
    },
-   "indeks": 68,
-   "status": "Perlu perhatian"
+   "indeks": 75,
+   "status": "Kondisi baik",
+   "hujan_mm": 1.1,
+   "hujan_malam_mm": 0.1,
+   "km_lambat": 1,
+   "yakin": "tinggi",
+   "alasan": [
+    "1 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-10-08",
@@ -354,10 +517,21 @@
     "durasi": 89.0,
     "rit_lambat": 32.0,
     "speed": 73.0,
-    "berhenti": 88.0
+    "berhenti": 88.0,
+    "km_lambat": 58.0,
+    "hujan": 97.0,
+    "trigger": null
    },
-   "indeks": 71,
-   "status": "Perlu perhatian"
+   "indeks": 73,
+   "status": "Perlu perhatian",
+   "hujan_mm": 0.7,
+   "hujan_malam_mm": 0.1,
+   "km_lambat": 3,
+   "yakin": "tinggi",
+   "alasan": [
+    "3 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-10-09",
@@ -377,10 +551,21 @@
     "durasi": 75.0,
     "rit_lambat": 9.0,
     "speed": 85.0,
-    "berhenti": 65.0
+    "berhenti": 65.0,
+    "km_lambat": 44.0,
+    "hujan": 94.0,
+    "trigger": null
    },
-   "indeks": 59,
-   "status": "Perlu perhatian"
+   "indeks": 62,
+   "status": "Perlu perhatian",
+   "hujan_mm": 1.6,
+   "hujan_malam_mm": 0.3,
+   "km_lambat": 4,
+   "yakin": "tinggi",
+   "alasan": [
+    "4 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-10-10",
@@ -400,10 +585,21 @@
     "durasi": 85.0,
     "rit_lambat": 0.0,
     "speed": 81.0,
-    "berhenti": 68.0
+    "berhenti": 68.0,
+    "km_lambat": 55.0,
+    "hujan": 94.0,
+    "trigger": null
    },
-   "indeks": 58,
-   "status": "Perlu perhatian"
+   "indeks": 64,
+   "status": "Perlu perhatian",
+   "hujan_mm": 1.5,
+   "hujan_malam_mm": 0.1,
+   "km_lambat": 3,
+   "yakin": "tinggi",
+   "alasan": [
+    "3 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-10-11",
@@ -423,10 +619,22 @@
     "durasi": 67.0,
     "rit_lambat": 0.0,
     "speed": 82.0,
-    "berhenti": 62.0
+    "berhenti": 62.0,
+    "km_lambat": 17.0,
+    "hujan": 78.0,
+    "trigger": null
    },
-   "indeks": 53,
-   "status": "Perlu perhatian"
+   "indeks": 51,
+   "status": "Perlu perhatian",
+   "hujan_mm": 5.6,
+   "hujan_malam_mm": 4.9,
+   "km_lambat": 5,
+   "yakin": "tinggi",
+   "alasan": [
+    "Hujan 6 mm, 5 mm semalam",
+    "5 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-10-12",
@@ -446,10 +654,21 @@
     "durasi": 89.0,
     "rit_lambat": 26.0,
     "speed": 100.0,
-    "berhenti": 78.0
+    "berhenti": 78.0,
+    "km_lambat": 82.0,
+    "hujan": 98.0,
+    "trigger": null
    },
-   "indeks": 73,
-   "status": "Perlu perhatian"
+   "indeks": 79,
+   "status": "Kondisi baik",
+   "hujan_mm": 0.4,
+   "hujan_malam_mm": 0.4,
+   "km_lambat": 1,
+   "yakin": "tinggi",
+   "alasan": [
+    "1 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-10-13",
@@ -469,10 +688,22 @@
     "durasi": 75.0,
     "rit_lambat": 23.0,
     "speed": 88.0,
-    "berhenti": 63.0
+    "berhenti": 63.0,
+    "km_lambat": 68.0,
+    "hujan": 79.0,
+    "trigger": null
    },
-   "indeks": 62,
-   "status": "Perlu perhatian"
+   "indeks": 66,
+   "status": "Perlu perhatian",
+   "hujan_mm": 5.2,
+   "hujan_malam_mm": 5.2,
+   "km_lambat": 2,
+   "yakin": "tinggi",
+   "alasan": [
+    "Hujan 5 mm, 5 mm semalam",
+    "2 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-10-14",
@@ -492,10 +723,22 @@
     "durasi": 0.0,
     "rit_lambat": 0.0,
     "speed": 76.0,
-    "berhenti": 73.0
+    "berhenti": 73.0,
+    "km_lambat": 0.0,
+    "hujan": 96.0,
+    "trigger": null
    },
-   "indeks": 37,
-   "status": "Perlu perbaikan"
+   "indeks": 41,
+   "status": "Perlu perbaikan",
+   "hujan_mm": 0.9,
+   "hujan_malam_mm": 0.8,
+   "km_lambat": 3,
+   "yakin": "tinggi",
+   "alasan": [
+    "3 KM DT jalan pelan (13 km/jam ke bawah)",
+    "1 rit rata-rata 7 jam 37 mnt"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-10-15",
@@ -515,10 +758,23 @@
     "durasi": 0.0,
     "rit_lambat": 0.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 100.0,
+    "trigger": null
    },
-   "indeks": 0,
-   "status": "Perlu perbaikan"
+   "indeks": 33,
+   "status": "Perlu perbaikan",
+   "hujan_mm": 0.0,
+   "hujan_malam_mm": 0.0,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [
+    "1 rit rata-rata 10 jam 20 mnt"
+   ],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-10-16",
@@ -538,10 +794,23 @@
     "durasi": 28.0,
     "rit_lambat": 0.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 100.0,
+    "trigger": null
    },
-   "indeks": 14,
-   "status": "Perlu perbaikan"
+   "indeks": 42,
+   "status": "Perlu perbaikan",
+   "hujan_mm": 0.1,
+   "hujan_malam_mm": 0.0,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [
+    "1 rit rata-rata 4 jam 10 mnt"
+   ],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-10-17",
@@ -561,10 +830,21 @@
     "durasi": 97.0,
     "rit_lambat": 50.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 100.0,
+    "trigger": null
    },
-   "indeks": 74,
-   "status": "Perlu perhatian"
+   "indeks": 82,
+   "status": "Kondisi baik",
+   "hujan_mm": 0.0,
+   "hujan_malam_mm": 0.0,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-10-18",
@@ -584,10 +864,21 @@
     "durasi": 100.0,
     "rit_lambat": 55.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 98.0,
+    "trigger": null
    },
-   "indeks": 77,
-   "status": "Kondisi baik"
+   "indeks": 84,
+   "status": "Kondisi baik",
+   "hujan_mm": 0.4,
+   "hujan_malam_mm": 0.0,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-10-19",
@@ -607,10 +898,23 @@
     "durasi": 94.0,
     "rit_lambat": 40.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 83.0,
+    "trigger": null
    },
-   "indeks": 67,
-   "status": "Perlu perhatian"
+   "indeks": 72,
+   "status": "Perlu perhatian",
+   "hujan_mm": 4.3,
+   "hujan_malam_mm": 3.6,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [
+    "Hujan 4 mm, 4 mm semalam"
+   ],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-10-20",
@@ -630,10 +934,21 @@
     "durasi": 89.0,
     "rit_lambat": 33.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 96.0,
+    "trigger": null
    },
-   "indeks": 61,
-   "status": "Perlu perhatian"
+   "indeks": 72,
+   "status": "Perlu perhatian",
+   "hujan_mm": 1.1,
+   "hujan_malam_mm": 0.3,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-10-21",
@@ -653,10 +968,21 @@
     "durasi": 100.0,
     "rit_lambat": 45.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 100.0,
+    "trigger": null
    },
-   "indeks": 72,
-   "status": "Perlu perhatian"
+   "indeks": 82,
+   "status": "Kondisi baik",
+   "hujan_mm": 0.0,
+   "hujan_malam_mm": 0.0,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-10-22",
@@ -676,10 +1002,21 @@
     "durasi": 89.0,
     "rit_lambat": 30.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 98.0,
+    "trigger": null
    },
-   "indeks": 59,
-   "status": "Perlu perhatian"
+   "indeks": 72,
+   "status": "Perlu perhatian",
+   "hujan_mm": 0.5,
+   "hujan_malam_mm": 0.0,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-10-23",
@@ -699,10 +1036,21 @@
     "durasi": 90.0,
     "rit_lambat": 40.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 96.0,
+    "trigger": null
    },
-   "indeks": 65,
-   "status": "Perlu perhatian"
+   "indeks": 75,
+   "status": "Kondisi baik",
+   "hujan_mm": 1.0,
+   "hujan_malam_mm": 0.0,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-10-24",
@@ -722,10 +1070,23 @@
     "durasi": 81.0,
     "rit_lambat": 19.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 57.0,
+    "trigger": null
    },
-   "indeks": 50,
-   "status": "Perlu perhatian"
+   "indeks": 52,
+   "status": "Perlu perhatian",
+   "hujan_mm": 10.7,
+   "hujan_malam_mm": 0.4,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [
+    "Hujan 11 mm"
+   ],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-10-25",
@@ -745,10 +1106,24 @@
     "durasi": 19.0,
     "rit_lambat": 0.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 0.0,
+    "trigger": null
    },
-   "indeks": 10,
-   "status": "Perlu perbaikan"
+   "indeks": 6,
+   "status": "Perlu perbaikan",
+   "hujan_mm": 34.2,
+   "hujan_malam_mm": 26.2,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [
+    "Hujan 34 mm, 26 mm semalam",
+    "1 rit rata-rata 4 jam 25 mnt"
+   ],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-10-26",
@@ -768,10 +1143,23 @@
     "durasi": 93.0,
     "rit_lambat": 38.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 77.0,
+    "trigger": null
    },
-   "indeks": 65,
-   "status": "Perlu perhatian"
+   "indeks": 69,
+   "status": "Perlu perhatian",
+   "hujan_mm": 5.7,
+   "hujan_malam_mm": 3.6,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [
+    "Hujan 6 mm, 4 mm semalam"
+   ],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-10-27",
@@ -791,10 +1179,21 @@
     "durasi": 86.0,
     "rit_lambat": 0.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 92.0,
+    "trigger": null
    },
-   "indeks": 43,
-   "status": "Perlu perbaikan"
+   "indeks": 60,
+   "status": "Perlu perhatian",
+   "hujan_mm": 1.9,
+   "hujan_malam_mm": 0.4,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-10-28",
@@ -814,10 +1213,24 @@
     "durasi": 15.0,
     "rit_lambat": 0.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 5.0,
+    "trigger": null
    },
-   "indeks": 8,
-   "status": "Perlu perbaikan"
+   "indeks": 7,
+   "status": "Perlu perbaikan",
+   "hujan_mm": 23.8,
+   "hujan_malam_mm": 14.2,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [
+    "Hujan 24 mm, 14 mm semalam",
+    "1 rit rata-rata 4 jam 32 mnt"
+   ],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-10-29",
@@ -837,10 +1250,23 @@
     "durasi": 82.0,
     "rit_lambat": 50.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 71.0,
+    "trigger": null
    },
-   "indeks": 66,
-   "status": "Perlu perhatian"
+   "indeks": 68,
+   "status": "Perlu perhatian",
+   "hujan_mm": 7.2,
+   "hujan_malam_mm": 3.9,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [
+    "Hujan 7 mm, 4 mm semalam"
+   ],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-10-30",
@@ -860,10 +1286,23 @@
     "durasi": 100.0,
     "rit_lambat": 89.0,
     "speed": 100.0,
-    "berhenti": 57.0
+    "berhenti": 57.0,
+    "km_lambat": 33.0,
+    "hujan": 25.0,
+    "trigger": null
    },
-   "indeks": 86,
-   "status": "Kondisi baik"
+   "indeks": 67,
+   "status": "Perlu perhatian",
+   "hujan_mm": 18.8,
+   "hujan_malam_mm": 18.2,
+   "km_lambat": 1,
+   "yakin": "tinggi",
+   "alasan": [
+    "Hujan 19 mm, 18 mm semalam",
+    "1 KM DT jalan pelan (13 km/jam ke bawah)",
+    "DT berhenti 17% waktu"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-10-31",
@@ -883,19 +1322,30 @@
     "durasi": 90.0,
     "rit_lambat": 50.0,
     "speed": 93.0,
-    "berhenti": 61.0
+    "berhenti": 61.0,
+    "km_lambat": 80.0,
+    "hujan": 94.0,
+    "trigger": null
    },
-   "indeks": 74,
-   "status": "Perlu perhatian"
+   "indeks": 78,
+   "status": "Kondisi baik",
+   "hujan_mm": 1.5,
+   "hujan_malam_mm": 0.2,
+   "km_lambat": 1,
+   "yakin": "tinggi",
+   "alasan": [
+    "1 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-11-01",
    "n_trip": 8,
-   "median_menit": 722.5,
+   "median_menit": null,
    "p90_menit": 922.5,
    "median_km": 22.3,
-   "n_lambat": 8,
-   "pct_lambat": 100.0,
+   "n_lambat": null,
+   "pct_lambat": null,
    "gps_speed": null,
    "gps_pct_berhenti": null,
    "gps_unit": 10,
@@ -903,13 +1353,27 @@
    "muat_bsr_menit": 30.0,
    "bongkar_107_menit": 32.5,
    "skor": {
-    "durasi": 0.0,
-    "rit_lambat": 0.0,
+    "durasi": null,
+    "rit_lambat": null,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 54.0,
+    "trigger": null
    },
-   "indeks": 0,
-   "status": "Perlu perbaikan"
+   "indeks": 54,
+   "status": "Perlu perhatian",
+   "hujan_mm": 11.4,
+   "hujan_malam_mm": 1.2,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [
+    "Hujan 11 mm, 1 mm semalam"
+   ],
+   "kurang": [
+    "data rit hari ini tidak wajar",
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-11-02",
@@ -929,10 +1393,22 @@
     "durasi": 100.0,
     "rit_lambat": -0.0,
     "speed": 88.0,
-    "berhenti": 64.0
+    "berhenti": 64.0,
+    "km_lambat": 0.0,
+    "hujan": 74.0,
+    "trigger": null
    },
-   "indeks": 63,
-   "status": "Perlu perhatian"
+   "indeks": 54,
+   "status": "Perlu perhatian",
+   "hujan_mm": 6.5,
+   "hujan_malam_mm": 5.2,
+   "km_lambat": 5,
+   "yakin": "tinggi",
+   "alasan": [
+    "Hujan 6 mm, 5 mm semalam",
+    "5 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-11-03",
@@ -952,10 +1428,24 @@
     "durasi": 100.0,
     "rit_lambat": 79.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": 58.0,
+    "hujan": 62.0,
+    "trigger": null
    },
-   "indeks": 90,
-   "status": "Kondisi baik"
+   "indeks": 75,
+   "status": "Kondisi baik",
+   "hujan_mm": 9.6,
+   "hujan_malam_mm": 2.5,
+   "km_lambat": 1,
+   "yakin": "sedang",
+   "alasan": [
+    "Hujan 10 mm, 2 mm semalam",
+    "1 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-11-04",
@@ -975,10 +1465,21 @@
     "durasi": 100.0,
     "rit_lambat": 70.0,
     "speed": 100.0,
-    "berhenti": 86.0
+    "berhenti": 86.0,
+    "km_lambat": 100.0,
+    "hujan": 66.0,
+    "trigger": null
    },
-   "indeks": 89,
-   "status": "Kondisi baik"
+   "indeks": 87,
+   "status": "Kondisi baik",
+   "hujan_mm": 8.6,
+   "hujan_malam_mm": 0.3,
+   "km_lambat": 0,
+   "yakin": "tinggi",
+   "alasan": [
+    "Hujan 9 mm"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-11-05",
@@ -998,10 +1499,23 @@
     "durasi": 89.0,
     "rit_lambat": 23.0,
     "speed": 86.0,
-    "berhenti": 51.0
+    "berhenti": 51.0,
+    "km_lambat": 67.0,
+    "hujan": 16.0,
+    "trigger": null
    },
-   "indeks": 62,
-   "status": "Perlu perhatian"
+   "indeks": 55,
+   "status": "Perlu perhatian",
+   "hujan_mm": 21.0,
+   "hujan_malam_mm": 6.5,
+   "km_lambat": 2,
+   "yakin": "tinggi",
+   "alasan": [
+    "Hujan 21 mm, 6 mm semalam",
+    "2 KM DT jalan pelan (13 km/jam ke bawah)",
+    "DT berhenti 20% waktu"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-11-06",
@@ -1021,10 +1535,22 @@
     "durasi": 78.0,
     "rit_lambat": 14.0,
     "speed": 85.0,
-    "berhenti": 65.0
+    "berhenti": 65.0,
+    "km_lambat": 2.0,
+    "hujan": 24.0,
+    "trigger": null
    },
-   "indeks": 60,
-   "status": "Perlu perhatian"
+   "indeks": 45,
+   "status": "Perlu perbaikan",
+   "hujan_mm": 19.0,
+   "hujan_malam_mm": 14.9,
+   "km_lambat": 5,
+   "yakin": "tinggi",
+   "alasan": [
+    "Hujan 19 mm, 15 mm semalam",
+    "5 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-11-07",
@@ -1044,10 +1570,22 @@
     "durasi": 83.0,
     "rit_lambat": 23.0,
     "speed": 88.0,
-    "berhenti": 72.0
+    "berhenti": 72.0,
+    "km_lambat": 0.0,
+    "hujan": 84.0,
+    "trigger": null
    },
-   "indeks": 67,
-   "status": "Perlu perhatian"
+   "indeks": 58,
+   "status": "Perlu perhatian",
+   "hujan_mm": 3.9,
+   "hujan_malam_mm": 1.9,
+   "km_lambat": 7,
+   "yakin": "tinggi",
+   "alasan": [
+    "Hujan 4 mm, 2 mm semalam",
+    "7 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-11-08",
@@ -1067,10 +1605,24 @@
     "durasi": 0.0,
     "rit_lambat": 0.0,
     "speed": 75.0,
-    "berhenti": 22.0
+    "berhenti": 22.0,
+    "km_lambat": 0.0,
+    "hujan": 0.0,
+    "trigger": null
    },
-   "indeks": 24,
-   "status": "Perlu perbaikan"
+   "indeks": 16,
+   "status": "Perlu perbaikan",
+   "hujan_mm": 27.3,
+   "hujan_malam_mm": 10.9,
+   "km_lambat": 3,
+   "yakin": "tinggi",
+   "alasan": [
+    "Hujan 27 mm, 11 mm semalam",
+    "3 KM DT jalan pelan (13 km/jam ke bawah)",
+    "1 rit rata-rata 7 jam 12 mnt",
+    "DT berhenti 31% waktu"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-11-09",
@@ -1090,10 +1642,22 @@
     "durasi": 100.0,
     "rit_lambat": 83.0,
     "speed": 100.0,
-    "berhenti": 64.0
+    "berhenti": 64.0,
+    "km_lambat": 58.0,
+    "hujan": 72.0,
+    "trigger": null
    },
-   "indeks": 87,
-   "status": "Kondisi baik"
+   "indeks": 80,
+   "status": "Kondisi baik",
+   "hujan_mm": 7.0,
+   "hujan_malam_mm": 5.4,
+   "km_lambat": 1,
+   "yakin": "tinggi",
+   "alasan": [
+    "Hujan 7 mm, 5 mm semalam",
+    "1 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-11-10",
@@ -1113,10 +1677,22 @@
     "durasi": 82.0,
     "rit_lambat": 19.0,
     "speed": 79.0,
-    "berhenti": 61.0
+    "berhenti": 61.0,
+    "km_lambat": 12.0,
+    "hujan": 78.0,
+    "trigger": null
    },
-   "indeks": 60,
-   "status": "Perlu perhatian"
+   "indeks": 55,
+   "status": "Perlu perhatian",
+   "hujan_mm": 5.5,
+   "hujan_malam_mm": 4.9,
+   "km_lambat": 5,
+   "yakin": "tinggi",
+   "alasan": [
+    "Hujan 6 mm, 5 mm semalam",
+    "5 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-11-11",
@@ -1136,10 +1712,22 @@
     "durasi": 86.0,
     "rit_lambat": 19.0,
     "speed": 99.0,
-    "berhenti": 60.0
+    "berhenti": 60.0,
+    "km_lambat": 30.0,
+    "hujan": 87.0,
+    "trigger": null
    },
-   "indeks": 66,
-   "status": "Perlu perhatian"
+   "indeks": 64,
+   "status": "Perlu perhatian",
+   "hujan_mm": 3.2,
+   "hujan_malam_mm": 0.3,
+   "km_lambat": 4,
+   "yakin": "tinggi",
+   "alasan": [
+    "Hujan 3 mm",
+    "4 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-11-12",
@@ -1159,10 +1747,22 @@
     "durasi": 89.0,
     "rit_lambat": 38.0,
     "speed": 91.0,
-    "berhenti": 79.0
+    "berhenti": 79.0,
+    "km_lambat": 52.0,
+    "hujan": 40.0,
+    "trigger": null
    },
-   "indeks": 74,
-   "status": "Perlu perhatian"
+   "indeks": 65,
+   "status": "Perlu perhatian",
+   "hujan_mm": 15.1,
+   "hujan_malam_mm": 10.2,
+   "km_lambat": 2,
+   "yakin": "tinggi",
+   "alasan": [
+    "Hujan 15 mm, 10 mm semalam",
+    "2 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-11-13",
@@ -1182,19 +1782,31 @@
     "durasi": 90.0,
     "rit_lambat": 22.0,
     "speed": 100.0,
-    "berhenti": 50.0
+    "berhenti": 50.0,
+    "km_lambat": 100.0,
+    "hujan": 49.0,
+    "trigger": null
    },
-   "indeks": 66,
-   "status": "Perlu perhatian"
+   "indeks": 69,
+   "status": "Perlu perhatian",
+   "hujan_mm": 12.7,
+   "hujan_malam_mm": 1.6,
+   "km_lambat": 0,
+   "yakin": "tinggi",
+   "alasan": [
+    "Hujan 13 mm, 2 mm semalam",
+    "DT berhenti 20% waktu"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-11-15",
    "n_trip": 2,
-   "median_menit": 2767.5,
+   "median_menit": null,
    "p90_menit": 2825.5,
    "median_km": 31.5,
-   "n_lambat": 2,
-   "pct_lambat": 100.0,
+   "n_lambat": null,
+   "pct_lambat": null,
    "gps_speed": null,
    "gps_pct_berhenti": null,
    "gps_unit": null,
@@ -1202,13 +1814,27 @@
    "muat_bsr_menit": 22.1,
    "bongkar_107_menit": 35.0,
    "skor": {
-    "durasi": 0.0,
-    "rit_lambat": 0.0,
+    "durasi": null,
+    "rit_lambat": null,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 48.0,
+    "trigger": null
    },
-   "indeks": 0,
-   "status": "Perlu perbaikan"
+   "indeks": 48,
+   "status": "Perlu perbaikan",
+   "hujan_mm": 13.1,
+   "hujan_malam_mm": 0.5,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [
+    "Hujan 13 mm"
+   ],
+   "kurang": [
+    "data rit hari ini tidak wajar",
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-11-16",
@@ -1228,10 +1854,23 @@
     "durasi": 100.0,
     "rit_lambat": 100.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 0.0,
+    "trigger": null
    },
-   "indeks": 100,
-   "status": "Kondisi baik"
+   "indeks": 67,
+   "status": "Perlu perhatian",
+   "hujan_mm": 64.5,
+   "hujan_malam_mm": 50.4,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [
+    "Hujan 64 mm, 50 mm semalam"
+   ],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-11-17",
@@ -1251,10 +1890,22 @@
     "durasi": 88.0,
     "rit_lambat": 38.0,
     "speed": 93.0,
-    "berhenti": 80.0
+    "berhenti": 80.0,
+    "km_lambat": 29.0,
+    "hujan": 38.0,
+    "trigger": null
    },
-   "indeks": 74,
-   "status": "Perlu perhatian"
+   "indeks": 61,
+   "status": "Perlu perhatian",
+   "hujan_mm": 15.5,
+   "hujan_malam_mm": 15.0,
+   "km_lambat": 3,
+   "yakin": "tinggi",
+   "alasan": [
+    "Hujan 16 mm, 15 mm semalam",
+    "3 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-11-18",
@@ -1274,10 +1925,25 @@
     "durasi": 35.0,
     "rit_lambat": 0.0,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": 44.0,
+    "hujan": 69.0,
+    "trigger": null
    },
-   "indeks": 17,
-   "status": "Perlu perbaikan"
+   "indeks": 37,
+   "status": "Perlu perbaikan",
+   "hujan_mm": 7.8,
+   "hujan_malam_mm": 0.4,
+   "km_lambat": 1,
+   "yakin": "sedang",
+   "alasan": [
+    "Hujan 8 mm",
+    "1 KM DT jalan pelan (13 km/jam ke bawah)",
+    "1 rit rata-rata 3 jam 57 mnt"
+   ],
+   "kurang": [
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-11-19",
@@ -1297,10 +1963,22 @@
     "durasi": 100.0,
     "rit_lambat": 74.0,
     "speed": 100.0,
-    "berhenti": 87.0
+    "berhenti": 87.0,
+    "km_lambat": 47.0,
+    "hujan": 4.0,
+    "trigger": null
    },
-   "indeks": 90,
-   "status": "Kondisi baik"
+   "indeks": 69,
+   "status": "Perlu perhatian",
+   "hujan_mm": 23.9,
+   "hujan_malam_mm": 14.0,
+   "km_lambat": 3,
+   "yakin": "tinggi",
+   "alasan": [
+    "Hujan 24 mm, 14 mm semalam",
+    "3 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-11-20",
@@ -1320,10 +1998,60 @@
     "durasi": 86.0,
     "rit_lambat": 6.0,
     "speed": 87.0,
-    "berhenti": 31.0
+    "berhenti": 31.0,
+    "km_lambat": 26.0,
+    "hujan": 22.0,
+    "trigger": null
    },
-   "indeks": 52,
-   "status": "Perlu perhatian"
+   "indeks": 43,
+   "status": "Perlu perbaikan",
+   "hujan_mm": 19.5,
+   "hujan_malam_mm": 5.2,
+   "km_lambat": 2,
+   "yakin": "tinggi",
+   "alasan": [
+    "Hujan 20 mm, 5 mm semalam",
+    "2 KM DT jalan pelan (13 km/jam ke bawah)",
+    "DT berhenti 28% waktu"
+   ],
+   "kurang": []
+  },
+  {
+   "tanggal": "2026-11-21",
+   "n_trip": null,
+   "median_menit": null,
+   "p90_menit": null,
+   "median_km": null,
+   "n_lambat": null,
+   "pct_lambat": null,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": 2,
+   "kosong_menit": null,
+   "muat_bsr_menit": null,
+   "bongkar_107_menit": null,
+   "skor": {
+    "durasi": null,
+    "rit_lambat": null,
+    "speed": null,
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 28.0,
+    "trigger": null
+   },
+   "indeks": 28,
+   "status": "Perlu perbaikan",
+   "hujan_mm": 17.9,
+   "hujan_malam_mm": 1.9,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [
+    "Hujan 18 mm, 2 mm semalam"
+   ],
+   "kurang": [
+    "data rit belum masuk",
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-11-22",
@@ -1343,19 +2071,30 @@
     "durasi": 100.0,
     "rit_lambat": 100.0,
     "speed": 100.0,
-    "berhenti": 65.0
+    "berhenti": 65.0,
+    "km_lambat": 100.0,
+    "hujan": 41.0,
+    "trigger": null
    },
-   "indeks": 91,
-   "status": "Kondisi baik"
+   "indeks": 84,
+   "status": "Kondisi baik",
+   "hujan_mm": 14.8,
+   "hujan_malam_mm": 13.6,
+   "km_lambat": 0,
+   "yakin": "tinggi",
+   "alasan": [
+    "Hujan 15 mm, 14 mm semalam"
+   ],
+   "kurang": []
   },
   {
    "tanggal": "2026-11-23",
    "n_trip": 11,
-   "median_menit": 1165.0,
+   "median_menit": null,
    "p90_menit": 1230.0,
    "median_km": 18.9,
-   "n_lambat": 8,
-   "pct_lambat": 72.7,
+   "n_lambat": null,
+   "pct_lambat": null,
    "gps_speed": null,
    "gps_pct_berhenti": null,
    "gps_unit": 10,
@@ -1363,13 +2102,28 @@
    "muat_bsr_menit": 45.0,
    "bongkar_107_menit": 25.1,
    "skor": {
-    "durasi": 0.0,
-    "rit_lambat": 0.0,
+    "durasi": null,
+    "rit_lambat": null,
     "speed": null,
-    "berhenti": null
+    "berhenti": null,
+    "km_lambat": 0.0,
+    "hujan": 57.0,
+    "trigger": null
    },
-   "indeks": 0,
-   "status": "Perlu perbaikan"
+   "indeks": 28,
+   "status": "Perlu perbaikan",
+   "hujan_mm": 10.8,
+   "hujan_malam_mm": 9.2,
+   "km_lambat": 4,
+   "yakin": "rendah",
+   "alasan": [
+    "Hujan 11 mm, 9 mm semalam",
+    "4 KM DT jalan pelan (13 km/jam ke bawah)"
+   ],
+   "kurang": [
+    "data rit hari ini tidak wajar",
+    "data GPS kurang"
+   ]
   },
   {
    "tanggal": "2026-11-24",
@@ -1389,10 +2143,3940 @@
     "durasi": null,
     "rit_lambat": null,
     "speed": 99.0,
-    "berhenti": 89.0
+    "berhenti": 89.0,
+    "km_lambat": 100.0,
+    "hujan": 69.0,
+    "trigger": null
    },
-   "indeks": 94,
-   "status": "Kondisi baik"
+   "indeks": 89,
+   "status": "Kondisi baik",
+   "hujan_mm": 7.8,
+   "hujan_malam_mm": 4.2,
+   "km_lambat": 0,
+   "yakin": "sedang",
+   "alasan": [
+    "Hujan 8 mm, 4 mm semalam"
+   ],
+   "kurang": [
+    "data rit belum masuk"
+   ]
+  },
+  {
+   "tanggal": "2026-11-25",
+   "n_trip": null,
+   "median_menit": null,
+   "p90_menit": null,
+   "median_km": null,
+   "n_lambat": null,
+   "pct_lambat": null,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": 2,
+   "kosong_menit": null,
+   "muat_bsr_menit": null,
+   "bongkar_107_menit": null,
+   "skor": {
+    "durasi": null,
+    "rit_lambat": null,
+    "speed": null,
+    "berhenti": null,
+    "km_lambat": null,
+    "hujan": 32.0,
+    "trigger": 50.0
+   },
+   "indeks": 41,
+   "status": "Perlu perbaikan",
+   "hujan_mm": 17.1,
+   "hujan_malam_mm": 8.3,
+   "km_lambat": null,
+   "yakin": "rendah",
+   "alasan": [
+    "Hujan 17 mm, 8 mm semalam",
+    "6 titik jalan merah masih terbuka"
+   ],
+   "kurang": [
+    "data rit belum masuk",
+    "data GPS kurang"
+   ]
   }
- ]
+ ],
+ "jam": {
+  "2026-09-25": [
+   [
+    11,
+    58,
+    37.5,
+    33.3,
+    3,
+    3
+   ],
+   [
+    15,
+    67,
+    12.0,
+    0.0,
+    4,
+    4
+   ],
+   [
+    17,
+    100,
+    20.7,
+    0.0,
+    3,
+    3
+   ]
+  ],
+  "2026-09-26": [],
+  "2026-09-27": [],
+  "2026-09-28": [],
+  "2026-09-29": [
+   [
+    15,
+    100,
+    30.6,
+    0.0,
+    8,
+    8
+   ],
+   [
+    16,
+    100,
+    25.7,
+    0.0,
+    3,
+    3
+   ],
+   [
+    18,
+    92,
+    18.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    20,
+    100,
+    23.4,
+    0.0,
+    5,
+    5
+   ],
+   [
+    21,
+    50,
+    25.3,
+    50.0,
+    6,
+    6
+   ],
+   [
+    23,
+    98,
+    19.5,
+    0.0,
+    4,
+    4
+   ]
+  ],
+  "2026-09-30": [
+   [
+    7,
+    96,
+    19.0,
+    0.0,
+    5,
+    5
+   ],
+   [
+    10,
+    100,
+    29.4,
+    0.0,
+    5,
+    5
+   ],
+   [
+    11,
+    100,
+    25.2,
+    0.0,
+    6,
+    6
+   ],
+   [
+    12,
+    100,
+    27.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    14,
+    100,
+    25.7,
+    0.0,
+    3,
+    3
+   ],
+   [
+    15,
+    69,
+    24.8,
+    25.0,
+    8,
+    8
+   ],
+   [
+    17,
+    96,
+    19.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    18,
+    44,
+    13.3,
+    22.2,
+    9,
+    9
+   ],
+   [
+    19,
+    73,
+    16.6,
+    10.0,
+    10,
+    10
+   ],
+   [
+    20,
+    75,
+    23.2,
+    20.0,
+    5,
+    5
+   ],
+   [
+    21,
+    82,
+    21.0,
+    14.3,
+    7,
+    7
+   ]
+  ],
+  "2026-10-01": [
+   [
+    10,
+    79,
+    19.2,
+    14.3,
+    7,
+    7
+   ],
+   [
+    11,
+    100,
+    22.2,
+    0.0,
+    5,
+    5
+   ],
+   [
+    12,
+    100,
+    21.0,
+    0.0,
+    5,
+    5
+   ],
+   [
+    14,
+    100,
+    24.0,
+    0.0,
+    5,
+    5
+   ],
+   [
+    15,
+    46,
+    19.0,
+    66.7,
+    3,
+    3
+   ],
+   [
+    16,
+    100,
+    30.0,
+    0.0,
+    4,
+    4
+   ],
+   [
+    17,
+    100,
+    24.8,
+    0.0,
+    4,
+    4
+   ],
+   [
+    18,
+    27,
+    12.5,
+    33.3,
+    3,
+    3
+   ]
+  ],
+  "2026-10-02": [
+   [
+    14,
+    89,
+    17.3,
+    0.0,
+    7,
+    7
+   ],
+   [
+    15,
+    50,
+    28.0,
+    66.7,
+    3,
+    3
+   ],
+   [
+    19,
+    100,
+    33.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    20,
+    100,
+    23.8,
+    0.0,
+    5,
+    5
+   ]
+  ],
+  "2026-10-03": [
+   [
+    8,
+    100,
+    25.5,
+    0.0,
+    4,
+    4
+   ],
+   [
+    10,
+    97,
+    19.2,
+    0.0,
+    4,
+    4
+   ],
+   [
+    12,
+    100,
+    20.0,
+    0.0,
+    7,
+    7
+   ],
+   [
+    13,
+    50,
+    23.3,
+    40.0,
+    5,
+    5
+   ],
+   [
+    14,
+    100,
+    30.2,
+    0.0,
+    4,
+    4
+   ],
+   [
+    15,
+    100,
+    24.7,
+    0.0,
+    6,
+    6
+   ],
+   [
+    16,
+    100,
+    23.6,
+    0.0,
+    5,
+    5
+   ],
+   [
+    17,
+    100,
+    21.0,
+    0.0,
+    4,
+    4
+   ],
+   [
+    20,
+    100,
+    26.5,
+    0.0,
+    8,
+    8
+   ],
+   [
+    21,
+    58,
+    36.0,
+    33.3,
+    3,
+    3
+   ],
+   [
+    22,
+    100,
+    20.7,
+    0.0,
+    3,
+    3
+   ]
+  ],
+  "2026-10-04": [
+   [
+    1,
+    100,
+    23.6,
+    0.0,
+    5,
+    5
+   ],
+   [
+    6,
+    100,
+    25.7,
+    0.0,
+    3,
+    3
+   ],
+   [
+    7,
+    100,
+    25.7,
+    0.0,
+    3,
+    3
+   ],
+   [
+    8,
+    100,
+    22.2,
+    0.0,
+    5,
+    5
+   ],
+   [
+    9,
+    82,
+    24.8,
+    14.3,
+    7,
+    7
+   ],
+   [
+    10,
+    73,
+    13.6,
+    0.0,
+    11,
+    11
+   ],
+   [
+    11,
+    79,
+    26.4,
+    16.7,
+    6,
+    6
+   ],
+   [
+    12,
+    79,
+    17.9,
+    10.0,
+    10,
+    10
+   ],
+   [
+    13,
+    100,
+    26.2,
+    0.0,
+    9,
+    9
+   ],
+   [
+    14,
+    93,
+    18.3,
+    0.0,
+    3,
+    3
+   ],
+   [
+    15,
+    100,
+    21.5,
+    0.0,
+    4,
+    4
+   ],
+   [
+    16,
+    65,
+    15.0,
+    11.1,
+    9,
+    9
+   ],
+   [
+    17,
+    79,
+    19.2,
+    14.3,
+    7,
+    7
+   ],
+   [
+    19,
+    70,
+    12.7,
+    0.0,
+    3,
+    3
+   ],
+   [
+    20,
+    100,
+    23.8,
+    0.0,
+    6,
+    6
+   ],
+   [
+    21,
+    100,
+    20.3,
+    0.0,
+    6,
+    6
+   ],
+   [
+    22,
+    55,
+    16.7,
+    25.0,
+    4,
+    4
+   ],
+   [
+    23,
+    87,
+    16.8,
+    0.0,
+    6,
+    6
+   ]
+  ],
+  "2026-10-05": [
+   [
+    0,
+    49,
+    15.3,
+    25.0,
+    4,
+    4
+   ],
+   [
+    1,
+    100,
+    22.6,
+    0.0,
+    5,
+    5
+   ],
+   [
+    5,
+    75,
+    14.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    6,
+    77,
+    14.5,
+    0.0,
+    4,
+    4
+   ],
+   [
+    7,
+    76,
+    14.3,
+    0.0,
+    3,
+    3
+   ],
+   [
+    8,
+    79,
+    25.2,
+    16.7,
+    6,
+    6
+   ],
+   [
+    9,
+    89,
+    27.8,
+    9.1,
+    11,
+    11
+   ],
+   [
+    10,
+    70,
+    17.2,
+    14.3,
+    7,
+    7
+   ],
+   [
+    11,
+    98,
+    19.5,
+    0.0,
+    6,
+    6
+   ],
+   [
+    12,
+    77,
+    18.3,
+    12.5,
+    16,
+    16
+   ],
+   [
+    13,
+    100,
+    26.1,
+    0.0,
+    13,
+    13
+   ],
+   [
+    14,
+    100,
+    22.4,
+    0.0,
+    9,
+    9
+   ],
+   [
+    15,
+    100,
+    26.8,
+    0.0,
+    8,
+    8
+   ],
+   [
+    16,
+    56,
+    15.5,
+    20.0,
+    5,
+    5
+   ],
+   [
+    17,
+    89,
+    21.0,
+    9.1,
+    11,
+    11
+   ],
+   [
+    18,
+    50,
+    23.5,
+    50.0,
+    8,
+    8
+   ],
+   [
+    19,
+    88,
+    17.0,
+    0.0,
+    5,
+    5
+   ],
+   [
+    20,
+    82,
+    24.2,
+    14.3,
+    14,
+    14
+   ],
+   [
+    21,
+    82,
+    15.7,
+    0.0,
+    9,
+    9
+   ],
+   [
+    22,
+    54,
+    17.1,
+    27.3,
+    11,
+    11
+   ],
+   [
+    23,
+    90,
+    17.7,
+    0.0,
+    7,
+    7
+   ]
+  ],
+  "2026-10-06": [
+   [
+    0,
+    91,
+    17.8,
+    0.0,
+    6,
+    6
+   ],
+   [
+    1,
+    90,
+    17.5,
+    0.0,
+    4,
+    4
+   ],
+   [
+    2,
+    84,
+    25.7,
+    12.5,
+    8,
+    8
+   ],
+   [
+    3,
+    50,
+    18.0,
+    33.3,
+    3,
+    3
+   ],
+   [
+    6,
+    67,
+    12.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    7,
+    85,
+    16.4,
+    0.0,
+    5,
+    5
+   ],
+   [
+    8,
+    82,
+    20.0,
+    14.3,
+    7,
+    7
+   ],
+   [
+    9,
+    100,
+    24.1,
+    0.0,
+    8,
+    8
+   ],
+   [
+    10,
+    71,
+    20.6,
+    23.1,
+    13,
+    13
+   ],
+   [
+    11,
+    88,
+    17.0,
+    0.0,
+    10,
+    10
+   ],
+   [
+    12,
+    89,
+    20.6,
+    9.1,
+    11,
+    11
+   ],
+   [
+    13,
+    55,
+    22.6,
+    35.7,
+    14,
+    14
+   ],
+   [
+    14,
+    90,
+    23.5,
+    8.3,
+    12,
+    12
+   ],
+   [
+    16,
+    62,
+    10.8,
+    0.0,
+    6,
+    6
+   ],
+   [
+    17,
+    70,
+    15.2,
+    7.7,
+    13,
+    13
+   ],
+   [
+    18,
+    50,
+    31.0,
+    50.0,
+    4,
+    4
+   ],
+   [
+    20,
+    11,
+    10.7,
+    50.0,
+    6,
+    6
+   ],
+   [
+    21,
+    0,
+    null,
+    100.0,
+    4,
+    4
+   ],
+   [
+    22,
+    0,
+    null,
+    100.0,
+    3,
+    3
+   ],
+   [
+    23,
+    0,
+    null,
+    100.0,
+    4,
+    4
+   ]
+  ],
+  "2026-10-07": [
+   [
+    0,
+    71,
+    15.5,
+    8.3,
+    12,
+    12
+   ],
+   [
+    1,
+    100,
+    29.2,
+    0.0,
+    4,
+    4
+   ],
+   [
+    2,
+    100,
+    26.0,
+    0.0,
+    5,
+    5
+   ],
+   [
+    6,
+    98,
+    19.5,
+    0.0,
+    4,
+    4
+   ],
+   [
+    7,
+    100,
+    19.9,
+    0.0,
+    8,
+    8
+   ],
+   [
+    8,
+    71,
+    13.0,
+    0.0,
+    4,
+    4
+   ],
+   [
+    9,
+    78,
+    18.4,
+    12.5,
+    8,
+    8
+   ],
+   [
+    10,
+    89,
+    21.0,
+    9.1,
+    11,
+    11
+   ],
+   [
+    11,
+    40,
+    14.7,
+    30.0,
+    10,
+    10
+   ],
+   [
+    12,
+    69,
+    23.7,
+    25.0,
+    8,
+    8
+   ],
+   [
+    13,
+    74,
+    15.8,
+    6.7,
+    15,
+    15
+   ],
+   [
+    14,
+    100,
+    25.8,
+    0.0,
+    12,
+    12
+   ],
+   [
+    15,
+    73,
+    15.3,
+    5.9,
+    17,
+    17
+   ],
+   [
+    16,
+    57,
+    12.9,
+    11.1,
+    9,
+    9
+   ],
+   [
+    17,
+    92,
+    18.0,
+    0.0,
+    6,
+    6
+   ],
+   [
+    18,
+    86,
+    21.6,
+    11.1,
+    9,
+    9
+   ],
+   [
+    19,
+    90,
+    17.5,
+    0.0,
+    11,
+    11
+   ],
+   [
+    20,
+    61,
+    10.7,
+    0.0,
+    6,
+    6
+   ],
+   [
+    21,
+    92,
+    18.0,
+    0.0,
+    6,
+    6
+   ],
+   [
+    22,
+    85,
+    16.5,
+    0.0,
+    13,
+    13
+   ],
+   [
+    23,
+    100,
+    21.4,
+    0.0,
+    9,
+    9
+   ]
+  ],
+  "2026-10-08": [
+   [
+    0,
+    86,
+    16.6,
+    0.0,
+    8,
+    8
+   ],
+   [
+    1,
+    100,
+    22.9,
+    0.0,
+    7,
+    7
+   ],
+   [
+    2,
+    75,
+    18.3,
+    14.3,
+    7,
+    7
+   ],
+   [
+    3,
+    90,
+    17.5,
+    0.0,
+    4,
+    4
+   ],
+   [
+    4,
+    72,
+    13.4,
+    0.0,
+    5,
+    5
+   ],
+   [
+    5,
+    69,
+    28.7,
+    25.0,
+    4,
+    4
+   ],
+   [
+    6,
+    86,
+    16.7,
+    0.0,
+    3,
+    3
+   ],
+   [
+    7,
+    79,
+    15.0,
+    0.0,
+    4,
+    4
+   ],
+   [
+    8,
+    92,
+    18.1,
+    0.0,
+    13,
+    13
+   ],
+   [
+    9,
+    94,
+    18.5,
+    0.0,
+    8,
+    8
+   ],
+   [
+    10,
+    65,
+    18.3,
+    22.2,
+    9,
+    9
+   ],
+   [
+    11,
+    73,
+    16.9,
+    11.1,
+    9,
+    9
+   ],
+   [
+    12,
+    63,
+    13.9,
+    9.1,
+    11,
+    11
+   ],
+   [
+    13,
+    77,
+    16.2,
+    5.6,
+    18,
+    18
+   ],
+   [
+    14,
+    63,
+    14.4,
+    11.1,
+    9,
+    9
+   ],
+   [
+    15,
+    70,
+    12.9,
+    0.0,
+    9,
+    9
+   ],
+   [
+    16,
+    74,
+    13.8,
+    0.0,
+    20,
+    20
+   ],
+   [
+    17,
+    81,
+    17.4,
+    6.7,
+    15,
+    15
+   ],
+   [
+    18,
+    89,
+    17.3,
+    0.0,
+    7,
+    7
+   ],
+   [
+    19,
+    88,
+    17.2,
+    0.0,
+    12,
+    12
+   ],
+   [
+    20,
+    84,
+    19.5,
+    11.1,
+    9,
+    9
+   ],
+   [
+    21,
+    87,
+    16.8,
+    0.0,
+    14,
+    14
+   ],
+   [
+    22,
+    83,
+    15.9,
+    0.0,
+    7,
+    7
+   ],
+   [
+    23,
+    98,
+    19.6,
+    0.0,
+    5,
+    5
+   ]
+  ],
+  "2026-10-09": [
+   [
+    0,
+    100,
+    27.8,
+    0.0,
+    4,
+    4
+   ],
+   [
+    1,
+    93,
+    18.3,
+    0.0,
+    3,
+    3
+   ],
+   [
+    2,
+    92,
+    18.2,
+    0.0,
+    4,
+    4
+   ],
+   [
+    4,
+    74,
+    19.8,
+    20.0,
+    5,
+    5
+   ],
+   [
+    5,
+    59,
+    15.2,
+    16.7,
+    6,
+    6
+   ],
+   [
+    6,
+    79,
+    22.6,
+    16.7,
+    6,
+    6
+   ],
+   [
+    8,
+    100,
+    22.1,
+    0.0,
+    8,
+    8
+   ],
+   [
+    9,
+    67,
+    18.9,
+    23.1,
+    13,
+    13
+   ],
+   [
+    10,
+    81,
+    21.8,
+    15.4,
+    13,
+    13
+   ],
+   [
+    11,
+    78,
+    14.8,
+    0.0,
+    8,
+    8
+   ],
+   [
+    12,
+    71,
+    19.0,
+    20.0,
+    10,
+    10
+   ],
+   [
+    13,
+    59,
+    16.9,
+    22.2,
+    9,
+    9
+   ],
+   [
+    14,
+    47,
+    15.4,
+    27.3,
+    11,
+    11
+   ],
+   [
+    15,
+    85,
+    16.4,
+    0.0,
+    11,
+    11
+   ],
+   [
+    16,
+    50,
+    24.3,
+    46.2,
+    13,
+    13
+   ],
+   [
+    17,
+    55,
+    13.0,
+    12.5,
+    8,
+    8
+   ],
+   [
+    18,
+    69,
+    14.5,
+    6.7,
+    15,
+    15
+   ],
+   [
+    19,
+    54,
+    9.0,
+    0.0,
+    4,
+    4
+   ],
+   [
+    20,
+    100,
+    20.4,
+    0.0,
+    8,
+    8
+   ],
+   [
+    21,
+    58,
+    17.5,
+    25.0,
+    8,
+    8
+   ],
+   [
+    22,
+    77,
+    14.5,
+    0.0,
+    10,
+    10
+   ],
+   [
+    23,
+    75,
+    20.6,
+    20.0,
+    10,
+    10
+   ]
+  ],
+  "2026-10-10": [
+   [
+    0,
+    98,
+    19.4,
+    0.0,
+    5,
+    5
+   ],
+   [
+    1,
+    58,
+    20.5,
+    33.3,
+    3,
+    3
+   ],
+   [
+    2,
+    89,
+    17.3,
+    0.0,
+    3,
+    3
+   ],
+   [
+    3,
+    100,
+    24.6,
+    0.0,
+    5,
+    5
+   ],
+   [
+    5,
+    100,
+    26.4,
+    0.0,
+    5,
+    5
+   ],
+   [
+    6,
+    82,
+    15.7,
+    0.0,
+    3,
+    3
+   ],
+   [
+    8,
+    100,
+    20.9,
+    0.0,
+    10,
+    10
+   ],
+   [
+    9,
+    75,
+    14.1,
+    0.0,
+    17,
+    17
+   ],
+   [
+    10,
+    95,
+    18.9,
+    0.0,
+    10,
+    10
+   ],
+   [
+    11,
+    90,
+    17.6,
+    0.0,
+    5,
+    5
+   ],
+   [
+    12,
+    69,
+    17.6,
+    16.7,
+    6,
+    6
+   ],
+   [
+    13,
+    58,
+    21.2,
+    33.3,
+    6,
+    6
+   ],
+   [
+    14,
+    62,
+    23.3,
+    30.0,
+    10,
+    10
+   ],
+   [
+    15,
+    61,
+    13.9,
+    11.1,
+    9,
+    9
+   ],
+   [
+    16,
+    38,
+    15.0,
+    33.3,
+    3,
+    3
+   ],
+   [
+    18,
+    77,
+    14.4,
+    0.0,
+    5,
+    5
+   ],
+   [
+    19,
+    22,
+    10.4,
+    30.0,
+    10,
+    10
+   ],
+   [
+    20,
+    64,
+    24.8,
+    28.6,
+    7,
+    7
+   ],
+   [
+    21,
+    42,
+    11.0,
+    16.7,
+    6,
+    6
+   ],
+   [
+    23,
+    0,
+    8.0,
+    66.7,
+    3,
+    3
+   ]
+  ],
+  "2026-10-11": [
+   [
+    1,
+    50,
+    24.0,
+    66.7,
+    3,
+    3
+   ],
+   [
+    7,
+    92,
+    18.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    8,
+    21,
+    13.0,
+    40.0,
+    5,
+    5
+   ],
+   [
+    9,
+    63,
+    17.1,
+    20.0,
+    10,
+    10
+   ],
+   [
+    10,
+    100,
+    21.6,
+    0.0,
+    7,
+    7
+   ],
+   [
+    11,
+    88,
+    17.2,
+    0.0,
+    5,
+    5
+   ],
+   [
+    12,
+    100,
+    23.2,
+    0.0,
+    4,
+    4
+   ],
+   [
+    13,
+    50,
+    28.0,
+    40.0,
+    5,
+    5
+   ],
+   [
+    14,
+    68,
+    12.2,
+    0.0,
+    6,
+    6
+   ],
+   [
+    15,
+    62,
+    10.8,
+    0.0,
+    4,
+    4
+   ],
+   [
+    16,
+    91,
+    17.8,
+    0.0,
+    8,
+    8
+   ],
+   [
+    18,
+    52,
+    18.5,
+    33.3,
+    3,
+    3
+   ],
+   [
+    19,
+    86,
+    21.1,
+    11.1,
+    9,
+    9
+   ],
+   [
+    20,
+    100,
+    21.3,
+    0.0,
+    3,
+    3
+   ],
+   [
+    21,
+    53,
+    13.0,
+    14.3,
+    7,
+    7
+   ]
+  ],
+  "2026-10-12": [
+   [
+    1,
+    50,
+    30.3,
+    40.0,
+    5,
+    5
+   ],
+   [
+    2,
+    100,
+    20.3,
+    0.0,
+    7,
+    7
+   ],
+   [
+    10,
+    22,
+    13.3,
+    40.0,
+    5,
+    5
+   ],
+   [
+    11,
+    48,
+    13.5,
+    20.0,
+    5,
+    5
+   ],
+   [
+    14,
+    100,
+    22.3,
+    0.0,
+    6,
+    6
+   ],
+   [
+    15,
+    79,
+    20.6,
+    16.7,
+    6,
+    6
+   ],
+   [
+    16,
+    92,
+    18.2,
+    0.0,
+    4,
+    4
+   ],
+   [
+    17,
+    71,
+    13.0,
+    0.0,
+    4,
+    4
+   ],
+   [
+    18,
+    100,
+    27.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    20,
+    100,
+    22.5,
+    0.0,
+    8,
+    8
+   ],
+   [
+    21,
+    100,
+    20.3,
+    0.0,
+    3,
+    3
+   ],
+   [
+    22,
+    100,
+    22.5,
+    0.0,
+    4,
+    4
+   ],
+   [
+    23,
+    84,
+    16.2,
+    0.0,
+    4,
+    4
+   ]
+  ],
+  "2026-10-13": [
+   [
+    0,
+    85,
+    16.5,
+    0.0,
+    4,
+    4
+   ],
+   [
+    2,
+    100,
+    27.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    4,
+    100,
+    21.3,
+    0.0,
+    3,
+    3
+   ],
+   [
+    5,
+    40,
+    15.5,
+    33.3,
+    3,
+    3
+   ],
+   [
+    6,
+    75,
+    21.8,
+    20.0,
+    5,
+    5
+   ],
+   [
+    7,
+    50,
+    30.7,
+    40.0,
+    5,
+    5
+   ],
+   [
+    9,
+    58,
+    21.8,
+    33.3,
+    6,
+    6
+   ],
+   [
+    10,
+    51,
+    12.1,
+    12.5,
+    8,
+    8
+   ],
+   [
+    11,
+    63,
+    17.2,
+    20.0,
+    5,
+    5
+   ],
+   [
+    12,
+    17,
+    12.0,
+    75.0,
+    4,
+    4
+   ],
+   [
+    13,
+    59,
+    16.2,
+    20.0,
+    5,
+    5
+   ],
+   [
+    14,
+    97,
+    19.2,
+    0.0,
+    5,
+    5
+   ],
+   [
+    15,
+    96,
+    19.0,
+    0.0,
+    6,
+    6
+   ],
+   [
+    16,
+    87,
+    16.8,
+    0.0,
+    6,
+    6
+   ],
+   [
+    17,
+    86,
+    16.7,
+    0.0,
+    3,
+    3
+   ],
+   [
+    18,
+    64,
+    15.7,
+    14.3,
+    7,
+    7
+   ],
+   [
+    19,
+    84,
+    23.7,
+    12.5,
+    8,
+    8
+   ],
+   [
+    20,
+    70,
+    12.7,
+    0.0,
+    3,
+    3
+   ],
+   [
+    21,
+    100,
+    21.6,
+    0.0,
+    11,
+    11
+   ],
+   [
+    22,
+    57,
+    13.0,
+    11.1,
+    9,
+    9
+   ],
+   [
+    23,
+    35,
+    14.5,
+    33.3,
+    6,
+    6
+   ]
+  ],
+  "2026-10-14": [
+   [
+    7,
+    52,
+    12.8,
+    14.3,
+    7,
+    7
+   ],
+   [
+    8,
+    100,
+    24.0,
+    0.0,
+    4,
+    4
+   ],
+   [
+    9,
+    72,
+    13.3,
+    0.0,
+    7,
+    7
+   ],
+   [
+    10,
+    83,
+    16.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    19,
+    58,
+    20.0,
+    33.3,
+    3,
+    3
+   ],
+   [
+    21,
+    80,
+    15.2,
+    0.0,
+    4,
+    4
+   ]
+  ],
+  "2026-10-15": [
+   [
+    14,
+    67,
+    12.0,
+    0.0,
+    3,
+    3
+   ]
+  ],
+  "2026-10-16": [],
+  "2026-10-17": [
+   [
+    16,
+    76,
+    14.3,
+    0.0,
+    3,
+    3
+   ]
+  ],
+  "2026-10-18": [],
+  "2026-10-19": [],
+  "2026-10-20": [],
+  "2026-10-21": [
+   [
+    10,
+    85,
+    16.5,
+    0.0,
+    4,
+    4
+   ]
+  ],
+  "2026-10-22": [
+   [
+    19,
+    56,
+    17.0,
+    25.0,
+    4,
+    4
+   ],
+   [
+    22,
+    40,
+    17.5,
+    50.0,
+    4,
+    4
+   ]
+  ],
+  "2026-10-23": [],
+  "2026-10-24": [],
+  "2026-10-25": [
+   [
+    14,
+    0,
+    null,
+    100.0,
+    3,
+    3
+   ]
+  ],
+  "2026-10-26": [
+   [
+    20,
+    12,
+    11.0,
+    66.7,
+    6,
+    6
+   ]
+  ],
+  "2026-10-27": [
+   [
+    15,
+    6,
+    9.5,
+    50.0,
+    12,
+    12
+   ]
+  ],
+  "2026-10-28": [],
+  "2026-10-29": [
+   [
+    13,
+    71,
+    13.0,
+    0.0,
+    3,
+    3
+   ]
+  ],
+  "2026-10-30": [
+   [
+    18,
+    100,
+    22.2,
+    0.0,
+    4,
+    4
+   ],
+   [
+    19,
+    100,
+    24.0,
+    0.0,
+    5,
+    5
+   ],
+   [
+    20,
+    100,
+    25.8,
+    0.0,
+    8,
+    8
+   ],
+   [
+    21,
+    50,
+    24.7,
+    62.5,
+    8,
+    8
+   ],
+   [
+    22,
+    19,
+    7.7,
+    25.0,
+    4,
+    4
+   ],
+   [
+    23,
+    84,
+    16.1,
+    0.0,
+    8,
+    8
+   ]
+  ],
+  "2026-10-31": [
+   [
+    0,
+    57,
+    14.8,
+    16.7,
+    6,
+    6
+   ],
+   [
+    1,
+    100,
+    24.2,
+    0.0,
+    4,
+    4
+   ],
+   [
+    2,
+    100,
+    21.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    4,
+    80,
+    15.3,
+    0.0,
+    3,
+    3
+   ],
+   [
+    7,
+    100,
+    20.2,
+    0.0,
+    5,
+    5
+   ],
+   [
+    9,
+    95,
+    18.7,
+    0.0,
+    6,
+    6
+   ],
+   [
+    10,
+    21,
+    13.0,
+    75.0,
+    4,
+    4
+   ],
+   [
+    11,
+    68,
+    15.0,
+    9.1,
+    11,
+    11
+   ],
+   [
+    12,
+    58,
+    22.5,
+    33.3,
+    3,
+    3
+   ],
+   [
+    13,
+    75,
+    26.5,
+    20.0,
+    5,
+    5
+   ],
+   [
+    14,
+    86,
+    25.6,
+    11.1,
+    9,
+    9
+   ],
+   [
+    15,
+    51,
+    15.7,
+    25.0,
+    8,
+    8
+   ],
+   [
+    16,
+    84,
+    20.1,
+    12.5,
+    8,
+    8
+   ],
+   [
+    17,
+    37,
+    16.8,
+    40.0,
+    10,
+    10
+   ],
+   [
+    18,
+    65,
+    11.5,
+    0.0,
+    4,
+    4
+   ],
+   [
+    19,
+    100,
+    23.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    20,
+    100,
+    22.6,
+    0.0,
+    5,
+    5
+   ],
+   [
+    21,
+    65,
+    17.0,
+    18.2,
+    11,
+    11
+   ],
+   [
+    22,
+    67,
+    12.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    23,
+    56,
+    19.5,
+    33.3,
+    3,
+    3
+   ]
+  ],
+  "2026-11-01": [
+   [
+    7,
+    0,
+    null,
+    100.0,
+    5,
+    5
+   ],
+   [
+    8,
+    8,
+    10.0,
+    66.7,
+    6,
+    6
+   ],
+   [
+    10,
+    99,
+    19.7,
+    0.0,
+    6,
+    6
+   ]
+  ],
+  "2026-11-02": [
+   [
+    10,
+    50,
+    20.0,
+    40.0,
+    5,
+    5
+   ],
+   [
+    11,
+    94,
+    18.5,
+    0.0,
+    4,
+    4
+   ],
+   [
+    12,
+    52,
+    16.0,
+    25.0,
+    4,
+    4
+   ],
+   [
+    15,
+    60,
+    10.3,
+    0.0,
+    3,
+    3
+   ],
+   [
+    16,
+    56,
+    15.5,
+    20.0,
+    5,
+    5
+   ],
+   [
+    17,
+    65,
+    17.5,
+    20.0,
+    5,
+    5
+   ],
+   [
+    20,
+    100,
+    28.3,
+    0.0,
+    3,
+    3
+   ]
+  ],
+  "2026-11-03": [
+   [
+    11,
+    60,
+    10.5,
+    0.0,
+    4,
+    4
+   ],
+   [
+    18,
+    100,
+    29.7,
+    0.0,
+    3,
+    3
+   ],
+   [
+    21,
+    88,
+    17.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    22,
+    100,
+    25.7,
+    0.0,
+    3,
+    3
+   ]
+  ],
+  "2026-11-04": [
+   [
+    0,
+    100,
+    24.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    6,
+    62,
+    11.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    8,
+    58,
+    14.2,
+    14.3,
+    7,
+    7
+   ],
+   [
+    9,
+    100,
+    25.3,
+    0.0,
+    3,
+    3
+   ],
+   [
+    11,
+    84,
+    26.0,
+    12.5,
+    8,
+    8
+   ],
+   [
+    12,
+    97,
+    19.2,
+    0.0,
+    4,
+    4
+   ],
+   [
+    13,
+    88,
+    17.0,
+    0.0,
+    6,
+    6
+   ],
+   [
+    14,
+    96,
+    19.0,
+    0.0,
+    7,
+    7
+   ],
+   [
+    15,
+    91,
+    17.9,
+    0.0,
+    8,
+    8
+   ],
+   [
+    17,
+    100,
+    20.5,
+    0.0,
+    6,
+    6
+   ],
+   [
+    18,
+    100,
+    24.2,
+    0.0,
+    6,
+    6
+   ],
+   [
+    19,
+    100,
+    27.0,
+    0.0,
+    6,
+    6
+   ],
+   [
+    20,
+    69,
+    34.5,
+    25.0,
+    8,
+    8
+   ],
+   [
+    21,
+    94,
+    18.6,
+    0.0,
+    5,
+    5
+   ],
+   [
+    22,
+    37,
+    10.0,
+    16.7,
+    6,
+    6
+   ],
+   [
+    23,
+    87,
+    16.9,
+    0.0,
+    8,
+    8
+   ]
+  ],
+  "2026-11-05": [
+   [
+    0,
+    53,
+    16.2,
+    25.0,
+    8,
+    8
+   ],
+   [
+    1,
+    78,
+    14.6,
+    0.0,
+    9,
+    9
+   ],
+   [
+    2,
+    82,
+    15.7,
+    0.0,
+    3,
+    3
+   ],
+   [
+    3,
+    100,
+    20.2,
+    0.0,
+    6,
+    6
+   ],
+   [
+    4,
+    100,
+    21.2,
+    0.0,
+    5,
+    5
+   ],
+   [
+    5,
+    51,
+    18.2,
+    33.3,
+    6,
+    6
+   ],
+   [
+    6,
+    50,
+    23.0,
+    66.7,
+    3,
+    3
+   ],
+   [
+    7,
+    68,
+    12.4,
+    0.0,
+    5,
+    5
+   ],
+   [
+    8,
+    58,
+    17.5,
+    25.0,
+    8,
+    8
+   ],
+   [
+    9,
+    42,
+    18.0,
+    42.9,
+    7,
+    7
+   ],
+   [
+    10,
+    60,
+    10.4,
+    0.0,
+    5,
+    5
+   ],
+   [
+    11,
+    89,
+    17.4,
+    0.0,
+    7,
+    7
+   ],
+   [
+    12,
+    69,
+    18.0,
+    18.2,
+    11,
+    11
+   ],
+   [
+    13,
+    58,
+    21.8,
+    33.3,
+    9,
+    9
+   ],
+   [
+    14,
+    100,
+    21.9,
+    0.0,
+    10,
+    10
+   ],
+   [
+    15,
+    75,
+    23.5,
+    20.0,
+    10,
+    10
+   ]
+  ],
+  "2026-11-06": [
+   [
+    9,
+    50,
+    20.0,
+    75.0,
+    4,
+    4
+   ],
+   [
+    10,
+    86,
+    22.1,
+    11.1,
+    9,
+    9
+   ],
+   [
+    11,
+    75,
+    14.0,
+    0.0,
+    5,
+    5
+   ],
+   [
+    12,
+    71,
+    17.3,
+    14.3,
+    7,
+    7
+   ],
+   [
+    14,
+    52,
+    18.5,
+    33.3,
+    3,
+    3
+   ],
+   [
+    15,
+    50,
+    23.2,
+    42.9,
+    7,
+    7
+   ],
+   [
+    16,
+    100,
+    21.3,
+    0.0,
+    7,
+    7
+   ],
+   [
+    17,
+    31,
+    13.5,
+    33.3,
+    3,
+    3
+   ],
+   [
+    18,
+    85,
+    16.3,
+    0.0,
+    10,
+    10
+   ],
+   [
+    20,
+    58,
+    23.5,
+    33.3,
+    3,
+    3
+   ],
+   [
+    22,
+    86,
+    16.7,
+    0.0,
+    7,
+    7
+   ],
+   [
+    23,
+    78,
+    14.8,
+    0.0,
+    8,
+    8
+   ]
+  ],
+  "2026-11-07": [
+   [
+    0,
+    100,
+    23.2,
+    0.0,
+    9,
+    9
+   ],
+   [
+    1,
+    52,
+    15.1,
+    22.2,
+    9,
+    9
+   ],
+   [
+    2,
+    100,
+    21.3,
+    0.0,
+    6,
+    6
+   ],
+   [
+    3,
+    79,
+    21.8,
+    16.7,
+    6,
+    6
+   ],
+   [
+    4,
+    53,
+    8.8,
+    0.0,
+    5,
+    5
+   ],
+   [
+    6,
+    100,
+    27.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    7,
+    100,
+    26.3,
+    0.0,
+    3,
+    3
+   ],
+   [
+    8,
+    0,
+    8.0,
+    66.7,
+    3,
+    3
+   ],
+   [
+    9,
+    66,
+    11.8,
+    0.0,
+    10,
+    10
+   ],
+   [
+    10,
+    42,
+    11.2,
+    16.7,
+    12,
+    12
+   ],
+   [
+    12,
+    100,
+    20.6,
+    0.0,
+    5,
+    5
+   ],
+   [
+    13,
+    100,
+    27.3,
+    0.0,
+    6,
+    6
+   ],
+   [
+    14,
+    100,
+    36.5,
+    0.0,
+    4,
+    4
+   ],
+   [
+    15,
+    100,
+    23.8,
+    0.0,
+    8,
+    8
+   ],
+   [
+    16,
+    0,
+    7.0,
+    75.0,
+    4,
+    4
+   ],
+   [
+    17,
+    31,
+    15.5,
+    42.9,
+    7,
+    7
+   ],
+   [
+    18,
+    70,
+    16.2,
+    11.1,
+    9,
+    9
+   ],
+   [
+    19,
+    82,
+    15.7,
+    0.0,
+    3,
+    3
+   ],
+   [
+    21,
+    68,
+    12.2,
+    0.0,
+    5,
+    5
+   ],
+   [
+    22,
+    62,
+    11.0,
+    0.0,
+    4,
+    4
+   ]
+  ],
+  "2026-11-08": [
+   [
+    9,
+    21,
+    13.0,
+    75.0,
+    4,
+    4
+   ],
+   [
+    14,
+    99,
+    19.8,
+    0.0,
+    4,
+    4
+   ],
+   [
+    15,
+    31,
+    13.5,
+    33.3,
+    6,
+    6
+   ],
+   [
+    17,
+    39,
+    17.4,
+    44.4,
+    9,
+    9
+   ]
+  ],
+  "2026-11-09": [
+   [
+    16,
+    92,
+    18.2,
+    0.0,
+    5,
+    5
+   ],
+   [
+    17,
+    99,
+    19.8,
+    0.0,
+    4,
+    4
+   ],
+   [
+    18,
+    33,
+    16.0,
+    50.0,
+    4,
+    4
+   ],
+   [
+    19,
+    83,
+    16.0,
+    0.0,
+    5,
+    5
+   ],
+   [
+    20,
+    87,
+    16.8,
+    0.0,
+    8,
+    8
+   ],
+   [
+    22,
+    100,
+    26.0,
+    0.0,
+    6,
+    6
+   ]
+  ],
+  "2026-11-10": [
+   [
+    1,
+    63,
+    16.2,
+    16.7,
+    6,
+    6
+   ],
+   [
+    2,
+    58,
+    22.0,
+    33.3,
+    3,
+    3
+   ],
+   [
+    7,
+    82,
+    15.8,
+    0.0,
+    5,
+    5
+   ],
+   [
+    8,
+    79,
+    15.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    10,
+    74,
+    13.7,
+    0.0,
+    7,
+    7
+   ],
+   [
+    13,
+    96,
+    19.0,
+    0.0,
+    6,
+    6
+   ],
+   [
+    14,
+    79,
+    15.0,
+    0.0,
+    6,
+    6
+   ],
+   [
+    15,
+    82,
+    18.8,
+    10.0,
+    10,
+    10
+   ],
+   [
+    16,
+    60,
+    14.7,
+    14.3,
+    7,
+    7
+   ],
+   [
+    17,
+    88,
+    17.2,
+    0.0,
+    8,
+    8
+   ],
+   [
+    18,
+    53,
+    16.2,
+    25.0,
+    12,
+    12
+   ],
+   [
+    20,
+    100,
+    20.8,
+    0.0,
+    4,
+    4
+   ],
+   [
+    22,
+    69,
+    20.5,
+    25.0,
+    8,
+    8
+   ]
+  ],
+  "2026-11-11": [
+   [
+    0,
+    83,
+    16.0,
+    0.0,
+    7,
+    7
+   ],
+   [
+    8,
+    92,
+    18.0,
+    0.0,
+    4,
+    4
+   ],
+   [
+    9,
+    82,
+    20.7,
+    14.3,
+    7,
+    7
+   ],
+   [
+    10,
+    52,
+    8.5,
+    0.0,
+    4,
+    4
+   ],
+   [
+    11,
+    82,
+    21.5,
+    14.3,
+    7,
+    7
+   ],
+   [
+    12,
+    50,
+    24.0,
+    80.0,
+    5,
+    5
+   ],
+   [
+    13,
+    50,
+    43.7,
+    57.1,
+    7,
+    7
+   ],
+   [
+    15,
+    100,
+    21.5,
+    0.0,
+    6,
+    6
+   ],
+   [
+    16,
+    27,
+    14.6,
+    44.4,
+    9,
+    9
+   ],
+   [
+    17,
+    92,
+    18.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    19,
+    99,
+    19.7,
+    0.0,
+    7,
+    7
+   ],
+   [
+    20,
+    100,
+    20.3,
+    0.0,
+    3,
+    3
+   ],
+   [
+    21,
+    100,
+    23.0,
+    0.0,
+    5,
+    5
+   ],
+   [
+    22,
+    80,
+    15.2,
+    0.0,
+    5,
+    5
+   ],
+   [
+    23,
+    70,
+    12.7,
+    0.0,
+    3,
+    3
+   ]
+  ],
+  "2026-11-12": [
+   [
+    8,
+    100,
+    20.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    10,
+    93,
+    18.3,
+    0.0,
+    7,
+    7
+   ],
+   [
+    11,
+    58,
+    9.9,
+    0.0,
+    7,
+    7
+   ],
+   [
+    12,
+    94,
+    18.6,
+    0.0,
+    8,
+    8
+   ],
+   [
+    13,
+    100,
+    20.0,
+    0.0,
+    6,
+    6
+   ],
+   [
+    15,
+    92,
+    18.2,
+    0.0,
+    5,
+    5
+   ],
+   [
+    17,
+    49,
+    19.8,
+    42.9,
+    7,
+    7
+   ],
+   [
+    18,
+    86,
+    16.7,
+    0.0,
+    3,
+    3
+   ],
+   [
+    19,
+    65,
+    11.7,
+    0.0,
+    3,
+    3
+   ],
+   [
+    20,
+    100,
+    24.3,
+    0.0,
+    6,
+    6
+   ],
+   [
+    22,
+    80,
+    15.3,
+    0.0,
+    3,
+    3
+   ],
+   [
+    23,
+    69,
+    21.0,
+    25.0,
+    4,
+    4
+   ]
+  ],
+  "2026-11-13": [
+   [
+    7,
+    58,
+    28.0,
+    33.3,
+    3,
+    3
+   ],
+   [
+    8,
+    100,
+    22.8,
+    0.0,
+    4,
+    4
+   ],
+   [
+    9,
+    96,
+    19.0,
+    0.0,
+    4,
+    4
+   ],
+   [
+    10,
+    79,
+    22.0,
+    16.7,
+    6,
+    6
+   ],
+   [
+    11,
+    0,
+    6.5,
+    60.0,
+    5,
+    5
+   ],
+   [
+    12,
+    86,
+    16.6,
+    0.0,
+    5,
+    5
+   ]
+  ],
+  "2026-11-16": [
+   [
+    20,
+    100,
+    28.0,
+    0.0,
+    3,
+    3
+   ]
+  ],
+  "2026-11-17": [
+   [
+    9,
+    93,
+    18.3,
+    0.0,
+    3,
+    3
+   ],
+   [
+    11,
+    89,
+    17.3,
+    0.0,
+    3,
+    3
+   ],
+   [
+    13,
+    100,
+    20.0,
+    0.0,
+    6,
+    6
+   ],
+   [
+    14,
+    100,
+    20.2,
+    0.0,
+    6,
+    6
+   ],
+   [
+    15,
+    100,
+    25.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    16,
+    75,
+    21.5,
+    20.0,
+    5,
+    5
+   ],
+   [
+    17,
+    67,
+    17.0,
+    16.7,
+    6,
+    6
+   ],
+   [
+    18,
+    58,
+    10.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    20,
+    100,
+    22.8,
+    0.0,
+    4,
+    4
+   ]
+  ],
+  "2026-11-18": [
+   [
+    13,
+    100,
+    21.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    14,
+    74,
+    13.7,
+    0.0,
+    3,
+    3
+   ],
+   [
+    17,
+    74,
+    13.7,
+    0.0,
+    3,
+    3
+   ]
+  ],
+  "2026-11-19": [
+   [
+    11,
+    100,
+    23.7,
+    0.0,
+    3,
+    3
+   ],
+   [
+    12,
+    83,
+    16.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    13,
+    75,
+    28.0,
+    20.0,
+    5,
+    5
+   ],
+   [
+    14,
+    78,
+    14.8,
+    0.0,
+    5,
+    5
+   ],
+   [
+    15,
+    100,
+    23.9,
+    0.0,
+    7,
+    7
+   ],
+   [
+    16,
+    82,
+    22.0,
+    14.3,
+    7,
+    7
+   ],
+   [
+    17,
+    100,
+    23.0,
+    0.0,
+    6,
+    6
+   ],
+   [
+    18,
+    100,
+    23.2,
+    0.0,
+    9,
+    9
+   ],
+   [
+    19,
+    89,
+    24.1,
+    9.1,
+    11,
+    11
+   ],
+   [
+    20,
+    98,
+    19.5,
+    0.0,
+    4,
+    4
+   ],
+   [
+    21,
+    100,
+    23.0,
+    0.0,
+    11,
+    11
+   ],
+   [
+    22,
+    68,
+    14.4,
+    7.1,
+    14,
+    14
+   ],
+   [
+    23,
+    60,
+    14.7,
+    14.3,
+    7,
+    7
+   ]
+  ],
+  "2026-11-20": [
+   [
+    0,
+    82,
+    25.2,
+    14.3,
+    7,
+    7
+   ],
+   [
+    1,
+    72,
+    17.0,
+    12.5,
+    8,
+    8
+   ],
+   [
+    2,
+    45,
+    14.3,
+    25.0,
+    4,
+    4
+   ],
+   [
+    3,
+    17,
+    12.0,
+    66.7,
+    3,
+    3
+   ],
+   [
+    6,
+    87,
+    16.8,
+    0.0,
+    4,
+    4
+   ],
+   [
+    7,
+    100,
+    20.3,
+    0.0,
+    3,
+    3
+   ],
+   [
+    8,
+    58,
+    23.5,
+    33.3,
+    3,
+    3
+   ],
+   [
+    9,
+    69,
+    20.3,
+    25.0,
+    4,
+    4
+   ],
+   [
+    10,
+    35,
+    12.0,
+    25.0,
+    4,
+    4
+   ]
+  ],
+  "2026-11-21": [],
+  "2026-11-22": [
+   [
+    12,
+    75,
+    14.0,
+    0.0,
+    3,
+    3
+   ],
+   [
+    13,
+    72,
+    13.4,
+    0.0,
+    7,
+    7
+   ],
+   [
+    14,
+    100,
+    24.3,
+    0.0,
+    3,
+    3
+   ],
+   [
+    15,
+    92,
+    18.2,
+    0.0,
+    6,
+    6
+   ],
+   [
+    16,
+    100,
+    24.2,
+    0.0,
+    5,
+    5
+   ],
+   [
+    17,
+    82,
+    22.2,
+    14.3,
+    7,
+    7
+   ],
+   [
+    19,
+    0,
+    null,
+    100.0,
+    3,
+    3
+   ],
+   [
+    21,
+    25,
+    14.0,
+    66.7,
+    3,
+    3
+   ]
+  ],
+  "2026-11-23": [
+   [
+    8,
+    50,
+    21.0,
+    66.7,
+    3,
+    3
+   ],
+   [
+    10,
+    0,
+    null,
+    100.0,
+    4,
+    4
+   ],
+   [
+    11,
+    19,
+    6.3,
+    25.0,
+    4,
+    4
+   ],
+   [
+    12,
+    65,
+    11.5,
+    0.0,
+    6,
+    6
+   ],
+   [
+    13,
+    80,
+    15.2,
+    0.0,
+    4,
+    4
+   ]
+  ],
+  "2026-11-24": [
+   [
+    11,
+    79,
+    15.0,
+    0.0,
+    5,
+    5
+   ],
+   [
+    13,
+    100,
+    23.3,
+    0.0,
+    3,
+    3
+   ],
+   [
+    15,
+    100,
+    29.3,
+    0.0,
+    3,
+    3
+   ],
+   [
+    16,
+    97,
+    19.2,
+    0.0,
+    4,
+    4
+   ],
+   [
+    17,
+    69,
+    22.0,
+    25.0,
+    4,
+    4
+   ],
+   [
+    18,
+    92,
+    18.0,
+    0.0,
+    4,
+    4
+   ],
+   [
+    19,
+    100,
+    22.0,
+    0.0,
+    4,
+    4
+   ],
+   [
+    20,
+    86,
+    16.7,
+    0.0,
+    3,
+    3
+   ],
+   [
+    21,
+    100,
+    23.2,
+    0.0,
+    4,
+    4
+   ],
+   [
+    22,
+    98,
+    19.6,
+    0.0,
+    5,
+    5
+   ]
+  ],
+  "2026-11-25": []
+ },
+ "keterangan_jam": "jam[tanggal] = [jam, nilai 0-100, kecepatan DT jalan, % berhenti, titik GPS, unit]"
 }
