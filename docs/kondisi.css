@@ -137,3 +137,15 @@
   .leg-strip { font-size: 15px; gap: 8px 16px; }
 }
 
+/* RR & traksi */
+.jalur.rrsec { margin-top: 0; border-top: 2px solid #3a4245; }
+.rr-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-top: 16px; }
+.rr-tiles .rt { background: #30373A; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; font-size: 15.5px; line-height: 1.45; color: #DCE0DC; }
+.rr-tiles .rt-l { font: 600 16px var(--isi); color: #C3C9C3; }
+.rr-tiles .rt b { font: 700 38px/1.05 var(--judul); color: #fff; }
+#rrStrip { width: 100%; min-width: 820px; height: auto; display: block; }
+#rrStrip text { font-family: var(--judul); }
+.cara-rr { margin-top: 16px; background: #30373A; border-radius: 12px; padding: 12px 16px; font-size: 16px; line-height: 1.55; color: #DCE0DC; }
+.cara-rr summary { cursor: pointer; font: 700 18px var(--judul); color: var(--kuning); }
+.cara-rr ol { padding-left: 22px; margin: 10px 0 6px; } .cara-rr li { margin-bottom: 6px; } .cara-rr p { margin: 6px 0 0; color: #B9C0B9; }
+@media (max-width: 640px) { #rrStrip { min-width: 900px; } .rr-tiles .rt b { font-size: 32px; } }

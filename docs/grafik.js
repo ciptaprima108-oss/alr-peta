@@ -185,9 +185,10 @@
     const skor = daftar.filter((k) => !k.zona).map((k) => { const t = totSemua[k.km]; return { k, jam: t[1] + t[2], hidup: t[1], sp: t[4] ? t[3] / t[4] : null, unit: t[5].size,
         m: totM ? totM[k.km][1] + totM[k.km][2] : null, ks: totK ? totK[k.km][1] + totK[k.km][2] : null }; })
       .filter((x) => x.jam > 0 || (x.sp != null && x.sp <= 13)).sort((a, b) => b.jam - a.jam).slice(0, 5);
-    $("topKm").innerHTML = skor.length ? `<div class="top">${skor.map((x, i) => `<div class="it"><div class="rambu"><svg viewBox="0 0 38 34" aria-hidden="true"><path d="M19 2 36 32H2z" fill="#F2B705" stroke="#23282A" stroke-width="2.5" stroke-linejoin="round"/><path d="M19 12v9M19 25v1" stroke="#23282A" stroke-width="3.5" stroke-linecap="round"/></svg><b class="km">${x.k.label}</b></div>
-        <b>${x.jam} jam</b> unit tertahan, ${x.hidup} jam di antaranya mesin hidup.${x.m != null ? `<br>Arah muatan ${x.m} jam, arah kosongan ${x.ks} jam.` : ""}<br>Kecepatan ${x.sp != null ? Math.round(x.sp) + " km/jam" : "belum ada data"}, ${x.unit} unit lewat.</div>`).join("")}</div>`
+    $("topKm").innerHTML = skor.length ? `<div class="top">${skor.map((x, i) => `<div class="it" data-km="${x.k.km}"><div class="rambu"><svg viewBox="0 0 38 34" aria-hidden="true"><path d="M19 2 36 32H2z" fill="#F2B705" stroke="#23282A" stroke-width="2.5" stroke-linejoin="round"/><path d="M19 12v9M19 25v1" stroke="#23282A" stroke-width="3.5" stroke-linecap="round"/></svg><b class="km">${x.k.label}</b></div>
+        <b>${x.jam} jam</b> unit tertahan, ${x.hidup} jam di antaranya mesin hidup.${x.m != null ? `<br>Arah muatan ${x.m} jam, arah kosongan ${x.ks} jam.` : ""}<br>Kecepatan ${x.sp != null ? Math.round(x.sp) + " km/jam" : "belum ada data"}, ${x.unit} unit lewat.<span class="rr-isi"></span></div>`).join("")}</div>`
       : `<p style="color:#C3C9C3;font-size:17px">Tidak ada KM bermasalah di rentang tanggal ini.</p>`;
+    if (window.isiRR) window.isiRR();
     const zt = Object.entries(zonaJam).filter(([, v]) => v);
     if (zt.length) $("topKm").innerHTML += `<div class="kosong-info">Tidak dihitung karena bukan masalah jalan: ${zt.map(([z, v]) => `${z} ${v} jam`).join(", ")}.</div>`;
 
