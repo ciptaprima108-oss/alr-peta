@@ -21,6 +21,8 @@
 
 .cuaca-sub { font: 700 26px/1.1 var(--judul); margin: 22px 0 10px; }
 .cuaca-zona { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.cz-st { margin-left: auto; font: 700 20px/1.1 var(--judul); text-align: right; }
+.cz-dari { margin: 8px 14px 0; font-size: 14px; color: var(--pudar); }
 .cz { background: var(--kertas); border-radius: 14px; overflow: hidden; box-shadow: var(--bayang); }
 .cz-atas { display: flex; align-items: center; gap: 12px; padding: 12px 14px; }
 .cz-atas .ik.sedang { font-size: 40px; flex-shrink: 0; }
@@ -42,7 +44,7 @@
 .sumber { margin: 4px 0 8px; padding-left: 22px; font-size: 16px; line-height: 1.5; }
 .sumber li { margin-bottom: 6px; }
 
-@media (max-width: 900px) { .cuaca-zona { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 900px) { .cuaca-zona { grid-template-columns: 1fr; } }
 @media (max-width: 640px) {
   .cuaca-zona, .cuaca-bawah { grid-template-columns: 1fr; }
   .cuaca-banner { padding: 14px; gap: 12px; }

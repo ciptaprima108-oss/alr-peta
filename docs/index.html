@@ -97,7 +97,7 @@
     <button type="button" class="ubin u-merah" data-buka="trigger"><span class="u-gb"><svg class="ik"><use href="#i-awas"/></svg><i class="u-badge" id="ubinTrig" hidden>0</i></span><b>Trigger jalan</b><small id="subTrig">Jalan merah yang perlu dicek</small></button>
     <button type="button" class="ubin u-kuning" data-buka="km"><span class="u-gb"><svg class="ik"><use href="#i-jalan"/></svg></span><b>Jalan per KM</b><small id="subKm">Di KM mana DT berhenti lama</small></button>
     <button type="button" class="ubin u-hijau" data-buka="rr"><span class="u-gb"><svg class="ik"><use href="#i-truk"/></svg></span><b>RR &amp; traksi</b><small id="subRr">Berat jalan dan rawan selip</small></button>
-    <button type="button" class="ubin u-hujan" data-buka="hujan"><span class="u-gb"><svg class="ik" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.4 1.5A3.3 3.3 0 0 0 7 14z"/><path d="M8 17l-1 3M12 17l-1 3M16 17l-1 3"/></svg></span><b>Hujan per KM</b><small id="subHujan">Di KM mana sedang hujan</small></button>
+    <button type="button" class="ubin u-hujan" data-buka="hujan"><span class="u-gb"><svg class="ik" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.4 1.5A3.3 3.3 0 0 0 7 14z"/><path d="M8 17l-1 3M12 17l-1 3M16 17l-1 3"/></svg></span><b>Hujan di jalan</b><small id="subHujan">Section mana yang hujan</small></button>
     <button type="button" class="ubin u-biru" data-buka="grafik"><span class="u-gb"><svg class="ik"><use href="#i-grafik"/></svg></span><b>Nilai &amp; grafik</b><small id="subGrafik">Kerja DT per hari</small></button>
     <button type="button" class="ubin u-biru2" data-buka="laporan"><span class="u-gb"><svg class="ik"><use href="#i-kamera"/></svg><i class="u-badge" id="ubinLap" hidden>0</i></span><b>Laporan lapangan</b><small id="subLap">Foto dan video dari pengawas</small></button>
     <button type="button" class="ubin u-abu" data-buka="pengguna"><span class="u-gb"><svg class="ik"><use href="#i-orang"/></svg></span><b>Pengguna</b><small id="subPengguna">ID card per divisi</small></button>
@@ -169,30 +169,25 @@
 </section>
 <section class="lyr kondisi" id="lyr-hujan" hidden aria-labelledby="lyrJ-hujan">
   <div class="lyr-atas"><button type="button" class="kembali" data-tutup><svg class="ik"><use href="#i-kiri"/></svg><span>Kembali</span></button>
-    <h2 id="lyrJ-hujan"><span class="lyr-gb" style="--w:#2A78D6"><svg class="ik" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.4 1.5A3.3 3.3 0 0 0 7 14z"/><path d="M8 17l-1 3M12 17l-1 3M16 17l-1 3"/></svg></span>Hujan per KM</h2></div>
+    <h2 id="lyrJ-hujan"><span class="lyr-gb" style="--w:#2A78D6"><svg class="ik" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.4 1.5A3.3 3.3 0 0 0 7 14z"/><path d="M8 17l-1 3M12 17l-1 3M16 17l-1 3"/></svg></span>Hujan di jalan ALR</h2></div>
   <div class="lyr-badan">
 <div class="cuaca" id="cuaca">
   <p class="cuaca-waktu" id="cuacaWaktu">memuat cuaca...</p>
   <section class="cuaca-banner" id="cuacaBanner"><div><b>Memuat cuaca...</b></div></section>
-  <div class="cuaca-pita-kotak">
-    <div class="cuaca-ujung"><span>BSR · KM 29</span><span>107 · KM 0</span></div>
-    <div class="gulir"><div class="cuaca-pita" id="cuacaPita"></div></div>
-    <div class="leg-cuaca"><span><i style="background:#F2B705"></i>Cerah</span><span><i style="background:#B8BFB7"></i>Berawan</span><span><i style="background:#8EC5EE"></i>Gerimis / mendung</span><span><i style="background:#2A78D6"></i>Hujan</span><span><i style="background:#1B2F8F"></i>Hujan lebat</span></div>
-  </div>
-  <h3 class="cuaca-sub">6 jam ke depan: peluang hujan per zona</h3>
+  <h3 class="cuaca-sub">Sekarang &amp; 6 jam ke depan, per section</h3>
   <div class="cuaca-zona" id="cuacaZona"></div>
   <div class="cuaca-bawah">
     <div class="kg"><h3>Laporan hujan dari lapangan (2 jam terakhir)</h3>
       <div id="cuacaLapor"><p class="kecil">memuat...</p></div>
-      <a class="kirim tombol-lapor" id="btnLaporHujan" target="_blank" rel="noopener" href="#">Lapor hujan di KM saya</a>
-      <p class="kecil">Laporan sopir dan pengawas paling akurat. Kalau ada laporan, warna KM itu (dan 1 KM di kiri-kanannya) ikut laporan.</p></div>
+      <a class="kirim tombol-lapor" id="btnLaporHujan" target="_blank" rel="noopener" href="#">Lapor hujan</a>
+      <p class="kecil">Laporan sopir dan pengawas paling akurat. Kalau ada laporan, warna section itu ikut laporan.</p></div>
     <div class="kg"><h3>Dari mana datanya?</h3>
       <ol class="sumber">
-        <li><b>Laporan lapangan</b>: paling tepat per KM, berlaku 2 jam.</li>
+        <li><b>Laporan lapangan</b>: paling tepat, berlaku 2 jam.</li>
         <li><b>Foto awan satelit Himawari</b> (NASA/JMA): diperbarui tiap 10 menit, telat sekitar 40 menit, ketelitian sekitar 2 km. Awan berwarna di satelit = awan hujan.</li>
-        <li><b>Model cuaca Open-Meteo</b>: untuk ramalan 6 jam ke depan, ketelitian sekitar 10 km, jadi KM yang berdekatan biasanya sama.</li>
+        <li><b>Model cuaca Open-Meteo</b>: untuk ramalan 6 jam ke depan, ketelitian sekitar 10 km, jadi cuma untuk perkiraan.</li>
       </ol>
-      <p class="kecil">Radar hujan gratis (RainViewer) tidak menjangkau ALR. Supaya benar-benar tepat per KM, paling bagus pasang 3 sampai 5 alat penakar hujan kecil di sepanjang jalan.</p></div>
+      <p class="kecil">Radar hujan gratis (RainViewer) tidak menjangkau ALR. Supaya lebih tepat, paling bagus pasang 1 alat penakar hujan kecil di tiap section.</p></div>
   </div>
 </div>
   </div>

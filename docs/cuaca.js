@@ -1,4 +1,4 @@
-// Cuaca per KM jalan ALR.
+// Cuaca jalan ALR, dibagi 3 section (BSR / Tengah / 107).
 // Gabungan 3 sumber, yang paling bisa dipercaya menang:
 //   1. Laporan sopir / pengawas (2 jam terakhir)  -> paling akurat, langsung dari lapangan
 //   2. Satelit Himawari (awan dingin = awan hujan), tiap 10 menit, telat ~40 menit, resolusi ~2 km
@@ -11,7 +11,8 @@
     : "ciptaprima108-oss/alr-peta";
   const SEGAR_MENIT = 10;           // ambil ulang data tiap 10 menit
   const LAPORAN_JAM = 2;            // laporan sopir berlaku 2 jam
-  const ZONA = [[25, 29, "BSR & Stockpile Utara"], [20, 24, ""], [15, 19, ""], [10, 14, "dekat gorong-gorong KM 14-15"], [5, 9, "dekat pipa KM 9-10"], [0, 4, "dekat 107"]];
+  // jalan dibagi 3 section (urut dari BSR ke 107, sama seperti pita jalan)
+  const ZONA = [[20, 29, "Section BSR", "BSR & Stockpile Utara"], [10, 19, "Section Tengah", "gorong-gorong KM 14-15"], [0, 9, "Section 107", "pipa KM 9-10 sampai 107"]];
   const TINGKAT = [
     { nama: "Cerah", warna: "#F2B705", tinta: "#15191A" },
     { nama: "Berawan", warna: "#B8BFB7", tinta: "#15191A" },
@@ -131,19 +132,19 @@
     return titik.map((t, i) => {
       const m = tingkatModel(model?.[i]?.current);
       const s = satelit ? satelit.tingkat[i] : null;
-      let tk = Math.max(m, s ?? 0), sumber = s != null && s >= m ? "satelit" : "model";
-      const lap = laporan.filter((l) => Math.abs(l.km - t.km) <= 1).sort((a, b) => b.waktu - a.waktu)[0];
-      if (lap) { tk = lap.tingkat; sumber = "laporan"; }
-      return { ...t, tingkat: tk, sumber, model: m, sat: s, lap };
+      return { ...t, tingkat: Math.max(m, s ?? 0), sumber: s != null && s >= m ? "satelit" : "model" };
     });
   }
-  function rentang(list) {   // [3,4,5,8] -> "KM 3-5, KM 8"
-    const out = []; let a = null, b = null;
-    for (const k of list.sort((x, y) => x - y)) { if (a === null) a = b = k; else if (k === b + 1) b = k; else { out.push([a, b]); a = b = k; } }
-    if (a !== null) out.push([a, b]);
-    return out.map(([x, y]) => (x === y ? `KM ${x}` : `KM ${x}-${y}`)).join(", ");
+  function statusSection(st) {   // 1 status per section: yang paling basah, kecuali ada laporan lapangan di section itu
+    return ZONA.map(([a, b, nama, ket]) => {
+      const sz = st.filter((s) => s.km >= a && s.km <= b);
+      const top = sz.reduce((x, y) => (y.tingkat > x.tingkat ? y : x), sz[0]);
+      const lap = laporan.filter((l) => l.km >= a - 0.5 && l.km <= b + 0.5).sort((x, y) => y.waktu - x.waktu)[0];
+      return lap ? { a, b, nama, ket, tingkat: lap.tingkat, sumber: "laporan", lap } : { a, b, nama, ket, tingkat: top.tingkat, sumber: top.sumber };
+    });
   }
-  function ramalan() {   // per jam ke depan: peluang & mm terbesar di tiap zona
+  const daftar = (arr) => arr.length <= 1 ? arr.join("") : arr.slice(0, -1).join(", ") + " dan " + arr.at(-1);
+  function ramalan() {   // per jam ke depan: peluang & mm terbesar di tiap section
     if (!model?.[0]?.hourly) return null;
     const h = model[0].hourly, now = Date.now(), idx = [];
     h.time.forEach((t, i) => { const d = new Date(t + ":00+07:00"); if (d.getTime() + 3600000 > now && idx.length < 6) idx.push(i); });
@@ -158,33 +159,26 @@
 
   // ---------- tampilan ----------
   function tampil() {
-    const st = statusKm(), sekarang = new Date();
-    const hujan = st.filter((s) => s.tingkat >= 3).map((s) => s.km), mendung = st.filter((s) => s.tingkat === 2).map((s) => s.km);
+    const sek = statusSection(statusKm()), sekarang = new Date();
+    const hujan = sek.filter((s) => s.tingkat >= 3).map((s) => s.nama), mendung = sek.filter((s) => s.tingkat === 2).map((s) => s.nama);
     const rm = ramalan();
     let maxP = { p: 0 };
     rm?.zona.forEach((z) => z.jam.slice(0, 3).forEach((j) => { if (j.p > maxP.p) maxP = { p: j.p, z }; }));
-    const tkMax = Math.max(...st.map((s) => s.tingkat));
+    const tkMax = Math.max(...sek.map((s) => s.tingkat));
     const T = TINGKAT[tkMax];
+    const judul = hujan.length === 3 ? "Hujan di semua section" : hujan.length ? "Ada hujan di " + daftar(hujan) : mendung.length ? "Gerimis / mendung di " + daftar(mendung) : "Jalan ALR tidak hujan sekarang";
     $("cuacaBanner").style.background = T.warna; $("cuacaBanner").style.color = T.tinta;
-    $("cuacaBanner").innerHTML = `${ikon(tkMax, "besar")}<div><b>${hujan.length ? "Ada hujan di " + rentang(hujan) : mendung.length ? "Gerimis / mendung di " + rentang(mendung) : "Jalan ALR tidak hujan sekarang"}</b>
-      <span>${hujan.length && mendung.length ? "Gerimis / mendung di " + rentang(mendung) + ". " : ""}${rm ? `3 jam ke depan: peluang hujan paling tinggi <b>${maxP.p}%</b>${maxP.z ? ` di KM ${maxP.z.a}-${maxP.z.b}` : ""}.` : ""}</span></div>`;
+    $("cuacaBanner").innerHTML = `${ikon(tkMax, "besar")}<div><b>${judul}</b>
+      <span>${hujan.length && mendung.length ? "Gerimis / mendung di " + daftar(mendung) + ". " : ""}${rm ? `3 jam ke depan: peluang hujan paling tinggi <b>${maxP.p}%</b>${maxP.z ? ` di ${maxP.z.nama}` : ""}.` : ""}</span></div>`;
+    if ($("subHujan")) $("subHujan").textContent = hujan.length === 3 ? "Hujan di semua section" : hujan.length ? "Hujan: " + daftar(hujan) : mendung.length ? "Gerimis / mendung: " + daftar(mendung) : "Tidak hujan sekarang";
 
-    // pita per KM: kiri BSR (KM 29), kanan 107 (KM 0), sama seperti pita kondisi jalan
-    if ($("subHujan")) $("subHujan").textContent = hujan.length ? "Hujan di " + rentang(hujan.slice()) : mendung.length ? "Gerimis / mendung di " + rentang(mendung.slice()) : "Tidak hujan sekarang";
-
-    $("cuacaPita").innerHTML = st.slice().reverse().map((s) => {
-      const T = TINGKAT[s.tingkat];
-      return `<div class="ck" style="background:${T.warna};color:${T.tinta}" title="KM ${s.km}: ${T.nama} (${s.sumber})">
-        ${ikon(s.tingkat)}<b>${s.km}</b>${s.sumber === "laporan" ? '<i class="lap">lapor</i>' : ""}</div>`;
-    }).join("");
-
-    // kartu zona: sekarang + 6 jam ke depan
-    $("cuacaZona").innerHTML = ZONA.map(([a, b, nama], zi) => {
-      const sz = st.filter((s) => s.km >= a && s.km <= b), tk = Math.max(...sz.map((s) => s.tingkat)), T = TINGKAT[tk];
-      const z = rm?.zona[zi];
-      const baris = z ? z.jam.map((j, k) => `<div class="cj"><small>${rm.jam[k]}</small><span class="tetes" style="--p:${j.p}">${j.p}%</span>${j.mm >= 0.1 ? `<em>${j.mm.toFixed(1)} mm</em>` : "<em>&nbsp;</em>"}</div>`).join("") : '<p class="kecil">Ramalan belum termuat.</p>';
-      return `<div class="cz"><div class="cz-atas" style="background:${T.warna};color:${T.tinta}">${ikon(tk, "sedang")}<div><b>KM ${a}-${b}</b><span>${T.nama}${nama ? " · " + esc(nama) : ""}</span></div></div>
-        <div class="cz-jam">${baris}</div></div>`;
+    // 3 kartu section: sekarang + 6 jam ke depan
+    $("cuacaZona").innerHTML = sek.map((z, zi) => {
+      const T = TINGKAT[z.tingkat], r = rm?.zona[zi];
+      const baris = r ? r.jam.map((j, k) => `<div class="cj"><small>${rm.jam[k]}</small><span class="tetes" style="--p:${j.p}">${j.p}%</span>${j.mm >= 0.1 ? `<em>${j.mm.toFixed(1)} mm</em>` : "<em>&nbsp;</em>"}</div>`).join("") : '<p class="kecil">Ramalan belum termuat.</p>';
+      const dari = z.sumber === "laporan" ? `Laporan lapangan KM ${z.lap.km}, jam ${jam(z.lap.waktu)}` : z.sumber === "satelit" ? "Dari foto awan satelit" : "Dari model cuaca";
+      return `<div class="cz"><div class="cz-atas" style="background:${T.warna};color:${T.tinta}">${ikon(z.tingkat, "sedang")}<div><b>${esc(z.nama)}</b><span>KM ${z.a}-${z.b} · ${esc(z.ket)}</span></div><strong class="cz-st">${T.nama}</strong></div>
+        <p class="cz-dari">${dari}</p><div class="cz-jam">${baris}</div></div>`;
     }).join("");
 
     // laporan
@@ -194,17 +188,16 @@
 
     $("cuacaWaktu").textContent = `Diperbarui ${jam(sekarang)} WIB` + (satelit ? ` · foto satelit jam ${jam(satelit.waktu)} WIB` : " · satelit belum termuat");
 
-    // peta: titik per KM
+    // peta: cahaya biru di bawah garis jalan, satu warna per section
     if (lapisKm) {
       lapisKm.clearLayers();
-      st.forEach((s) => {
-        if (s.tingkat < 2) return;   // hanya tampil kalau mendung / hujan supaya peta tidak ramai
-        const T = TINGKAT[s.tingkat];
-        // lingkaran biru di BAWAH garis jalan: jadi "cahaya" biru di sekitar jalan, warna kondisi jalan tetap kelihatan
-        L.circleMarker([s.lat, s.lon], { pane: "cuaca", radius: s.tingkat >= 4 ? 18 : s.tingkat === 3 ? 15 : 12, stroke: false, fillColor: T.warna, fillOpacity: s.tingkat >= 3 ? 0.75 : 0.6 })
-          .bindTooltip(`KM ${s.km}: ${T.nama}`, { direction: "top" })
-          .bindPopup(`<b>KM ${s.km}: ${T.nama}</b><br><span class="kecil">Dari ${s.sumber === "laporan" ? "laporan lapangan" : s.sumber === "satelit" ? "foto awan satelit" : "model cuaca"}</span>`)
-          .addTo(lapisKm);
+      sek.forEach((z) => {
+        if (z.tingkat < 2) return;
+        const T = TINGKAT[z.tingkat];
+        titik.filter((t) => t.km >= z.a && t.km <= z.b).forEach((t) => {
+          L.circleMarker([t.lat, t.lon], { pane: "cuaca", radius: z.tingkat >= 4 ? 18 : z.tingkat === 3 ? 15 : 12, stroke: false, fillColor: T.warna, fillOpacity: z.tingkat >= 3 ? 0.75 : 0.6 })
+            .bindTooltip(`${z.nama}: ${T.nama}`, { direction: "top" }).addTo(lapisKm);
+        });
       });
     }
     if (lapisAwan && satelit) lapisAwan.setUrl(urlSat(satelit.iso, "{z}", "{x}", "{y}"));
@@ -216,7 +209,7 @@
     P.map.createPane("cuaca").style.zIndex = 390;   // di bawah garis jalan (overlayPane = 400)
     lapisKm = L.layerGroup().addTo(P.map);
     lapisAwan = L.tileLayer(urlSat("default", "{z}", "{x}", "{y}"), { maxNativeZoom: 6, maxZoom: 19, opacity: 0.5, attribution: "Awan: NASA GIBS / JMA Himawari" });
-    P.kontrolLapis.addOverlay(lapisKm, "Hujan per KM");
+    P.kontrolLapis.addOverlay(lapisKm, "Hujan per section");
     P.kontrolLapis.addOverlay(lapisAwan, "Awan satelit (Himawari)");
   }
 
