@@ -87,7 +87,12 @@
       scales: { x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkipPadding: 14, color: "#64748b" } },
         y: { beginAtZero: true, grid: { color: "#eef2f6" }, border: { display: false }, ticks: { color: "#64748b" }, ...extra } } };
   }
-  function buat(id, data, o, judul) { grafik[id]?.destroy(); grafik[id] = new Chart($(id), { data, options: o }); grafik[id].$judul = judul; }
+  function buat(id, data, o, judul) {
+    grafik[id]?.destroy(); grafik[id] = new Chart($(id), { data, options: o }); grafik[id].$judul = judul;
+    // grafik tanpa data sama sekali disembunyikan, biar tidak ada kotak kosong
+    const ada = data.datasets.some((d) => d.label !== "Target" && d.data.some((v) => v != null && v !== 0));
+    const kartu = $(id).closest(".kg"); if (kartu) kartu.hidden = !ada;
+  }
   const target = (n, v) => ({ type: "line", label: "Target", data: Array(n).fill(v), borderColor: "#94a3b8", borderWidth: 1.5, borderDash: [6, 4], pointRadius: 0, pointHitRadius: 0 });
   const batang = (label, data, warna) => ({ type: "bar", label, data, backgroundColor: warna, borderRadius: 4, borderSkipped: "start", maxBarThickness: 32 });
   const garis = (label, data) => ({ type: "line", label, data, borderColor: BIRU, backgroundColor: BIRU, borderWidth: 2, pointRadius: 3, pointHoverRadius: 6, spanGaps: false, tension: 0.2 });
@@ -164,16 +169,16 @@
     const zonaJam = {};
     semuaUrut.filter((k) => k.zona).forEach((k) => { const t = totSemua[k.km]; zonaJam[k.zona] = (zonaJam[k.zona] || 0) + t[1] + t[2]; });
     for (let d = new Date(dari); d <= sampai; d = tambah(d, 1)) { const z = KM.zona_hari?.[iso(d)]; if (z) for (const n in z) { const nm = n.replace(/ \(STA.*\)$/, ""); zonaJam[nm] = (zonaJam[nm] || 0) + z[n]; } }
-    const L = urut.map((k) => k.label + (k.zona ? "*" : "")), T = urut.map((k) => tot[k.km]);
+    const L = urut.map((k) => String(k.km)), T = urut.map((k) => tot[k.km]);
     const speed = T.map((t) => t[4] ? s1(t[3] / t[4]) : null);
-    const oA = opsi("jam"); oA.scales.x.stacked = oA.scales.y.stacked = true; oA.scales.x.ticks.autoSkip = false; oA.scales.x.ticks.maxRotation = 60;
+    const oA = opsi("jam"); oA.scales.x.stacked = oA.scales.y.stacked = true; oA.scales.x.title = { display: true, text: "KM (BSR di kiri, 107 di kanan)", color: "#64748b" };
     oA.plugins.legend = { display: true, position: "top", align: "start", labels: { boxWidth: 12, boxHeight: 12, color: "#334155" } };
     oA.plugins.tooltip.callbacks.title = (c) => `${urut[c[0].dataIndex].label}${urut[c[0].dataIndex].zona ? " · " + urut[c[0].dataIndex].zona : ""}`;
     oA.plugins.tooltip.callbacks.footer = (c) => { const t = T[c[0].dataIndex]; return `${t[5].size} unit lewat · ${t[0]} titik GPS`; };
     buat("cKmStop", { labels: L, datasets: [
       { type: "bar", label: "Berhenti mesin hidup", data: T.map((t) => t[1]), backgroundColor: "#eb6834", borderColor: "#fff", borderWidth: { top: 2 }, borderSkipped: false },
       { type: "bar", label: "Berhenti mesin mati", data: T.map((t) => t[2]), backgroundColor: "#2a78d6", borderColor: "#fff", borderWidth: { top: 2 }, borderSkipped: false }] }, oA, L);
-    const oB = opsi("km/jam"); oB.scales.x.ticks.autoSkip = false; oB.scales.x.ticks.maxRotation = 60;
+    const oB = opsi("km/jam"); oB.scales.x.title = { display: true, text: "KM (BSR di kiri, 107 di kanan)", color: "#64748b" };
     oB.plugins.tooltip.callbacks.title = (c) => urut[c[0].dataIndex].label;
     oB.plugins.tooltip.callbacks.label = (c) => c.parsed.y == null ? " Tidak ada data" : ` Kecepatan ${c.parsed.y} km/jam · ${c.parsed.y <= 13 ? "lambat" : c.parsed.y <= 17 ? "agak pelan" : "lancar"}`;
     buat("cKmSpeed", { labels: L, datasets: [batang("Kecepatan", speed, speed.map((v) => v == null ? "#e5e7eb" : v <= 13 ? WARNA.TIDAK : v <= 17 ? WARNA.KURANG : WARNA.LAYAK)),
@@ -184,9 +189,9 @@
     // KM paling bermasalah (bukan zona antre/parkir)
     const skor = daftar.filter((k) => !k.zona).map((k) => { const t = totSemua[k.km]; return { k, jam: t[1] + t[2], hidup: t[1], sp: t[4] ? t[3] / t[4] : null, unit: t[5].size,
         m: totM ? totM[k.km][1] + totM[k.km][2] : null, ks: totK ? totK[k.km][1] + totK[k.km][2] : null }; })
-      .filter((x) => x.jam > 0 || (x.sp != null && x.sp <= 13)).sort((a, b) => b.jam - a.jam).slice(0, 5);
+      .filter((x) => x.jam > 0 || (x.sp != null && x.sp <= 13)).sort((a, b) => b.jam - a.jam).slice(0, 3);
     $("topKm").innerHTML = skor.length ? `<div class="top">${skor.map((x, i) => `<div class="it" data-km="${x.k.km}"><div class="rambu"><svg viewBox="0 0 38 34" aria-hidden="true"><path d="M19 2 36 32H2z" fill="#F2B705" stroke="#23282A" stroke-width="2.5" stroke-linejoin="round"/><path d="M19 12v9M19 25v1" stroke="#23282A" stroke-width="3.5" stroke-linecap="round"/></svg><b class="km">${x.k.label}</b></div>
-        <b>${x.jam} jam</b> unit tertahan, ${x.hidup} jam di antaranya mesin hidup.${x.m != null ? `<br>Arah muatan ${x.m} jam, arah kosongan ${x.ks} jam.` : ""}<br>Kecepatan ${x.sp != null ? Math.round(x.sp) + " km/jam" : "belum ada data"}, ${x.unit} unit lewat.<span class="rr-isi"></span></div>`).join("")}</div>`
+        <b>${x.jam} jam</b> DT berhenti di KM ini, ${x.hidup} jam di antaranya mesin hidup.${x.m != null ? `<br>Arah muatan ${x.m} jam, arah kosongan ${x.ks} jam.` : ""}<br>Kecepatan ${x.sp != null ? Math.round(x.sp) + " km/jam" : "belum ada data"}, ${x.unit} unit lewat.<span class="rr-isi"></span></div>`).join("")}</div>`
       : `<p style="color:#C3C9C3;font-size:17px">Tidak ada KM bermasalah di rentang tanggal ini.</p>`;
     if (window.isiRR) window.isiRR();
     const zt = Object.entries(zonaJam).filter(([, v]) => v);
@@ -216,34 +221,34 @@
     const kelas = (k, j) => k.zona ? "z" : j >= maks * 0.6 ? "m" : j >= maks * 0.25 ? "k" : "h";
     const WK = { h: "#3FA34D", k: "#F2B705", m: "#E5341F" }, TK = { h: "#fff", k: "#23282A", m: "#fff" };
     const judul = (k, l, j) => `${k.label}, jalur ${l.nama}${k.zona ? ", " + k.zona + " (tidak dihitung)" : ": " + j + " jam unit tertahan"}`;
-    // --- laptop: pita mendatar dua lajur ---
-    const n = urut.length, x0 = 50, x1 = 950, w = (x1 - x0) / n, hgt = 58, yA = 58, yB = yA + hgt + 6;
-    const laju = (t, k) => t[k.km][4] ? t[k.km][3] / t[k.km][4] : null;      // kecepatan rata-rata saat jalan
+    // --- pita mendatar dua lajur. Kotak berwarna = jam berhenti; tulisan abu di bawah kotak = kecepatan & menit lewat ---
+    const n = urut.length, x0 = 50, x1 = 950, w = (x1 - x0) / n, hgt = 42;
+    const dua = L2.length > 1, yA = 66, gap = 36, yB = yA + hgt + gap + 14;
+    const laju = (t, k) => t[k.km][4] ? t[k.km][3] / t[k.km][4] : null;
     let g = `<defs><pattern id="arsir" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#454B4D"/><line x1="0" y1="0" x2="0" y2="7" stroke="#7A8183" stroke-width="2.5"/></pattern>
       <marker id="panah" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#F2B705"/></marker></defs>`;
-    const lajurY = L2.length > 1 ? [yA, yB] : [yA];
+    const lajurY = dua ? [yA, yB] : [yA];
     L2.forEach((l, li) => urut.forEach((k, i) => {
-      const x = x0 + i * w, j = jamOf(l.tot, k), c = kelas(k, j), y = lajurY[li];
-      g += `<rect x="${x + 1.5}" y="${y}" width="${w - 3}" height="${hgt}" rx="3" fill="${c === "z" ? "url(#arsir)" : WK[c]}"><title>${judul(k, l, j)}</title></rect>`;
+      const x = x0 + i * w, j = jamOf(l.tot, k), c = kelas(k, j), y = lajurY[li], cx = x + w / 2;
+      g += `<rect x="${x + 1.5}" y="${y}" width="${w - 3}" height="${hgt}" rx="4" fill="${c === "z" ? "url(#arsir)" : WK[c]}"><title>${judul(k, l, j)}</title></rect>`;
       if (c === "z") return;
-      const v = laju(l.tot, k), cx = x + w / 2;
-      g += `<text x="${cx}" y="${y + 20}" text-anchor="middle" font-size="${j >= 100 ? 14 : 16}" font-weight="700" fill="${TK[c]}" pointer-events="none">${j > 0 ? j : "0"}</text>`;
-      g += `<line x1="${x + 6}" y1="${y + 27}" x2="${x + w - 6}" y2="${y + 27}" stroke="${TK[c]}" stroke-opacity=".35" stroke-width="1"/>`;
-      if (v) g += `<text x="${cx}" y="${y + 39}" text-anchor="middle" font-size="10" fill="${TK[c]}" pointer-events="none">${Math.round(v)}km/j</text><text x="${cx}" y="${y + 52}" text-anchor="middle" font-size="10" fill="${TK[c]}" pointer-events="none">${Math.max(1, Math.round(60 / v))} mnt</text>`;
+      g += `<text x="${cx}" y="${y + 22}" text-anchor="middle" font-size="${j >= 100 ? 15 : 17}" font-weight="700" fill="${TK[c]}" pointer-events="none">${j}</text>`;
+      g += `<text x="${cx}" y="${y + 35}" text-anchor="middle" font-size="10" fill="${TK[c]}" pointer-events="none">jam</text>`;
+      const v = laju(l.tot, k);
+      if (v) g += `<text x="${cx}" y="${y + hgt + 13}" text-anchor="middle" font-size="10.5" fill="#AEB6AE" pointer-events="none">${Math.round(v)}km/j</text><text x="${cx}" y="${y + hgt + 26}" text-anchor="middle" font-size="10.5" fill="#AEB6AE" pointer-events="none">${Math.max(1, Math.round(60 / v))} mnt</text>`;
     }));
-    const yb = lajurY[lajurY.length - 1] + hgt;
-    if (L2.length > 1) g += `<line x1="${x0}" y1="${yA + hgt + 3}" x2="${x1}" y2="${yA + hgt + 3}" stroke="#F2B705" stroke-width="2.5" stroke-dasharray="12 8"/>`;
+    if (dua) g += `<line x1="${x0}" y1="${yB - 8}" x2="${x1}" y2="${yB - 8}" stroke="#F2B705" stroke-width="2.5" stroke-dasharray="12 8"/>`;
     urut.forEach((k, i) => {
-      const x = x0 + i * w, sta = k.km + 1;
-      g += `<line x1="${x}" y1="${yA - 4}" x2="${x}" y2="${yA - (sta % 5 === 0 || i === 0 ? 12 : 7)}" stroke="#B8BFB7" stroke-width="1.5"/>`;
-      if (sta % 5 === 0 || i === 0) g += `<text x="${x}" y="${yA - 16}" text-anchor="middle" font-size="14" fill="#D7DCD5">STA ${sta}</text>`;
+      const x = x0 + i * w, sta = k.km + 1, besar = sta % 5 === 0 || i === 0;
+      g += `<line x1="${x}" y1="${yA - 4}" x2="${x}" y2="${yA - (besar ? 12 : 7)}" stroke="#B8BFB7" stroke-width="1.5"/>`;
+      if (besar) g += `<text x="${x}" y="${yA - 16}" text-anchor="${i === 0 ? "start" : "middle"}" font-size="14" fill="#D7DCD5">STA ${sta}</text>`;
     });
-    g += `<text x="${x1}" y="${yA - 16}" text-anchor="middle" font-size="14" fill="#D7DCD5">STA 0</text>`;
-    const ym = (yA + yb) / 2;
-    g += `<text x="${x0 - 8}" y="${ym + 7}" text-anchor="end" font-size="20" font-weight="700" fill="#F2B705">BSR</text><text x="${x1 + 8}" y="${ym + 7}" font-size="20" font-weight="700" fill="#F2B705">107</text>`;
-    g += `<text x="${x0}" y="18" font-size="17" font-weight="700" fill="#fff">JALUR MUATAN</text><text x="${x0 + 122}" y="18" font-size="15" fill="#C3C9C3">BSR ke 107</text><line x1="${x0 + 205}" y1="13" x2="${x0 + 290}" y2="13" stroke="#F2B705" stroke-width="3" marker-end="url(#panah)"/>`;
-    if (L2.length > 1) g += `<line x1="${x1 - 238}" y1="${yb + 23}" x2="${x1 - 323}" y2="${yb + 23}" stroke="#F2B705" stroke-width="3" marker-end="url(#panah)"/><text x="${x1 - 140}" y="${yb + 28}" text-anchor="end" font-size="15" fill="#C3C9C3">107 ke BSR</text><text x="${x1}" y="${yb + 28}" text-anchor="end" font-size="17" font-weight="700" fill="#fff">JALUR KOSONGAN</text>`;
-    $("strip").setAttribute("viewBox", `0 0 1000 ${yb + (L2.length > 1 ? 40 : 10)}`);
+    g += `<text x="${x1}" y="${yA - 16}" text-anchor="end" font-size="14" fill="#D7DCD5">STA 0</text>`;
+    const yAkhir = lajurY[lajurY.length - 1] + hgt + 30, ym = dua ? yB - 4 : yA + hgt / 2 + 7;
+    g += `<text x="${x0 - 8}" y="${ym}" text-anchor="end" font-size="20" font-weight="700" fill="#F2B705">BSR</text><text x="${x1 + 8}" y="${ym}" font-size="20" font-weight="700" fill="#F2B705">107</text>`;
+    g += `<text x="${x0}" y="20" font-size="17" font-weight="700" fill="#fff">${dua ? "JALUR MUATAN" : "SEMUA ARAH"}</text>` + (dua ? `<text x="${x0 + 118}" y="20" font-size="15" fill="#C3C9C3">BSR ke 107</text><line x1="${x0 + 195}" y1="15" x2="${x0 + 260}" y2="15" stroke="#F2B705" stroke-width="3" marker-end="url(#panah)"/>` : "");
+    if (dua) g += `<line x1="${x0 + 65}" y1="${yAkhir + 14}" x2="${x0}" y2="${yAkhir + 14}" stroke="#F2B705" stroke-width="3" marker-end="url(#panah)"/><text x="${x0 + 80}" y="${yAkhir + 20}" font-size="17" font-weight="700" fill="#fff">JALUR KOSONGAN</text><text x="${x0 + 215}" y="${yAkhir + 20}" font-size="15" fill="#C3C9C3">107 ke BSR</text>`;
+    $("strip").setAttribute("viewBox", `0 0 1000 ${yAkhir + (dua ? 30 : 4)}`);
     $("strip").innerHTML = g;
     // --- HP: daftar tegak, satu baris per KM ---
     const sel = (k, l) => { const j = jamOf(l.tot, k), c = kelas(k, j);
