@@ -4,81 +4,105 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kondisi Jalan ALR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
 <style>
-  :root { --bg:#eef1f5; --kartu:#ffffff; --teks:#0f172a; --pudar:#64748b; --garis:#e2e8f0;
-          --hijau:#16a34a; --hijau-bg:#dcfce7; --kuning:#d97706; --kuning-bg:#fef3c7; --merah:#dc2626; --merah-bg:#fee2e2; --biru:#2563eb; }
+  /* Bahasa visual: rambu & patok jalan hauling. Kuning keselamatan, aspal/tanah, angka condensed seperti papan STA */
+  :root { --debu:#E6E8E3; --kertas:#FBFBF9; --aspal:#2A2F2B; --tinta:#1E2320; --pudar:#5E665F; --garis:#D3D7D0;
+          --kuning:#F2B705; --merah:#C8321F; --amber:#D98200; --hijau:#2E7D32;
+          --hijau-bg:#E3F1E2; --kuning-bg:#FDF0C8; --merah-bg:#F8DDD8;
+          --judul:"Barlow Condensed", "Arial Narrow", sans-serif; --isi:"Barlow", system-ui, sans-serif; }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--teks); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-  .atas { background: #0f172a; color: #fff; padding: 14px 16px; }
-  .atas .isi { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-  .atas h1 { margin: 0; font-size: 19px; }
-  .atas p { margin: 2px 0 0; font-size: 13px; color: #cbd5e1; }
-  .atas a { background: #fff; color: #0f172a; text-decoration: none; font-weight: 600; font-size: 14px; padding: 8px 12px; border-radius: 10px; white-space: nowrap; }
-  .wrap { max-width: 1100px; margin: 0 auto; padding: 14px 16px 40px; }
+  html, body { overflow-x: hidden; }
+  body { margin: 0; background: var(--debu); color: var(--tinta); font-family: var(--isi); font-size: 15px; line-height: 1.5; }
+  :focus-visible { outline: 3px solid var(--kuning); outline-offset: 2px; }
+  .atas { background: var(--kuning); color: var(--aspal); }
+  .atas .isi { max-width: 1120px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .atas h1 { margin: 0; font: 700 26px/1 var(--judul); letter-spacing: .2px; }
+  .atas p { margin: 3px 0 0; font-size: 13.5px; }
+  .atas a { color: var(--aspal); font-weight: 600; font-size: 14px; text-decoration: none; border: 2px solid var(--aspal); padding: 6px 12px; border-radius: 6px; white-space: nowrap; }
+  .atas a:hover { background: var(--aspal); color: var(--kuning); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 14px 16px 48px; }
 
-  .filter { background: var(--kartu); border-radius: 16px; padding: 12px 14px; display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; box-shadow: 0 1px 2px rgba(15,23,42,.06); }
+  .filter { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; padding: 4px 0 14px; border-bottom: 1px solid var(--garis); }
   .filter .grup { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-  .filter .lbl { font-size: 12.5px; color: var(--pudar); font-weight: 600; margin-right: 2px; }
-  .chip { border: 1px solid var(--garis); background: #fff; border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 13.5px; cursor: pointer; color: var(--teks); }
-  .chip.aktif { background: #0f172a; color: #fff; border-color: #0f172a; }
-  input[type=date] { font: inherit; font-size: 13.5px; padding: 5px 8px; border: 1px solid var(--garis); border-radius: 8px; background: #fff; color: var(--teks); }
+  .filter .lbl { font-size: 13px; color: var(--pudar); margin-right: 2px; }
+  .chip { border: 1px solid var(--garis); background: var(--kertas); border-radius: 6px; padding: 6px 11px; font: 500 14px var(--isi); cursor: pointer; color: var(--tinta); }
+  .chip:hover { border-color: var(--aspal); }
+  .chip.aktif { background: var(--aspal); color: #fff; border-color: var(--aspal); }
+  input[type=date] { font: 14px var(--isi); padding: 5px 8px; border: 1px solid var(--garis); border-radius: 6px; background: var(--kertas); color: var(--tinta); }
 
-  .status { margin-top: 12px; border-radius: 18px; padding: 18px 20px; display: flex; gap: 16px; align-items: center; }
-  .status .ikon { font-size: 46px; line-height: 1; }
-  .status h2 { margin: 0; font-size: 26px; letter-spacing: .3px; }
-  .status .nilai { font-size: 15px; font-weight: 600; margin-top: 2px; }
-  .status p { margin: 6px 0 0; font-size: 15px; line-height: 1.45; }
-  .s-LAYAK { background: var(--hijau-bg); color: #14532d; }
-  .s-KURANG { background: var(--kuning-bg); color: #78350f; }
-  .s-TIDAK { background: var(--merah-bg); color: #7f1d1d; }
-  .s-KOSONG { background: #fff; color: var(--pudar); }
+  /* vonis: seperti papan rambu, garis tebal kiri sesuai status */
+  .status { margin-top: 18px; padding: 4px 0 4px 18px; border-left: 10px solid var(--pudar); display: flex; gap: 14px; align-items: flex-start; }
+  .status .ikon { display: none; }
+  .status h2 { margin: 0; font: 700 clamp(30px, 5vw, 46px)/1.02 var(--judul); }
+  .status .nilai { font-size: 14px; color: var(--pudar); margin-top: 6px; }
+  .status p { margin: 8px 0 0; font-size: 16px; max-width: 72ch; }
+  .s-LAYAK { border-color: var(--hijau); } .s-LAYAK h2 { color: var(--hijau); }
+  .s-KURANG { border-color: var(--amber); } .s-KURANG h2 { color: #A35F00; }
+  .s-TIDAK { border-color: var(--merah); } .s-TIDAK h2 { color: var(--merah); }
 
-  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; }
-  .tile { background: var(--kartu); border-radius: 16px; padding: 14px; box-shadow: 0 1px 2px rgba(15,23,42,.06); }
-  .tile .k { font-size: 13px; color: var(--pudar); }
-  .tile .v { font-size: 26px; font-weight: 750; margin: 4px 0 2px; }
-  .tile .b { font-size: 12.5px; }
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 18px; border-top: 1px solid var(--garis); border-bottom: 1px solid var(--garis); }
+  .tile { padding: 12px 14px; border-left: 1px solid var(--garis); }
+  .tile:first-child { border-left: 0; padding-left: 0; }
+  .tile .k { font-size: 13.5px; color: var(--pudar); }
+  .tile .v { font: 700 34px/1.1 var(--judul); margin: 2px 0; }
+  .tile .b { font-size: 13px; }
   .baik { color: var(--hijau); } .buruk { color: var(--merah); } .netral { color: var(--pudar); }
 
+  /* jalur: satu-satunya bagian "berani", pita aspal BSR -> 107 dengan patok KM */
+  .jalur { margin: 22px calc(50% - 50vw) 0; background: var(--aspal); color: #EDEFEA; padding: 18px 16px 16px; }
+  .jalur .dalam { max-width: 1088px; margin: 0 auto; }
+  .jalur h2 { margin: 0; font: 700 28px/1.1 var(--judul); color: #fff; }
+  .jalur .ket { color: #B8BFB7; font-size: 13.5px; margin: 4px 0 12px; max-width: 80ch; }
+  .gulir { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  #strip { width: 100%; min-width: 760px; height: auto; display: block; }
+  #strip text { font-family: var(--judul); }
+  .top { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0; margin-top: 14px; border-top: 1px solid #454B46; }
+  .top .it { padding: 10px 12px 4px 0; font-size: 13.5px; line-height: 1.45; color: #D7DCD5; }
+  .top .it b.km { display: block; font: 700 24px/1.1 var(--judul); color: var(--kuning); }
+  .top .it b { color: #fff; }
+  .jalur .kosong-info { background: transparent; color: #AEB5AD; padding: 8px 0 0; border-top: 1px solid #454B46; margin-top: 10px; }
+
+  h2.bagian { font: 700 26px/1.1 var(--judul); margin: 30px 0 2px; }
+  p.bagian { margin: 0 0 6px; color: var(--pudar); font-size: 14px; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
   .grid > * { min-width: 0; }
-  .kartu { background: var(--kartu); border-radius: 16px; padding: 14px 16px; box-shadow: 0 1px 2px rgba(15,23,42,.06); }
-  .kartu h3 { margin: 0; font-size: 15.5px; }
-  .kartu .ket { margin: 3px 0 10px; font-size: 13px; color: var(--pudar); }
+  .kartu { background: var(--kertas); border-radius: 8px; padding: 14px 16px; border: 1px solid var(--garis); }
+  .kartu h3 { margin: 0; font: 600 21px/1.15 var(--judul); }
+  .kartu .ket { margin: 3px 0 10px; font-size: 13.5px; color: var(--pudar); }
   .kanvas { position: relative; height: 230px; width: 100%; }
   .lebar { grid-column: 1 / -1; }
-  .kosong-info { margin-top: 8px; font-size: 12.5px; color: var(--pudar); background: #f8fafc; border-radius: 8px; padding: 6px 10px; }
+  .kosong-info { margin-top: 8px; font-size: 13px; color: var(--pudar); background: var(--debu); border-radius: 6px; padding: 6px 10px; }
 
-  details { margin-top: 12px; background: var(--kartu); border-radius: 16px; padding: 4px 16px; box-shadow: 0 1px 2px rgba(15,23,42,.06); }
-  summary { cursor: pointer; font-weight: 650; padding: 10px 0; }
-  .tbl { overflow-x: auto; padding-bottom: 10px; }
+  details { margin-top: 14px; background: var(--kertas); border: 1px solid var(--garis); border-radius: 8px; padding: 2px 16px; }
+  summary { cursor: pointer; font-weight: 600; padding: 10px 0; }
+  .tbl { overflow-x: auto; padding-bottom: 8px; }
   table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
   th, td { padding: 8px; border-bottom: 1px solid var(--garis); text-align: right; white-space: nowrap; }
   th:first-child, td:first-child { text-align: left; }
-  th { color: var(--pudar); font-weight: 600; font-size: 12.5px; }
-  .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-weight: 700; font-size: 12px; }
-  .p-LAYAK { background: var(--hijau-bg); color: #166534; } .p-KURANG { background: var(--kuning-bg); color: #92400e; } .p-TIDAK { background: var(--merah-bg); color: #991b1b; }
-  .top { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; }
-  .top .it { border: 1px solid var(--garis); border-left: 5px solid var(--merah); border-radius: 10px; padding: 8px 10px; font-size: 13px; line-height: 1.4; }
-  .top .it b { font-size: 15px; }
-  .heat { border-collapse: separate; border-spacing: 2px; font-size: 11.5px; }
-  .heat th { position: sticky; left: 0; background: #fff; color: var(--pudar); font-weight: 600; padding: 2px 6px; white-space: nowrap; text-align: right; }
-  .heat thead th { position: static; writing-mode: vertical-rl; transform: rotate(180deg); height: 54px; text-align: left; }
-  .heat td { min-width: 24px; height: 20px; text-align: center; border-radius: 3px; padding: 0 2px; border: 0; color: #111; }
-  .catatan { margin-top: 12px; font-size: 13px; color: var(--pudar); line-height: 1.55; }
-
+  th { color: var(--pudar); font-weight: 600; font-size: 13px; }
+  .pill { display: inline-block; padding: 1px 8px; border-radius: 4px; font-weight: 600; font-size: 12.5px; }
+  .p-LAYAK { background: var(--hijau-bg); color: #1F5A23; } .p-KURANG { background: var(--kuning-bg); color: #7A4A00; } .p-TIDAK { background: var(--merah-bg); color: #8E2416; }
+  .heat { border-collapse: separate; border-spacing: 2px; font-size: 12px; width: auto; }
+  .heat th { position: sticky; left: 0; background: var(--kertas); color: var(--pudar); font-weight: 600; padding: 2px 8px 2px 0; white-space: nowrap; text-align: right; border: 0; font-size: 12px; }
+  .heat thead th { position: static; writing-mode: vertical-rl; transform: rotate(180deg); height: 54px; text-align: left; padding: 2px; }
+  .heat td { min-width: 26px; height: 21px; text-align: center; border-radius: 3px; padding: 0 2px; border: 0; color: var(--tinta); }
+  .catatan { margin-top: 14px; font-size: 13.5px; color: var(--pudar); max-width: 90ch; }
   @media (max-width: 800px) {
     .tiles { grid-template-columns: 1fr 1fr; }
+    .tile:nth-child(3) { border-left: 0; padding-left: 0; }
+    .tile:nth-child(n+3) { border-top: 1px solid var(--garis); }
     .grid { grid-template-columns: 1fr; }
-    .status { padding: 14px 16px; } .status h2 { font-size: 21px; } .status .ikon { font-size: 38px; }
-    .tile .v { font-size: 22px; }
+    .tile .v { font-size: 28px; }
   }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 </head>
 <body>
 <div class="atas"><div class="isi">
   <div><h1>Kondisi Jalan ALR</h1><p>Apakah jalan BSR → 107 layak? Dilihat dari kerja DT yang lewat</p></div>
-  <a href="./">🗺️ Peta</a>
+  <a href="./">Buka peta</a>
 </div></div>
 
 <div class="wrap">
@@ -94,44 +118,49 @@
   <div class="status s-KOSONG" id="status"><div class="ikon">⏳</div><div><h2>Memuat...</h2></div></div>
   <div class="tiles" id="tiles"></div>
 
-  <div class="kartu" style="margin-top:12px">
-    <h3>📍 Per kilometer: di mana DT lambat & tertahan</h3>
-    <div class="ket">Jalan dipotong per 1 KM, dari BSR (STA 27) sampai 107 (STA 0). Ikut rentang tanggal yang dipilih di atas. Data GPS tiap jam, jadi 1 titik berhenti ≈ 1 jam unit tertahan.</div>
+  <section class="jalur" aria-labelledby="jJudul"><div class="dalam">
+    <h2 id="jJudul">Di KM mana unit tertahan</h2>
+    <div class="ket">Jalan ALR dari BSR (STA 27) sampai 107 (STA 0), per 1 KM, mengikuti tanggal yang dipilih. Makin merah, makin lama unit tertahan di KM itu. Arsir = zona antre atau parkir.</div>
+    <div class="gulir"><svg id="strip" viewBox="0 0 1000 120" role="img" aria-label="Jalur ALR per kilometer"></svg></div>
     <div id="topKm"></div>
-  </div>
+  </div></section>
+  <h2 class="bagian">Rincian per kilometer</h2>
+  <p class="bagian">Berapa jam unit tertahan, seberapa cepat DT jalan, dan kapan kejadiannya.</p>
   <div class="grid">
-    <div class="kartu lebar"><h3>⏸️ Jam unit tertahan per KM</h3>
-      <div class="ket">Mesin hidup = antre / macet / pelan merayap. Mesin mati = parkir, menginap, atau nunggu jalan bisa dilewati. Zona antre BSR, parkir, dan area 107 tidak digambar karena bukan masalah jalan</div>
+    <div class="kartu lebar"><h3>Jam unit tertahan per KM</h3>
+      <div class="ket">Mesin hidup berarti antre, macet, atau merayap. Mesin mati berarti parkir, menginap, atau menunggu jalan bisa dilewati. Zona antre BSR, parkir, dan area 107 tidak digambar.</div>
       <div class="kanvas" style="height:300px"><canvas id="cKmStop"></canvas></div></div>
-    <div class="kartu lebar"><h3>💨 Kecepatan DT per KM (km/jam)</h3>
-      <div class="ket">Rata-rata saat DT sedang jalan. Merah ≤ 13 = lambat, kuning ≤ 17 = agak pelan, hijau = lancar</div>
+    <div class="kartu lebar"><h3>Kecepatan DT per KM (km/jam)</h3>
+      <div class="ket">Rata-rata saat DT sedang jalan. Merah 13 km/jam ke bawah, kuning sampai 17, hijau lancar.</div>
       <div class="kanvas" style="height:260px"><canvas id="cKmSpeed"></canvas></div></div>
-    <div class="kartu lebar"><h3>🗓️ Kapan & di KM mana unit tertahan</h3>
-      <div class="ket">Angka = jam unit tertahan (mesin hidup + mati). Makin merah makin parah. Kosong = tidak ada unit tertahan / tidak ada data. Baris * abu-abu = zona antre/parkir</div>
+    <div class="kartu lebar"><h3>Kapan & di KM mana unit tertahan</h3>
+      <div class="ket">Angka di kotak adalah jam unit tertahan. Kotak kosong berarti tidak ada unit tertahan atau belum ada data. Baris bertanda * adalah zona antre atau parkir.</div>
       <div class="tbl" id="heat"></div></div>
   </div>
+  <h2 class="bagian">Kerja DT dari waktu ke waktu</h2>
+  <p class="bagian">Nilai jalan, waktu tiap tahap rit, dan kecepatan DT per hari, minggu, atau bulan.</p>
   <div class="grid">
     <div class="kartu lebar"><h3>Nilai jalan</h3>
-      <div class="ket">Hijau = layak · Kuning = kurang layak · Merah = tidak layak · Abu-abu = tidak ada data</div>
+      <div class="ket">Hijau layak, kuning kurang layak, merah tidak layak, abu-abu tidak ada data</div>
       <div class="kanvas"><canvas id="cNilai"></canvas></div><div class="kosong-info" id="infoKosong" hidden></div></div>
-    <div class="kartu lebar"><h3>🔄 1 rit lengkap: berapa lama tiap tahap (jam)</h3>
+    <div class="kartu lebar"><h3>1 rit lengkap: berapa lama tiap tahap (jam)</h3>
       <div class="ket">Kosongan 107 → BSR, antre & muat di BSR, muatan BSR → 107, lalu bongkar di 107. Makin pendek batangnya makin bagus</div>
       <div class="kanvas" style="height:270px"><canvas id="cSiklus"></canvas></div><div class="kosong-info" id="infoSiklus" hidden></div></div>
-    <div class="kartu"><h3>⏱️ Waktu 1 rit muatan (jam)</h3>
+    <div class="kartu"><h3>Waktu 1 rit muatan (jam)</h3>
       <div class="ket">Rata-rata waktu DT dari BSR sampai 107. Garis putus-putus = target</div>
       <div class="kanvas"><canvas id="cWaktu"></canvas></div></div>
-    <div class="kartu"><h3>🐢 Rit telat (%)</h3>
+    <div class="kartu"><h3>Rit telat (%)</h3>
       <div class="ket">Rit yang butuh lebih dari <span class="tTelat"></span>. Makin rendah makin bagus</div>
       <div class="kanvas"><canvas id="cTelat"></canvas></div></div>
-    <div class="kartu"><h3>🚚 Jumlah rit muatan</h3>
+    <div class="kartu"><h3>Jumlah rit muatan</h3>
       <div class="ket">Berapa kali DT bawa muatan BSR → 107</div>
       <div class="kanvas"><canvas id="cRit"></canvas></div></div>
-    <div class="kartu"><h3>💨 Kecepatan DT di jalan (km/jam)</h3>
+    <div class="kartu"><h3>Kecepatan DT di jalan (km/jam)</h3>
       <div class="ket">Dari GPS, saat DT sedang jalan. Garis putus-putus = target</div>
       <div class="kanvas"><canvas id="cSpeed"></canvas></div></div>
   </div>
 
-  <details><summary>📋 Lihat angka detail</summary><div class="tbl"><table id="tabel"></table></div></details>
+  <details><summary>Lihat angka detail per periode</summary><div class="tbl"><table id="tabel"></table></div></details>
 
   <div class="catatan" id="catatan"></div>
 </div>

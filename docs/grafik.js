@@ -1,12 +1,13 @@
 // Halaman Kondisi Jalan ALR: nilai kelayakan dari performa DT, filter rentang tanggal, per hari/minggu/bulan
 (function () {
   const $ = (id) => document.getElementById(id);
-  const WARNA = { LAYAK: "#16a34a", KURANG: "#f59e0b", TIDAK: "#dc2626", KOSONG: "#eef2f6" };
+  const WARNA = { LAYAK: "#2E7D32", KURANG: "#D98200", TIDAK: "#C8321F", KOSONG: "#DDE1DA" };
   const BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-  const BIRU = "#2563eb";
+  const BIRU = "#2A2F2B";
   let KM = null,
   HARI = new Map(), KL = {}, TELAT = 195, mode = "hari", grafik = {}, awalData, akhirData;
 
+  if (window.Chart) { Chart.defaults.font.family = "Barlow, system-ui, sans-serif"; Chart.defaults.font.size = 12.5; Chart.defaults.color = "#5E665F"; }
   // ---------- util ----------
   const tgl = (s) => new Date(s + "T00:00:00");
   const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -157,14 +158,15 @@
     buat("cKmSpeed", { labels: L, datasets: [batang("Kecepatan", speed, speed.map((v) => v == null ? "#e5e7eb" : v <= 13 ? WARNA.TIDAK : v <= 17 ? WARNA.KURANG : WARNA.LAYAK)),
       target(n, KL.speed_bagus_kmh ?? 20)] }, oB, L);
 
+    strip(semuaUrut, tot);
     // KM paling bermasalah (bukan zona antre/parkir)
     const skor = daftar.filter((k) => !k.zona).map((k) => { const t = tot[k.km]; return { k, jam: t[1] + t[2], hidup: t[1], sp: t[4] ? t[3] / t[4] : null, unit: t[5].size }; })
       .filter((x) => x.jam > 0 || (x.sp != null && x.sp <= 13)).sort((a, b) => b.jam - a.jam).slice(0, 5);
-    $("topKm").innerHTML = skor.length ? `<div class="top">${skor.map((x, i) => `<div class="it"><b>${i + 1}. ${x.k.label}</b> <span class="netral">(STA ${x.k.km}+000 - ${x.k.km + 1}+000)</span><br>
-        ⏸️ <b>${x.jam} jam</b> unit tertahan (${x.hidup} jam mesin hidup)<br>💨 ${x.sp != null ? Math.round(x.sp) + " km/jam" : "-"} · 🚚 ${x.unit} unit</div>`).join("")}</div>`
-      : `<p class="netral">Tidak ada KM bermasalah di rentang ini.</p>`;
+    $("topKm").innerHTML = skor.length ? `<div class="top">${skor.map((x, i) => `<div class="it"><b class="km">${x.k.label}</b>
+        <b>${x.jam} jam</b> unit tertahan, ${x.hidup} jam di antaranya mesin hidup.<br>Kecepatan ${x.sp != null ? Math.round(x.sp) + " km/jam" : "belum ada data"}, ${x.unit} unit lewat.</div>`).join("")}</div>`
+      : `<p style="color:#B8BFB7">Tidak ada KM bermasalah di rentang tanggal ini.</p>`;
     const zt = Object.entries(zonaJam).filter(([, v]) => v);
-    if (zt.length) $("topKm").innerHTML += `<div class="kosong-info">Tidak dihitung karena bukan masalah jalan: ${zt.map(([z, v]) => `${z} ${v} jam`).join(" · ")}.</div>`;
+    if (zt.length) $("topKm").innerHTML += `<div class="kosong-info">Tidak dihitung karena bukan masalah jalan: ${zt.map(([z, v]) => `${z.toLowerCase()} ${v} jam`).join(", ")}.</div>`;
 
     // tabel warna KM x periode
     const P = periode(dari, sampai);
@@ -175,17 +177,40 @@
       per.push(a);
     }
     const maks = Math.max(1, ...per.flatMap((a) => urut.map((k) => a[k.km] || 0)));
-    const warna = (v) => { if (!v) return "#f8fafc"; const x = Math.min(1, v / Math.max(6, maks * 0.6)); return `rgba(220,38,38,${0.12 + 0.78 * x})`; };
+    const warna = (v) => { if (!v) return "#F1F3EF"; const x = Math.min(1, v / Math.max(6, maks * 0.6)); return `rgba(200,50,31,${0.12 + 0.8 * x})`; };
     $("heat").innerHTML = `<table class="heat"><thead><tr><th></th>${P.map((p) => `<th>${p.label}</th>`).join("")}</tr></thead><tbody>` +
       semuaUrut.map((k) => `<tr><th>${k.label}${k.zona ? "*" : ""}</th>${per.map((a, i) => { const v = a[k.km];
-        return `<td style="background:${k.zona ? (v ? "#e2e8f0" : "#f8fafc") : warna(v)};color:${!k.zona && v && v / maks > 0.5 ? "#fff" : "#111"}" title="${k.label} · ${P[i].judul}: ${v ? v + " jam unit tertahan" : "tidak ada"}">${v || ""}</td>`; }).join("")}</tr>`).join("") + `</tbody></table>`;
+        return `<td style="background:${k.zona ? (v ? "#DDE1DA" : "#F1F3EF") : warna(v)};color:${!k.zona && v && v / maks > 0.5 ? "#fff" : "#111"}" title="${k.label} · ${P[i].judul}: ${v ? v + " jam unit tertahan" : "tidak ada"}">${v || ""}</td>`; }).join("")}</tr>`).join("") + `</tbody></table>`;
+  }
+
+  // pita jalur BSR (kiri) -> 107 (kanan), satu kotak per KM, warna = jam unit tertahan
+  function strip(urut, tot) {
+    const n = urut.length, x0 = 44, x1 = 956, w = (x1 - x0) / n, y = 34, hgt = 30;
+    const jam = urut.map((k) => k.zona ? 0 : tot[k.km][1] + tot[k.km][2]), maks = Math.max(4, ...jam);
+    const isi = (k, j) => k.zona ? "url(#arsir)" : !j ? "#3B413C" : `rgba(242,${Math.round(183 - 150 * Math.min(1, j / maks))},${Math.round(5 + 26 * Math.min(1, j / maks))},${0.35 + 0.65 * Math.min(1, j / maks)})`;
+    let g = `<defs><pattern id="arsir" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#3B413C"/><line x1="0" y1="0" x2="0" y2="6" stroke="#6B726C" stroke-width="2"/></pattern></defs>`;
+    g += `<line x1="${x0}" y1="${y + hgt / 2}" x2="${x1}" y2="${y + hgt / 2}" stroke="#F2B705" stroke-width="1.5" stroke-dasharray="10 9" opacity=".7" pointer-events="none"/>`;
+    urut.forEach((k, i) => {
+      const x = x0 + i * w, j = jam[i];
+      g += `<rect x="${x + 1}" y="${y}" width="${w - 2}" height="${hgt}" rx="2" fill="${isi(k, j)}"><title>${k.label}${k.zona ? ", " + k.zona.toLowerCase() : ""}: ${k.zona ? "tidak dihitung" : j + " jam unit tertahan"}</title></rect>`;
+      if (!k.zona && j >= maks * 0.45) g += `<text x="${x + w / 2}" y="${y + hgt / 2 + 5}" text-anchor="middle" font-size="14" font-weight="700" fill="#1E2320">${j}</text>`;
+      g += `<line x1="${x}" y1="${y + hgt + 4}" x2="${x}" y2="${y + hgt + (k.km % 5 === 4 || i === 0 ? 14 : 9)}" stroke="#B8BFB7" stroke-width="1.5"/>`;
+      const sta = k.km + 1;
+      if (sta % 5 === 0 || i === 0) g += `<text x="${x}" y="${y + hgt + 28}" text-anchor="middle" font-size="13" fill="#D7DCD5">STA ${sta}</text>`;
+    });
+    g += `<text x="${x1}" y="${y + hgt + 28}" text-anchor="middle" font-size="13" fill="#D7DCD5">STA 0</text>`;
+    g += `<text x="${x0 - 8}" y="${y + hgt / 2 + 6}" text-anchor="end" font-size="17" font-weight="700" fill="#F2B705">BSR</text>`;
+    g += `<text x="${x1 + 8}" y="${y + hgt / 2 + 6}" font-size="17" font-weight="700" fill="#F2B705">107</text>`;
+    g += `<text x="${x0}" y="20" font-size="13" fill="#B8BFB7">Arah muatan</text><line x1="${x0 + 78}" y1="16" x2="${x0 + 150}" y2="16" stroke="#B8BFB7" stroke-width="1.5" marker-end="url(#panah)"/>`;
+    g = g.replace("</defs>", `<marker id="panah" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#B8BFB7"/></marker></defs>`);
+    $("strip").innerHTML = g;
   }
 
   function banding(a, b, satuan, naikBaik, f = (x) => s1(x)) {
     if (a == null || b == null) return `<span class="netral">belum ada pembanding</span>`;
     const d = a - b; if (Math.abs(d) < 0.05 * Math.max(1, Math.abs(b))) return `<span class="netral">sama seperti sebelumnya</span>`;
     const baik = naikBaik ? d > 0 : d < 0;
-    return `<span class="${baik ? "baik" : "buruk"}">${d > 0 ? "▲ naik" : "▼ turun"} ${f(Math.abs(d))}${satuan}</span> <span class="netral">· ${baik ? "lebih baik" : "lebih buruk"}</span>`;
+    return `<span class="${baik ? "baik" : "buruk"}">${d > 0 ? "▲ naik" : "▼ turun"} ${f(Math.abs(d))}${satuan}</span> <span class="netral">(${baik ? "lebih baik" : "lebih buruk"})</span>`;
   }
 
   function status(r, prev, dari, sampai, panjang) {
@@ -202,15 +227,15 @@
     let arah = "";
     if (prev && prev.nilai != null) arah = r.nilai > prev.nilai + 2 ? `Lebih baik dari ${panjang} hari sebelumnya (nilai ${prev.nilai}).` : r.nilai < prev.nilai - 2 ? `Lebih buruk dari ${panjang} hari sebelumnya (nilai ${prev.nilai}).` : `Sama seperti ${panjang} hari sebelumnya.`;
     el.className = `status s-${r.kode}`;
-    el.innerHTML = `<div class="ikon">${IKON[r.kode]}</div><div><h2>Jalan ALR ${NAMA[r.kode]}</h2>
-      <div class="nilai">Nilai ${r.nilai} dari 100 · ${rentangTeks}${r.hariData < panjang ? ` · data ada ${r.hariData} dari ${panjang} hari` : ""}</div>
+    el.innerHTML = `<div class="ikon">${IKON[r.kode]}</div><div><h2>Jalan ALR ${NAMA[r.kode].toLowerCase()}</h2>
+      <div class="nilai">Nilai ${r.nilai} dari 100, ${rentangTeks}${r.hariData < panjang ? `, data ada ${r.hariData} dari ${panjang} hari` : ""}</div>
       <p>${kal.join(" ")} ${arah}</p></div>`;
     const t = (k, v, b) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="b">${b}</div></div>`;
     $("tiles").innerHTML =
-      t("🚚 Jumlah rit", r.rit ?? "-", banding(r.rit, prev?.rit, " rit", true, Math.round)) +
-      t("⏱️ Waktu 1 rit", jamMenit(r.waktu), banding(r.waktu, prev?.waktu, "", false, jamMenit)) +
-      t("🐢 Rit telat", r.pctTelat != null ? `${Math.round(r.pctTelat)}%` : "-", banding(r.pctTelat, prev?.pctTelat, "%", false, Math.round)) +
-      t("💨 Kecepatan DT", r.speed != null ? `${Math.round(r.speed)} km/j` : "-", banding(r.speed, prev?.speed, " km/j", true, Math.round));
+      t("Jumlah rit muatan", r.rit ?? "-", banding(r.rit, prev?.rit, " rit", true, Math.round)) +
+      t("Waktu 1 rit muatan", jamMenit(r.waktu), banding(r.waktu, prev?.waktu, "", false, jamMenit)) +
+      t("Rit telat", r.pctTelat != null ? `${Math.round(r.pctTelat)}%` : "-", banding(r.pctTelat, prev?.pctTelat, "%", false, Math.round)) +
+      t("Kecepatan DT", r.speed != null ? `${Math.round(r.speed)} km/j` : "-", banding(r.speed, prev?.speed, " km/j", true, Math.round));
   }
 
   function tabel(P) {
