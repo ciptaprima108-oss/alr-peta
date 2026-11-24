@@ -1,6 +1,7 @@
 /* Bagian Hujan di jalan ALR (cuaca.js) */
 .cuaca { padding-bottom: 8px; }
-.judul-bagian .gb-biru { background: #2A78D6; color: #fff; }
+.cuaca-waktu { margin: 0 0 10px; font-size: 16px; color: var(--pudar); }
+.ubin.u-hujan { --w: #2A78D6; --wm: #E2EEFB; }
 .cuaca-banner { display: flex; align-items: center; gap: 16px; border-radius: 16px; padding: 18px 20px; box-shadow: var(--bayang); background: var(--kertas); }
 .cuaca-banner .ik.besar { font-size: 64px; flex-shrink: 0; }
 .cuaca-banner b { display: block; font: 700 30px/1.1 var(--judul); }

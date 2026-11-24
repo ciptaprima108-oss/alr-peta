@@ -170,6 +170,8 @@
       <span>${hujan.length && mendung.length ? "Gerimis / mendung di " + rentang(mendung) + ". " : ""}${rm ? `3 jam ke depan: peluang hujan paling tinggi <b>${maxP.p}%</b>${maxP.z ? ` di KM ${maxP.z.a}-${maxP.z.b}` : ""}.` : ""}</span></div>`;
 
     // pita per KM: kiri BSR (KM 29), kanan 107 (KM 0), sama seperti pita kondisi jalan
+    if ($("subHujan")) $("subHujan").textContent = hujan.length ? "Hujan di " + rentang(hujan.slice()) : mendung.length ? "Gerimis / mendung di " + rentang(mendung.slice()) : "Tidak hujan sekarang";
+
     $("cuacaPita").innerHTML = st.slice().reverse().map((s) => {
       const T = TINGKAT[s.tingkat];
       return `<div class="ck" style="background:${T.warna};color:${T.tinta}" title="KM ${s.km}: ${T.nama} (${s.sumber})">

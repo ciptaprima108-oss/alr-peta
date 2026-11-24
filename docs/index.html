@@ -20,11 +20,14 @@
 <link rel="stylesheet" href="style.css?v=202611240419">
 <link rel="stylesheet" href="kondisi.css?v=202611240419">
 <link rel="stylesheet" href="cuaca.css?v=202611240419">
+<link rel="stylesheet" href="aplikasi.css?v=202611240419">
 </head>
 <body>
+<div id="splash" aria-hidden="true"><div class="sp-isi"><span class="sp-logo"><img src="ikon/logo_alr.png" alt=""></span><b>ALR</b><small>Jalan hauling BSR ke 107</small><i class="sp-bar"><i></i></i></div></div>
 <header class="appbar"><div class="appbar-isi">
   <a class="merek" href="./"><span class="logo logo-alr"><img src="ikon/logo_alr.png" alt="Logo ALR"></span><span><b>ALR</b><small id="info">memuat data...</small></span></a>
   <div class="kanan tombol">
+    <button id="btnSuara" class="ikon-saja" type="button"></button>
     <button id="btnLokasi" title="Cari posisi saya di jalan ALR"><svg class="ik"><use href="#i-lokasi"/></svg><span class="teks-hp">Lokasi saya</span></button>
     <button id="btnPengawas" title="Pengguna ALR"><svg class="ik"><use href="#i-orang"/></svg><span class="teks-hp">Pengguna</span></button>
     <button id="btnPanel" class="utama"><svg class="ik"><use href="#i-awas"/></svg><span class="teks-hp">Trigger</span> <span id="nTrig" class="badge">0</span></button>
@@ -33,21 +36,6 @@
 
 <main id="petaArea">
   <div id="map"></div>
-  <aside id="panel">
-    <section>
-      <h3><span class="tgb" style="background:var(--merah-muda);color:var(--merah)"><svg class="ik"><use href="#i-awas"/></svg></span>Trigger jalan merah</h3>
-      <p class="kecil">Muncul otomatis kalau beberapa unit melambat atau tertahan di segmen yang sama. Pengawas ALR/RM cek ke lokasi lalu upload foto/video di tiketnya.</p>
-      <div id="listTrig"><p class="kecil">Tidak ada trigger.</p></div>
-    </section>
-    <section>
-      <h3><span class="tgb" style="background:var(--biru-muda);color:var(--biru)"><svg class="ik"><use href="#i-kamera"/></svg></span>Laporan lapangan</h3>
-      <div id="listLap"><p class="kecil">Belum ada laporan.</p></div>
-    </section>
-    <section>
-      <h3><span class="tgb" style="background:var(--debu);color:var(--pudar)"><svg class="ik"><use href="#i-daftar"/></svg></span>Ringkasan segmen</h3>
-      <div id="ringkas"></div>
-    </section>
-  </aside>
   <div class="legend" id="legend" title="Ketuk untuk lihat semua warna">
   <b>Arti warna jalan</b>
   <div><i style="background:#E5341F"></i>Merah: melambat / tertahan</div>
@@ -59,31 +47,6 @@
 </main>
 
 
-<div class="wrap kondisi cuaca" id="cuaca">
-  <div class="judul-bagian pembuka"><span class="gb gb-biru"><svg class="ik" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.4 1.5A3.3 3.3 0 0 0 7 14z"/><path d="M8 17l-1 3M12 17l-1 3M16 17l-1 3"/></svg></span><div><h2>Hujan di jalan ALR</h2>
-    <p id="cuacaWaktu">memuat cuaca...</p></div></div>
-  <section class="cuaca-banner" id="cuacaBanner"><div><b>Memuat cuaca...</b></div></section>
-  <div class="cuaca-pita-kotak">
-    <div class="cuaca-ujung"><span>BSR · KM 29</span><span>107 · KM 0</span></div>
-    <div class="gulir"><div class="cuaca-pita" id="cuacaPita"></div></div>
-    <div class="leg-cuaca"><span><i style="background:#F2B705"></i>Cerah</span><span><i style="background:#B8BFB7"></i>Berawan</span><span><i style="background:#8EC5EE"></i>Gerimis / mendung</span><span><i style="background:#2A78D6"></i>Hujan</span><span><i style="background:#1B2F8F"></i>Hujan lebat</span></div>
-  </div>
-  <h3 class="cuaca-sub">6 jam ke depan: peluang hujan per zona</h3>
-  <div class="cuaca-zona" id="cuacaZona"></div>
-  <div class="cuaca-bawah">
-    <div class="kg"><h3>Laporan hujan dari lapangan (2 jam terakhir)</h3>
-      <div id="cuacaLapor"><p class="kecil">memuat...</p></div>
-      <a class="kirim tombol-lapor" id="btnLaporHujan" target="_blank" rel="noopener" href="#">Lapor hujan di KM saya</a>
-      <p class="kecil">Laporan sopir dan pengawas paling akurat. Kalau ada laporan, warna KM itu (dan 1 KM di kiri-kanannya) ikut laporan.</p></div>
-    <div class="kg"><h3>Dari mana datanya?</h3>
-      <ol class="sumber">
-        <li><b>Laporan lapangan</b>: paling tepat per KM, berlaku 2 jam.</li>
-        <li><b>Foto awan satelit Himawari</b> (NASA/JMA): diperbarui tiap 10 menit, telat sekitar 40 menit, ketelitian sekitar 2 km. Awan berwarna di satelit = awan hujan.</li>
-        <li><b>Model cuaca Open-Meteo</b>: untuk ramalan 6 jam ke depan, ketelitian sekitar 10 km, jadi KM yang berdekatan biasanya sama.</li>
-      </ol>
-      <p class="kecil">Radar hujan gratis (RainViewer) tidak menjangkau ALR. Supaya benar-benar tepat per KM, paling bagus pasang 3 sampai 5 alat penakar hujan kecil di sepanjang jalan.</p></div>
-  </div>
-</div>
 
 <div class="layar" id="layarPengawas" hidden role="dialog" aria-modal="true" aria-labelledby="lpJudul">
   <div class="layar-isi">
@@ -124,30 +87,75 @@
   </div>
 </div>
 
-<div class="wrap kondisi" id="kondisi">
-  <div class="judul-bagian pembuka"><span class="gb"><svg class="ik"><use href="#i-grafik"/></svg></span><div><h2>Kondisi jalan ALR</h2>
-    <p>Dinilai dari kerja DT yang lewat. Pilih rentang tanggal di bawah.</p></div></div>
-  <div class="filter">
-    <div class="grup"><span class="lbl"><svg class="ik"><use href="#i-kalender"/></svg>Rentang</span>
-      <button class="chip" data-p="7">7 hari</button><button class="chip" data-p="30">30 hari</button>
-      <button class="chip" data-p="90">3 bulan</button><button class="chip" data-p="semua">Semua</button></div>
-    <div class="grup"><span class="lbl">Dari</span><input type="date" id="dari"><span class="lbl">sampai</span><input type="date" id="sampai"></div>
-    <div class="grup"><span class="lbl"><svg class="ik"><use href="#i-grafik"/></svg>Lihat per</span>
-      <button class="chip aktif" data-m="hari">Hari</button><button class="chip" data-m="minggu">Minggu</button><button class="chip" data-m="bulan">Bulan</button></div>
+<section id="beranda" class="beranda" aria-label="Menu ALR">
+  <div class="sapa" id="sapa">
+    <div class="sapa-atas"><span class="sapa-lampu" id="sapaLampu"></span><div><small id="sapaTgl">Memuat data jalan...</small><h2 id="sapaJudul">Kondisi jalan ALR</h2></div>
+      <div class="sapa-nilai" id="sapaNilai" hidden><b>-</b><span>nilai jalan</span></div></div>
+    <p id="sapaIsi"></p>
   </div>
-
-  <section class="hero s-KOSONG" id="status"><div><h2>Memuat data...</h2></div></section>
-  <div class="tiles" id="tiles"></div>
-
+  <div class="menu" id="menu">
+    <button type="button" class="ubin u-merah" data-buka="trigger"><span class="u-gb"><svg class="ik"><use href="#i-awas"/></svg><i class="u-badge" id="ubinTrig" hidden>0</i></span><b>Trigger jalan</b><small id="subTrig">Jalan merah yang perlu dicek</small></button>
+    <button type="button" class="ubin u-kuning" data-buka="km"><span class="u-gb"><svg class="ik"><use href="#i-jalan"/></svg></span><b>Jalan per KM</b><small id="subKm">Di KM mana DT berhenti lama</small></button>
+    <button type="button" class="ubin u-hijau" data-buka="rr"><span class="u-gb"><svg class="ik"><use href="#i-truk"/></svg></span><b>RR &amp; traksi</b><small id="subRr">Berat jalan dan rawan selip</small></button>
+    <button type="button" class="ubin u-hujan" data-buka="hujan"><span class="u-gb"><svg class="ik" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.4 1.5A3.3 3.3 0 0 0 7 14z"/><path d="M8 17l-1 3M12 17l-1 3M16 17l-1 3"/></svg></span><b>Hujan per KM</b><small id="subHujan">Di KM mana sedang hujan</small></button>
+    <button type="button" class="ubin u-biru" data-buka="grafik"><span class="u-gb"><svg class="ik"><use href="#i-grafik"/></svg></span><b>Nilai &amp; grafik</b><small id="subGrafik">Kerja DT per hari</small></button>
+    <button type="button" class="ubin u-biru2" data-buka="laporan"><span class="u-gb"><svg class="ik"><use href="#i-kamera"/></svg><i class="u-badge" id="ubinLap" hidden>0</i></span><b>Laporan lapangan</b><small id="subLap">Foto dan video dari pengawas</small></button>
+    <button type="button" class="ubin u-abu" data-buka="pengguna"><span class="u-gb"><svg class="ik"><use href="#i-orang"/></svg></span><b>Pengguna</b><small id="subPengguna">ID card per divisi</small></button>
+  </div>
+  <div class="notif-ajak" id="notifAjak" hidden>
+    <span class="u-gb"><svg class="ik"><use href="#i-lonceng"/></svg></span>
+    <div><b>Nyalakan notifikasi ALR</b><small id="notifAjakIsi">Dapat pemberitahuan kalau ada trigger atau laporan baru.</small></div>
+    <button type="button" id="btnNotif">Nyalakan</button>
+  </div>
+</section>
+<section class="lyr kondisi" id="lyr-trigger" hidden aria-labelledby="lyrJ-trigger">
+  <div class="lyr-atas"><button type="button" class="kembali" data-tutup><svg class="ik"><use href="#i-kiri"/></svg><span>Kembali</span></button>
+    <h2 id="lyrJ-trigger"><span class="lyr-gb" style="--w:#C8321F"><svg class="ik"><use href="#i-awas"/></svg></span>Trigger jalan</h2></div>
+  <div class="lyr-badan"><div class="lyr-filter"></div>
+    <section class="kartu-lyr">
+      <h3><span class="tgb" style="background:var(--merah-muda);color:var(--merah)"><svg class="ik"><use href="#i-awas"/></svg></span>Trigger jalan merah</h3>
+      <p class="kecil">Muncul otomatis kalau beberapa unit melambat atau tertahan di segmen yang sama. Pengawas ALR/RM cek ke lokasi lalu upload foto/video di tiketnya.</p>
+      <div id="listTrig"><p class="kecil">Tidak ada trigger.</p></div>
+    </section>
+    <section class="kartu-lyr">
+      <h3><span class="tgb" style="background:var(--debu);color:var(--pudar)"><svg class="ik"><use href="#i-daftar"/></svg></span>Ringkasan segmen</h3>
+      <div id="ringkas"></div>
+    </section>
+  </div>
+</section>
+<section class="lyr kondisi" id="lyr-laporan" hidden aria-labelledby="lyrJ-laporan">
+  <div class="lyr-atas"><button type="button" class="kembali" data-tutup><svg class="ik"><use href="#i-kiri"/></svg><span>Kembali</span></button>
+    <h2 id="lyrJ-laporan"><span class="lyr-gb" style="--w:#2a78d6"><svg class="ik"><use href="#i-kamera"/></svg></span>Laporan lapangan</h2></div>
+  <div class="lyr-badan"><div class="lyr-filter"></div>
+    <section class="kartu-lyr">
+      <h3><span class="tgb" style="background:var(--biru-muda);color:var(--biru)"><svg class="ik"><use href="#i-kamera"/></svg></span>Laporan lapangan</h3>
+      <div id="listLap"><p class="kecil">Belum ada laporan.</p></div>
+    </section>
+  </div>
+</section>
+<section class="lyr kondisi" id="lyr-km" hidden aria-labelledby="lyrJ-km" data-filter="1">
+  <div class="lyr-atas"><button type="button" class="kembali" data-tutup><svg class="ik"><use href="#i-kiri"/></svg><span>Kembali</span></button>
+    <h2 id="lyrJ-km"><span class="lyr-gb" style="--w:#F2B705"><svg class="ik"><use href="#i-jalan"/></svg></span>Jalan per KM</h2></div>
+  <div class="lyr-badan"><div class="lyr-filter"></div>
   <section class="jalur" aria-labelledby="jJudul"><div class="dalam">
-    <div class="judul-bagian"><span class="gb"><svg class="ik"><use href="#i-jalan"/></svg></span><div><h2 id="jJudul">Di KM mana unit tertahan</h2>
-    <p>Jalan ALR dari BSR (STA 29) sampai 107 (STA 0), per 1 KM, mengikuti tanggal yang dipilih. Jalur atas untuk DT bermuatan, jalur bawah untuk DT kosongan. Angka di kotak adalah jam unit tertahan di KM itu.</p></div></div>
+    <div class="judul-bagian"><span class="gb"><svg class="ik"><use href="#i-jalan"/></svg></span><div><h2 id="jJudul">Di KM mana DT berhenti lama</h2>
+    <p>Jalan ALR dari BSR (STA 29) sampai 107 (STA 0), per 1 KM, mengikuti tanggal yang dipilih. Jalur atas untuk DT bermuatan, jalur bawah untuk DT kosongan.</p></div></div>
     <div class="gulir"><svg id="strip" viewBox="0 0 1000 180" role="img" aria-label="Jalur ALR per kilometer"></svg></div>
     <div id="stripHp" hidden></div>
     <div class="geser-hint">Geser pita ke kiri untuk melihat sampai 107</div>
-    <div class="leg-strip"><span><i class="h"></i>Hijau: lancar / sebentar</span><span><i class="k"></i>Kuning: cukup lama</span><span><i class="m"></i>Merah: paling lama tertahan</span><span><i class="z"></i>Arsir: zona antre / parkir</span></div>
+    <div class="leg-strip"><span><i class="h"></i>Hijau: sedikit berhenti</span><span><i class="k"></i>Kuning: cukup lama berhenti</span><span><i class="m"></i>Merah: paling lama berhenti</span><span><i class="z"></i>Arsir: zona antre / parkir</span></div>
+    <div class="ket-strip"><p><b>Kotak berwarna</b> = total jam DT berhenti di KM itu, semua unit dijumlah selama tanggal yang dipilih. Makin merah, makin banyak jam berhenti.</p>
+      <p><b>Tulisan abu-abu di bawah kotak</b> = kecepatan rata-rata DT saat sedang jalan, dan kira-kira berapa menit untuk melewati 1 KM itu.</p>
+      <p>Contoh: kotak merah 122 jam dengan 17 km/j artinya DT bisa jalan normal di KM itu, tapi banyak unit berhenti lama di sana (antre, mogok, menunggu, atau jalan tertutup).</p></div>
+    <h3 class="sub-jalur">3 KM dengan jam berhenti paling banyak</h3>
     <div id="topKm"></div>
   </div></section>
+  </div>
+</section>
+<section class="lyr kondisi" id="lyr-rr" hidden aria-labelledby="lyrJ-rr">
+  <div class="lyr-atas"><button type="button" class="kembali" data-tutup><svg class="ik"><use href="#i-kiri"/></svg><span>Kembali</span></button>
+    <h2 id="lyrJ-rr"><span class="lyr-gb" style="--w:#2E7D32"><svg class="ik"><use href="#i-truk"/></svg></span>RR &amp; traksi</h2></div>
+  <div class="lyr-badan"><div class="lyr-filter"></div>
   <section class="jalur rrsec" id="rr" aria-labelledby="rrJudul"><div class="dalam">
     <div class="judul-bagian"><span class="gb"><svg class="ik"><use href="#i-truk"/></svg></span><div><h2 id="rrJudul">Rolling resistance &amp; traksi per KM</h2>
     <p>Seberapa berat jalan dilawan ban DT, dan di KM mana DT bisa selip kalau jalan basah. Ini perkiraan dari kecepatan DT bermuatan dan tanjakan, bukan hasil ukur alat.</p></div></div>
@@ -157,27 +165,69 @@
     <div class="leg-strip"><span><i class="h"></i>RR ringan / traksi aman</span><span><i class="k"></i>RR sedang / waspada saat basah</span><span><i class="m"></i>RR berat / rawan selip saat basah</span><span><i class="z"></i>Arsir: zona antre / parkir</span></div>
     <details class="cara-rr"><summary>Cara menghitung dan angka yang dipakai</summary><div id="rrCara"></div></details>
   </div></section>
-  <div class="judul-bagian bagian"><span class="gb"><svg class="ik"><use href="#i-lokasi"/></svg></span><div><h2>Rincian per kilometer</h2>
-    <p>Berapa jam unit tertahan, seberapa cepat DT jalan, dan kapan kejadiannya.</p></div></div>
+  </div>
+</section>
+<section class="lyr kondisi" id="lyr-hujan" hidden aria-labelledby="lyrJ-hujan">
+  <div class="lyr-atas"><button type="button" class="kembali" data-tutup><svg class="ik"><use href="#i-kiri"/></svg><span>Kembali</span></button>
+    <h2 id="lyrJ-hujan"><span class="lyr-gb" style="--w:#2A78D6"><svg class="ik" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.4 1.5A3.3 3.3 0 0 0 7 14z"/><path d="M8 17l-1 3M12 17l-1 3M16 17l-1 3"/></svg></span>Hujan per KM</h2></div>
+  <div class="lyr-badan">
+<div class="cuaca" id="cuaca">
+  <p class="cuaca-waktu" id="cuacaWaktu">memuat cuaca...</p>
+  <section class="cuaca-banner" id="cuacaBanner"><div><b>Memuat cuaca...</b></div></section>
+  <div class="cuaca-pita-kotak">
+    <div class="cuaca-ujung"><span>BSR · KM 29</span><span>107 · KM 0</span></div>
+    <div class="gulir"><div class="cuaca-pita" id="cuacaPita"></div></div>
+    <div class="leg-cuaca"><span><i style="background:#F2B705"></i>Cerah</span><span><i style="background:#B8BFB7"></i>Berawan</span><span><i style="background:#8EC5EE"></i>Gerimis / mendung</span><span><i style="background:#2A78D6"></i>Hujan</span><span><i style="background:#1B2F8F"></i>Hujan lebat</span></div>
+  </div>
+  <h3 class="cuaca-sub">6 jam ke depan: peluang hujan per zona</h3>
+  <div class="cuaca-zona" id="cuacaZona"></div>
+  <div class="cuaca-bawah">
+    <div class="kg"><h3>Laporan hujan dari lapangan (2 jam terakhir)</h3>
+      <div id="cuacaLapor"><p class="kecil">memuat...</p></div>
+      <a class="kirim tombol-lapor" id="btnLaporHujan" target="_blank" rel="noopener" href="#">Lapor hujan di KM saya</a>
+      <p class="kecil">Laporan sopir dan pengawas paling akurat. Kalau ada laporan, warna KM itu (dan 1 KM di kiri-kanannya) ikut laporan.</p></div>
+    <div class="kg"><h3>Dari mana datanya?</h3>
+      <ol class="sumber">
+        <li><b>Laporan lapangan</b>: paling tepat per KM, berlaku 2 jam.</li>
+        <li><b>Foto awan satelit Himawari</b> (NASA/JMA): diperbarui tiap 10 menit, telat sekitar 40 menit, ketelitian sekitar 2 km. Awan berwarna di satelit = awan hujan.</li>
+        <li><b>Model cuaca Open-Meteo</b>: untuk ramalan 6 jam ke depan, ketelitian sekitar 10 km, jadi KM yang berdekatan biasanya sama.</li>
+      </ol>
+      <p class="kecil">Radar hujan gratis (RainViewer) tidak menjangkau ALR. Supaya benar-benar tepat per KM, paling bagus pasang 3 sampai 5 alat penakar hujan kecil di sepanjang jalan.</p></div>
+  </div>
+</div>
+  </div>
+</section>
+<section class="lyr kondisi" id="lyr-grafik" hidden aria-labelledby="lyrJ-grafik" data-filter="1">
+  <div class="lyr-atas"><button type="button" class="kembali" data-tutup><svg class="ik"><use href="#i-kiri"/></svg><span>Kembali</span></button>
+    <h2 id="lyrJ-grafik"><span class="lyr-gb" style="--w:#2a78d6"><svg class="ik"><use href="#i-grafik"/></svg></span>Nilai &amp; grafik</h2></div>
+  <div class="lyr-badan"><div class="lyr-filter"></div>
+  <section class="hero s-KOSONG" id="status"><div><h2>Memuat data...</h2></div></section>
+  <div class="tiles" id="tiles"></div>
+
+  <div class="judul-bagian bagian"><span class="gb"><svg class="ik"><use href="#i-grafik"/></svg></span><div><h2>Nilai jalan dari hari ke hari</h2>
+    <p>Satu angka 0 sampai 100 per hari dari kerja DT. Grafik lain bisa dibuka di bawahnya kalau perlu.</p></div></div>
+  <div class="grid">
+    <div class="kg lebar"><h3><svg class="ik"><use href="#i-grafik"/></svg>Nilai jalan</h3>
+      <div class="ket">Hijau kondisi baik, kuning perlu perhatian, merah perlu perbaikan, abu-abu tidak ada data</div>
+      <div class="kanvas"><canvas id="cNilai"></canvas></div><div class="kosong-info" id="infoKosong" hidden></div></div>
+  </div>
+  <details class="lebih"><summary><svg class="ik"><use href="#i-lokasi"/></svg><span>Grafik per KM<small>Jam berhenti, kecepatan, dan tanggal kejadian per KM</small></span></summary>
   <div class="filter arahF"><div class="grup"><span class="lbl"><svg class="ik"><use href="#i-rit"/></svg>Arah</span>
     <button class="chip aktif" data-a="semua">Semua</button><button class="chip" data-a="muatan">Muatan BSR → 107</button><button class="chip" data-a="kosongan">Kosongan 107 → BSR</button></div></div>
   <div class="grid">
-    <div class="kg lebar"><h3><svg class="ik"><use href="#i-jam"/></svg>Jam unit tertahan per KM<span class="nArah"></span></h3>
+    <div class="kg lebar"><h3><svg class="ik"><use href="#i-jam"/></svg>Jam DT berhenti per KM<span class="nArah"></span></h3>
       <div class="ket">Mesin hidup berarti antre, macet, atau merayap. Mesin mati berarti parkir, menginap, atau menunggu jalan bisa dilewati. Zona antre BSR, parkir, dan area 107 tidak digambar.</div>
       <div class="kanvas" style="height:300px"><canvas id="cKmStop"></canvas></div></div>
     <div class="kg lebar"><h3><svg class="ik"><use href="#i-speed"/></svg>Kecepatan DT per KM (km/jam)<span class="nArah"></span></h3>
       <div class="ket">Rata-rata saat DT sedang jalan. Merah 13 km/jam ke bawah, kuning sampai 17, hijau lancar.</div>
       <div class="kanvas" style="height:260px"><canvas id="cKmSpeed"></canvas></div></div>
-    <div class="kg lebar"><h3><svg class="ik"><use href="#i-kalender"/></svg>Kapan & di KM mana unit tertahan<span class="nArah"></span></h3>
-      <div class="ket">Angka di kotak adalah jam unit tertahan. Kotak kosong berarti tidak ada unit tertahan atau belum ada data. Baris bertanda * adalah zona antre atau parkir.</div>
+    <div class="kg lebar"><h3><svg class="ik"><use href="#i-kalender"/></svg>Kapan & di KM mana DT berhenti<span class="nArah"></span></h3>
+      <div class="ket">Angka di kotak adalah jam DT berhenti. Kotak kosong berarti tidak ada DT berhenti atau belum ada data. Geser tabel ke kiri untuk tanggal berikutnya. Baris bertanda * adalah zona antre atau parkir.</div>
       <div class="tbl" id="heat"></div></div>
   </div>
-  <div class="judul-bagian bagian"><span class="gb"><svg class="ik"><use href="#i-truk"/></svg></span><div><h2>Kerja DT dari waktu ke waktu</h2>
-    <p>Nilai jalan, waktu tiap tahap rit, dan kecepatan DT per hari, minggu, atau bulan.</p></div></div>
+  </details>
+  <details class="lebih"><summary><svg class="ik"><use href="#i-truk"/></svg><span>Grafik kerja DT<small>Waktu 1 rit, rit telat, jumlah rit, kecepatan DT</small></span></summary>
   <div class="grid">
-    <div class="kg lebar"><h3><svg class="ik"><use href="#i-grafik"/></svg>Nilai jalan</h3>
-      <div class="ket">Hijau kondisi baik, kuning perlu perhatian, merah perlu perbaikan, abu-abu tidak ada data</div>
-      <div class="kanvas"><canvas id="cNilai"></canvas></div><div class="kosong-info" id="infoKosong" hidden></div></div>
     <div class="kg lebar"><h3><svg class="ik"><use href="#i-rit"/></svg>1 rit lengkap: berapa lama tiap tahap (jam)</h3>
       <div class="ket">Kosongan 107 → BSR, antre & muat di BSR, muatan BSR → 107, lalu bongkar di 107. Makin pendek batangnya makin bagus</div>
       <div class="kanvas" style="height:270px"><canvas id="cSiklus"></canvas></div><div class="kosong-info" id="infoSiklus" hidden></div></div>
@@ -195,7 +245,8 @@
       <div class="kanvas"><canvas id="cSpeed"></canvas></div></div>
   </div>
 
-  <details><summary>Lihat angka detail per periode</summary><div class="tbl"><table id="tabel"></table></div></details>
+  </details>
+  <details class="lebih"><summary><svg class="ik"><use href="#i-daftar"/></svg><span>Tabel angka<small>Semua angka per periode</small></span></summary><div class="tbl"><table id="tabel"></table></div></details>
 
   <section class="cara"><h3><svg class="ik"><use href="#i-info"/></svg>Cara membaca nilai jalan</h3>
     <div class="lampu3">
@@ -204,6 +255,18 @@
       <div style="background:var(--merah-muda)"><i style="background:var(--merah)"></i><div><b>Perlu perbaikan</b>Nilai di bawah 50</div></div>
     </div>
     <p class="catatan" id="catatan"></p></section>
+  </div>
+</section>
+<div id="filterSimpan" hidden>
+  <div class="filter">
+    <div class="grup"><span class="lbl"><svg class="ik"><use href="#i-kalender"/></svg>Rentang</span>
+      <button class="chip" data-p="7">7 hari</button><button class="chip" data-p="30">30 hari</button>
+      <button class="chip" data-p="90">3 bulan</button><button class="chip" data-p="semua">Semua</button></div>
+    <div class="grup"><span class="lbl">Dari</span><input type="date" id="dari"><span class="lbl">sampai</span><input type="date" id="sampai"></div>
+    <div class="grup"><span class="lbl"><svg class="ik"><use href="#i-grafik"/></svg>Lihat per</span>
+      <button class="chip aktif" data-m="hari">Hari</button><button class="chip" data-m="minggu">Minggu</button><button class="chip" data-m="bulan">Bulan</button></div>
+  </div>
+
 </div>
 
 
@@ -216,5 +279,6 @@
 <script src="rr.js?v=202611240419"></script>
 <script src="grafik.js?v=202611240419"></script>
 <script src="cuaca.js?v=202611240419"></script>
+<script src="aplikasi.js?v=202611240419"></script>
 </body>
 </html>
