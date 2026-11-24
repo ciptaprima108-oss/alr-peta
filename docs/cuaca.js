@@ -189,16 +189,16 @@
 
     $("cuacaWaktu").textContent = `Diperbarui ${jam(sekarang)} WIB` + (satelit ? ` · foto satelit jam ${jam(satelit.waktu)} WIB` : " · satelit belum termuat");
 
-    // peta: cahaya biru di bawah garis jalan, satu warna per section
+    // peta: satu tanda kecil per section (di KM tengah section), hanya kalau gerimis / hujan, supaya jalan tetap kelihatan
     if (lapisKm) {
       lapisKm.clearLayers();
       sek.forEach((z) => {
         if (z.tingkat < 2) return;
-        const T = TINGKAT[z.tingkat];
-        titik.filter((t) => t.km >= z.a && t.km <= z.b).forEach((t) => {
-          L.circleMarker([t.lat, t.lon], { pane: "cuaca", radius: z.tingkat >= 4 ? 18 : z.tingkat === 3 ? 15 : 12, stroke: false, fillColor: T.warna, fillOpacity: z.tingkat >= 3 ? 0.75 : 0.6 })
-            .bindTooltip(`${z.nama}: ${T.nama}`, { direction: "top" }).addTo(lapisKm);
-        });
+        const T = TINGKAT[z.tingkat], t = titik.find((x) => x.km === Math.round((z.a + z.b) / 2));
+        if (!t) return;
+        L.marker([t.lat, t.lon], { pane: "cuaca", interactive: true, icon: L.divIcon({ className: "", iconSize: [34, 34], iconAnchor: [17, 40],
+          html: `<div style="width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:${T.warna};color:${T.tinta};border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4);font-size:20px">${ikon(z.tingkat)}</div>` }) })
+          .bindTooltip(`${z.nama}: ${T.nama}`, { direction: "top", offset: [0, -40] }).addTo(lapisKm);
       });
     }
     if (lapisAwan && satelit) lapisAwan.setUrl(urlSat(satelit.iso, "{z}", "{x}", "{y}"));
@@ -207,7 +207,7 @@
   function siapkanPeta() {
     const P = window.ALR_PETA;
     if (!P) return;
-    P.map.createPane("cuaca").style.zIndex = 390;   // di bawah garis jalan (overlayPane = 400)
+    P.map.createPane("cuaca").style.zIndex = 610;   // tanda kecil di atas garis jalan
     lapisKm = L.layerGroup().addTo(P.map);
     lapisAwan = L.tileLayer(urlSat("default", "{z}", "{x}", "{y}"), { maxNativeZoom: 6, maxZoom: 19, opacity: 0.5, attribution: "Awan: NASA GIBS / JMA Himawari" });
     P.kontrolLapis.addOverlay(lapisKm, "Hujan per section");
