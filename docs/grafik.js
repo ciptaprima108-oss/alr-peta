@@ -189,7 +189,7 @@
         <b>${x.jam} jam</b> unit tertahan, ${x.hidup} jam di antaranya mesin hidup.${x.m != null ? `<br>Arah muatan ${x.m} jam, arah kosongan ${x.ks} jam.` : ""}<br>Kecepatan ${x.sp != null ? Math.round(x.sp) + " km/jam" : "belum ada data"}, ${x.unit} unit lewat.</div>`).join("")}</div>`
       : `<p style="color:#C3C9C3;font-size:17px">Tidak ada KM bermasalah di rentang tanggal ini.</p>`;
     const zt = Object.entries(zonaJam).filter(([, v]) => v);
-    if (zt.length) $("topKm").innerHTML += `<div class="kosong-info">Tidak dihitung karena bukan masalah jalan: ${zt.map(([z, v]) => `${z.toLowerCase()} ${v} jam`).join(", ")}.</div>`;
+    if (zt.length) $("topKm").innerHTML += `<div class="kosong-info">Tidak dihitung karena bukan masalah jalan: ${zt.map(([z, v]) => `${z} ${v} jam`).join(", ")}.</div>`;
 
     // tabel warna KM x periode
     const P = periode(dari, sampai);
@@ -214,7 +214,7 @@
     // tiga warna tegas: hijau sedikit tertahan, kuning sedang, merah lama
     const kelas = (k, j) => k.zona ? "z" : j >= maks * 0.6 ? "m" : j >= maks * 0.25 ? "k" : "h";
     const WK = { h: "#3FA34D", k: "#F2B705", m: "#E5341F" }, TK = { h: "#fff", k: "#23282A", m: "#fff" };
-    const judul = (k, l, j) => `${k.label}, jalur ${l.nama}${k.zona ? ", " + k.zona.toLowerCase() + " (tidak dihitung)" : ": " + j + " jam unit tertahan"}`;
+    const judul = (k, l, j) => `${k.label}, jalur ${l.nama}${k.zona ? ", " + k.zona + " (tidak dihitung)" : ": " + j + " jam unit tertahan"}`;
     // --- laptop: pita mendatar dua lajur ---
     const n = urut.length, x0 = 50, x1 = 950, w = (x1 - x0) / n, hgt = 34, yA = 58, yB = yA + hgt + 6;
     let g = `<defs><pattern id="arsir" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#454B4D"/><line x1="0" y1="0" x2="0" y2="7" stroke="#7A8183" stroke-width="2.5"/></pattern>
