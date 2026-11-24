@@ -1,0 +1,34 @@
+/* Tema bersama aplikasi ALR: rambu jalan hauling. Huruf besar & kontras tinggi supaya enak dibaca semua umur */
+:root {
+  --debu: #EEF0EC; --kertas: #FFFFFF; --aspal: #23282A; --aspal2: #353B3D; --tinta: #15191A; --pudar: #4E5652; --garis: #D9DDD6;
+  --kuning: #F2B705; --kuning-muda: #FFF4CC; --merah: #C8321F; --merah-muda: #FBE3DE; --amber: #C77700; --amber-muda: #FDEBCF;
+  --hijau: #2E7D32; --hijau-muda: #E1F1E1; --biru: #2a78d6; --biru-muda: #E2EEFB;
+  --judul: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif; --isi: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --bayang: 0 1px 2px rgba(20,25,26,.06), 0 4px 14px rgba(20,25,26,.06);
+}
+.ik { width: 1em; height: 1em; flex-shrink: 0; vertical-align: -0.15em; }
+
+.appbar { background: var(--aspal); color: #fff; border-bottom: 5px solid var(--kuning); position: relative; z-index: 1000; }
+.appbar-isi { max-width: 1240px; margin: 0 auto; height: 68px; padding: 0 16px; display: flex; align-items: center; gap: 18px; }
+.merek { display: flex; align-items: center; gap: 11px; color: #fff; text-decoration: none; min-width: 0; }
+.merek .logo { width: 44px; height: 44px; border-radius: 10px; background: var(--kuning); color: var(--aspal); display: grid; place-items: center; font-size: 28px; flex-shrink: 0; }
+.merek b { display: block; font: 700 25px/1 var(--judul); letter-spacing: .3px; }
+.merek small { display: block; font-size: 14px; color: #C9CEC9; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tab { display: flex; gap: 4px; margin-left: 8px; }
+.tab a { display: flex; align-items: center; gap: 8px; color: #D8DCD8; text-decoration: none; font: 600 17px var(--isi); padding: 10px 16px; border-radius: 8px; }
+.tab a .ik { font-size: 22px; }
+.tab a:hover { background: var(--aspal2); color: #fff; }
+.tab a.aktif { background: var(--kuning); color: var(--aspal); }
+.appbar .kanan { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+
+@media (max-width: 760px) {
+  .appbar-isi { height: 60px; gap: 10px; padding: 0 12px; }
+  .merek .logo { width: 38px; height: 38px; font-size: 24px; }
+  .merek b { font-size: 22px; }
+  .merek small { font-size: 13px; }
+  /* menu bawah seperti aplikasi HP */
+  .tab { position: fixed; left: 0; right: 0; bottom: 0; margin: 0; z-index: 1200; background: var(--aspal); border-top: 4px solid var(--kuning); padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); gap: 6px; }
+  .tab a { flex: 1; flex-direction: column; gap: 2px; font-size: 14px; padding: 6px 4px; justify-content: center; }
+  .tab a .ik { font-size: 26px; }
+  body.ada-tab { padding-bottom: 78px; }
+}

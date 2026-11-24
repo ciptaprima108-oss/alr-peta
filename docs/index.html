@@ -7,36 +7,34 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="tema.css?v=202611240419">
 <link rel="stylesheet" href="style.css?v=202611240419">
 </head>
-<body>
-<header>
-  <div class="judul">
-    <b>Peta Jalan ALR</b>
-    <span id="info">memuat data...</span>
+<body class="ada-tab">
+<header class="appbar"><div class="appbar-isi">
+  <a class="merek" href="./"><span class="logo"><svg class="ik"><use href="#i-truk"/></svg></span><span><b>ALR Monitor</b><small id="info">memuat data...</small></span></a>
+  <nav class="tab" aria-label="Menu"><a href="./" class="aktif" aria-current="page"><svg class="ik"><use href="#i-peta"/></svg>Peta jalan</a><a href="grafik.html"><svg class="ik"><use href="#i-grafik"/></svg>Kondisi jalan</a></nav>
+  <div class="kanan tombol">
+    <button id="btnLokasi" title="Cari posisi saya di jalan ALR"><svg class="ik"><use href="#i-lokasi"/></svg><span class="teks-hp">Lokasi saya</span></button>
+    <button id="btnPengawas" title="Pengawas ALR / RM"><svg class="ik"><use href="#i-helm"/></svg><span class="teks-hp">Pengawas</span></button>
+    <button id="btnPanel" class="utama"><svg class="ik"><use href="#i-awas"/></svg><span class="teks-hp">Trigger</span> <span id="nTrig" class="badge">0</span></button>
   </div>
-  <nav class="tombol">
-    <button id="btnLokasi" title="Cari posisi saya di jalan ALR"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2" fill="currentColor"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/></svg><span class="teks-hp">Lokasi saya</span></button>
-    <a class="tbl" href="grafik.html" title="Kondisi jalan per hari, minggu, bulan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="teks-hp">Kondisi jalan</span></a>
-    <button id="btnPengawas" title="Pengawas ALR / RM"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span class="teks-hp">Pengawas</span></button>
-    <button id="btnPanel">Trigger <span id="nTrig" class="badge">0</span></button>
-  </nav>
-</header>
+</div></header>
 
 <main>
   <div id="map"></div>
   <aside id="panel">
     <section>
-      <h3><span class="tanda" style="background:var(--merah)"></span>Trigger jalan merah</h3>
+      <h3><span class="tgb" style="background:var(--merah-muda);color:var(--merah)"><svg class="ik"><use href="#i-awas"/></svg></span>Trigger jalan merah</h3>
       <p class="kecil">Muncul otomatis kalau beberapa unit melambat atau tertahan di segmen yang sama. Pengawas ALR/RM cek ke lokasi lalu upload foto/video di tiketnya.</p>
       <div id="listTrig"><p class="kecil">Tidak ada trigger.</p></div>
     </section>
     <section>
-      <h3><span class="tanda" style="background:var(--hijau)"></span>Laporan lapangan</h3>
+      <h3><span class="tgb" style="background:var(--biru-muda);color:var(--biru)"><svg class="ik"><use href="#i-kamera"/></svg></span>Laporan lapangan</h3>
       <div id="listLap"><p class="kecil">Belum ada laporan.</p></div>
     </section>
     <section id="secPengawas">
-      <h3><span class="tanda" style="background:var(--kuning)"></span>Pengawas ALR / RM</h3>
+      <h3><span class="tgb" style="background:var(--kuning-muda);color:#8A6200"><svg class="ik"><use href="#i-helm"/></svg></span>Pengawas ALR / RM</h3>
       <p class="kecil">Yang terdaftar dapat notif tiap ada trigger merah. Pengawas perlu punya akun GitHub (daftar gratis di github.com/signup).</p>
       <div id="listPengawas"><p class="kecil">memuat...</p></div>
       <div id="adminPesan" class="kecil" aria-live="polite"></div>
@@ -56,14 +54,14 @@
       </form>
     </section>
     <section>
-      <h3>Ringkasan segmen</h3>
+      <h3><span class="tgb" style="background:var(--debu);color:var(--pudar)"><svg class="ik"><use href="#i-daftar"/></svg></span>Ringkasan segmen</h3>
       <div id="ringkas"></div>
     </section>
   </aside>
 </main>
 
 <div class="legend" id="legend" title="Ketuk untuk lihat semua warna">
-  <b>Warna jalan</b>
+  <b>Arti warna jalan</b>
   <div><i style="background:#E5341F"></i>Merah: melambat / tertahan</div>
   <div><i style="background:#F2B705"></i>Kuning: agak pelan</div>
   <div class="lengkap"><i style="background:#3FA34D"></i>Hijau: lancar</div>
@@ -71,6 +69,7 @@
   <div class="lengkap"><i style="background:#5E665F"></i>Abu gelap: belum ada data GPS</div>
 </div>
 
+<script src="ikon.js?v=202611240419"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="app.js?v=202611240419"></script>
 </body>

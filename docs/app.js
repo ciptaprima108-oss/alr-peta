@@ -84,7 +84,8 @@
       } else if (p.jenis === "pos") {
         L.marker([y, x], { icon: L.divIcon({ className: "", html: `<div class="pos-label leaflet-tooltip">${esc(p.nama)}</div>`, iconSize: null }) }).addTo(map);
       } else {
-        L.circleMarker([y, x], { radius: 9, color: "#2A2F2B", weight: 3, fillColor: "#F2B705", fillOpacity: 1 })
+        L.marker([y, x], { icon: L.divIcon({ className: "", iconSize: [30, 27], iconAnchor: [15, 14],
+          html: `<svg viewBox="0 0 38 34" width="30" height="27" style="filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))"><path d="M19 2 36 32H2z" fill="#F2B705" stroke="#23282A" stroke-width="2.5" stroke-linejoin="round"/><path d="M19 12v9M19 25v1" stroke="#23282A" stroke-width="3.5" stroke-linecap="round"/></svg>` }) })
           .bindPopup(`<b>Titik rawan</b><br>${esc(p.nama)}${p.catatan ? `<br><span class="kecil">${esc(p.catatan)}</span>` : ""}`).addTo(map);
       }
     }
@@ -124,6 +125,12 @@
       $("listTrig").innerHTML = `<p class="kecil">Tiket belum bisa dimuat (${esc(e.message)}). Daftar di bawah dari hasil hitung GPS.</p>` + kartuDariRingkasan();
     }
   }
+  const ik = (n) => `<svg class="ik"><use href="#i-${n}"/></svg>`;
+  // penanda peta berbentuk pin dengan ikon, warna sesuai jenis
+  const PIN_IKON = { awas: '<path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17v.5"/>', kamera: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>' };
+  const pin = (warna, nama, kedip = false) => L.divIcon({ className: "", iconSize: [40, 50], iconAnchor: [20, 48], popupAnchor: [0, -44],
+    html: `<div class="pin${kedip ? " kedip" : ""}"><svg viewBox="0 0 40 50" width="40" height="50"><path d="M20 48C20 48 37 30 37 18A17 17 0 0 0 3 18c0 12 17 30 17 30z" fill="${warna}" stroke="#fff" stroke-width="3"/>
+      <g transform="translate(9 7) scale(.92)" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${PIN_IKON[nama]}</g></svg></div>` });
   function statusTiket(i) {
     if (i.state === "closed") return `<span class="status selesai">SELESAI</span>`;
     return i._gambar.length ? `<span class="status ada">ADA FOTO</span>` : `<span class="status belum">BELUM DICEK</span>`;
@@ -132,10 +139,11 @@
     const lok = i._lok, ll = lok?.ll;
     const thumbs = i._gambar.slice(0, 4).map((u) => `<img src="${esc(u)}" loading="lazy" onerror="this.remove()">`).join("");
     return `<div class="kartu ${jenis} ${i.state === "closed" ? "tutup" : ""}" data-ll="${ll ? ll.join(",") : ""}">
+      <span class="kgb">${ik(jenis === "lap" ? "kamera" : "awas")}</span><div>
       <b>${esc(lok?.label || i.title)}</b>${statusTiket(i)}
       <div class="baris">Tiket #${i.number}, ${new Date(i.created_at).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" })}, ${i._gambar.length} lampiran</div>
       ${thumbs ? `<div class="thumbs">${thumbs}</div>` : ""}
-      <div class="baris"><a target="_blank" href="${i.html_url}">${jenis === "lap" ? "Buka laporan" : "Buka tiket / upload foto"}</a></div></div>`;
+      <div class="baris"><a target="_blank" href="${i.html_url}">${jenis === "lap" ? "Buka laporan" : "Buka tiket / upload foto"}</a></div></div></div>`;
   }
   function tampilTiket(trig, lap) {
     if (!trig.length && !lap.length) return;           // belum ada tiket: pakai bendera dari hasil hitung GPS
@@ -147,8 +155,7 @@
     for (const i of [...trig, ...lap]) {
       if (!i._lok?.ll) continue;
       const isTrig = trig.includes(i);
-      const ikon = L.divIcon({ className: "", iconSize: [30, 30], iconAnchor: [15, 30],
-        html: `<div style="font-size:26px;line-height:30px;filter:drop-shadow(0 1px 2px #000)">${isTrig ? (i._gambar.length ? "📸" : "🚩") : "📷"}</div>` });
+      const ikon = isTrig ? pin(i._gambar.length ? "#2E7D32" : "#C8321F", i._gambar.length ? "kamera" : "awas", !i._gambar.length && i.state === "open") : pin("#2a78d6", "kamera");
       L.marker(i._lok.ll, { icon: ikon, zIndexOffset: 1000 }).bindPopup(
         `<b>${esc(i.title)}</b><br>${statusTiket(i)}<br><span class="kecil">${i._gambar.length} lampiran</span>
          <div class="thumbs">${i._gambar.slice(0, 6).map((u) => `<a target="_blank" href="${esc(u)}"><img src="${esc(u)}" onerror="this.remove()"></a>`).join("")}</div>
@@ -158,13 +165,12 @@
     pasangKlikKartu();
   }
   function kartuDariRingkasan() {
-    return (ringkasan?.trigger || []).map((t) => `<div class="kartu" data-ll="${t.lat},${t.lon}"><b>STA ${fmtSta(t.sta_awal)} - ${fmtSta(t.sta_akhir)}</b>
-      <div class="baris">${esc(t.alasan)}</div><div class="baris">Unit: ${esc(t.unit.join(", "))}</div></div>`).join("");
+    return (ringkasan?.trigger || []).map((t) => `<div class="kartu" data-ll="${t.lat},${t.lon}"><span class="kgb">${ik("awas")}</span><div><b>STA ${fmtSta(t.sta_awal)} - ${fmtSta(t.sta_akhir)}</b>
+      <div class="baris">${esc(t.alasan)}</div><div class="baris">${ik("truk")} ${esc(t.unit.join(", "))}</div></div></div>`).join("");
   }
   function benderaRingkasan() {
     for (const t of ringkasan?.trigger || [])
-      L.marker([t.lat, t.lon], { zIndexOffset: 1000, icon: L.divIcon({ className: "", iconSize: [30, 30], iconAnchor: [6, 30],
-        html: `<div class="kedip" style="font-size:26px;line-height:30px">🚩</div>` }) })
+      L.marker([t.lat, t.lon], { zIndexOffset: 1000, icon: pin("#C8321F", "awas", true) })
         .bindPopup(`<b>STA ${fmtSta(t.sta_awal)} - ${fmtSta(t.sta_akhir)}</b><br>${esc(t.alasan)}<br><span class="kecil">Unit: ${esc(t.unit.join(", "))}</span>
           <div class="aksi"><a class="btn merah" target="_blank" href="${linkLapor(fmtSta(t.sta_awal), t.lat, t.lon)}">Lapor + foto</a>
           <a class="btn abu" target="_blank" href="${linkNav(t.lat, t.lon)}">Navigasi</a></div>`).addTo(lapisTiket);
@@ -294,7 +300,7 @@
     map.fitBounds(L.geoJSON(seg).getBounds(), { padding: [20, 20] });   // set view dulu baru gambar
     gambarSegmen(); gambarTitik(titik);
     const j = ring.jumlah_segmen || {}, tgl = (s) => new Date(s.replace(" ", "T")).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" });
-    $("info").textContent = `Data GPS ${tgl(ring.data_dari)} s/d ${tgl(ring.data_sampai)} · ${ring.n_unit} unit`;
+    $("info").textContent = `Data GPS sampai ${tgl(ring.data_sampai)}, ${ring.n_unit} unit`;
     $("ringkas").innerHTML = `<p class="kecil">Segmen ${seg.features.length ? Math.round((seg.features[0].properties.sta_akhir - seg.features[0].properties.sta_awal) * 1000) : 200} m.
       Merah ${j.merah || 0}, kuning ${j.kuning || 0}, hijau ${j.hijau || 0}, abu ${j.abu || 0}, belum ada data ${j.kosong || 0}.<br>Dihitung ${esc(ring.dibuat)}.</p>`;
     $("listTrig").innerHTML = kartuDariRingkasan() || `<p class="kecil">Tidak ada trigger.</p>`;

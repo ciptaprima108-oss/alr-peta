@@ -7,7 +7,7 @@
   let KM = null,
   HARI = new Map(), KL = {}, TELAT = 195, mode = "hari", grafik = {}, awalData, akhirData;
 
-  if (window.Chart) { Chart.defaults.font.family = "Barlow, system-ui, sans-serif"; Chart.defaults.font.size = 12.5; Chart.defaults.color = "#5E665F"; }
+  if (window.Chart) { Chart.defaults.font.family = "Barlow, system-ui, sans-serif"; Chart.defaults.font.size = 14; Chart.defaults.color = "#3E4541"; }
   // ---------- util ----------
   const tgl = (s) => new Date(s + "T00:00:00");
   const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -185,9 +185,9 @@
     const skor = daftar.filter((k) => !k.zona).map((k) => { const t = totSemua[k.km]; return { k, jam: t[1] + t[2], hidup: t[1], sp: t[4] ? t[3] / t[4] : null, unit: t[5].size,
         m: totM ? totM[k.km][1] + totM[k.km][2] : null, ks: totK ? totK[k.km][1] + totK[k.km][2] : null }; })
       .filter((x) => x.jam > 0 || (x.sp != null && x.sp <= 13)).sort((a, b) => b.jam - a.jam).slice(0, 5);
-    $("topKm").innerHTML = skor.length ? `<div class="top">${skor.map((x, i) => `<div class="it"><b class="km">${x.k.label}</b>
+    $("topKm").innerHTML = skor.length ? `<div class="top">${skor.map((x, i) => `<div class="it"><div class="rambu"><svg viewBox="0 0 38 34" aria-hidden="true"><path d="M19 2 36 32H2z" fill="#F2B705" stroke="#23282A" stroke-width="2.5" stroke-linejoin="round"/><path d="M19 12v9M19 25v1" stroke="#23282A" stroke-width="3.5" stroke-linecap="round"/></svg><b class="km">${x.k.label}</b></div>
         <b>${x.jam} jam</b> unit tertahan, ${x.hidup} jam di antaranya mesin hidup.${x.m != null ? `<br>Arah muatan ${x.m} jam, arah kosongan ${x.ks} jam.` : ""}<br>Kecepatan ${x.sp != null ? Math.round(x.sp) + " km/jam" : "belum ada data"}, ${x.unit} unit lewat.</div>`).join("")}</div>`
-      : `<p style="color:#B8BFB7">Tidak ada KM bermasalah di rentang tanggal ini.</p>`;
+      : `<p style="color:#C3C9C3;font-size:17px">Tidak ada KM bermasalah di rentang tanggal ini.</p>`;
     const zt = Object.entries(zonaJam).filter(([, v]) => v);
     if (zt.length) $("topKm").innerHTML += `<div class="kosong-info">Tidak dihitung karena bukan masalah jalan: ${zt.map(([z, v]) => `${z.toLowerCase()} ${v} jam`).join(", ")}.</div>`;
 
@@ -237,42 +237,80 @@
     $("strip").innerHTML = g;
   }
 
+  const ik = (n) => `<svg class="ik"><use href="#i-${n}"/></svg>`;
   function banding(a, b, satuan, naikBaik, f = (x) => s1(x)) {
     if (a == null || b == null) return `<span class="netral">belum ada pembanding</span>`;
     const d = a - b; if (Math.abs(d) < 0.05 * Math.max(1, Math.abs(b))) return `<span class="netral">sama seperti sebelumnya</span>`;
     const baik = naikBaik ? d > 0 : d < 0;
-    return `<span class="${baik ? "baik" : "buruk"}">${d > 0 ? "▲ naik" : "▼ turun"} ${f(Math.abs(d))}${satuan}</span> <span class="netral">(${baik ? "lebih baik" : "lebih buruk"})</span>`;
+    return `<span class="${baik ? "baik" : "buruk"}">${ik(d > 0 ? "naik" : "turun")}${d > 0 ? "naik" : "turun"} ${f(Math.abs(d))}${satuan}</span> <span class="netral">(${baik ? "lebih baik" : "lebih buruk"})</span>`;
+  }
+
+  // meter setengah lingkaran 0-100
+  function meter(nilai, warna) {
+    const r = 80, cx = 100, cy = 96, sudut = Math.PI * (1 - Math.max(0, Math.min(100, nilai)) / 100);
+    const x = cx + r * Math.cos(sudut), y = cy - r * Math.sin(sudut);
+    return `<svg viewBox="0 0 200 118" role="img" aria-label="Nilai ${nilai} dari 100">
+      <path d="M20 96 A80 80 0 0 1 180 96" fill="none" stroke="#E4E7E2" stroke-width="18" stroke-linecap="round"/>
+      <path d="M20 96 A80 80 0 0 1 ${x.toFixed(1)} ${y.toFixed(1)}" fill="none" stroke="${warna}" stroke-width="18" stroke-linecap="round"/>
+      <text x="100" y="92" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="50" fill="#15191A">${nilai}</text>
+      <text x="100" y="113" text-anchor="middle" font-family="Barlow, sans-serif" font-size="13" fill="#4E5652">dari 100</text></svg>`;
+  }
+  // gambar: dump truck di jalan hauling dengan lampu rambu sesuai kondisi
+  function adegan(kode) {
+    const nyala = { LAYAK: 2, KURANG: 1, TIDAK: 0 }[kode] ?? -1, w = ["#E5341F", "#F2B705", "#3FA34D"];
+    const lampu = w.map((c, i) => `<circle cx="318" cy="${46 + i * 30}" r="11" fill="${i === nyala ? c : "#4A5052"}"/>${i === nyala ? `<circle cx="318" cy="${46 + i * 30}" r="17" fill="${c}" opacity=".25"/>` : ""}`).join("");
+    return `<svg viewBox="0 0 360 190" role="img" aria-label="Gambar dump truck di jalan ALR">
+      <rect width="360" height="190" rx="14" fill="#E9F0F4"/>
+      <path d="M0 120 L70 70 L120 96 L190 52 L260 100 L360 64 V190 H0z" fill="#C9D8C2"/>
+      <path d="M0 132 L90 104 L170 118 L250 98 L360 112 V190 H0z" fill="#A9BF9F"/>
+      <path d="M0 150 H360 V190 H0z" fill="#8C6A48"/>
+      <path d="M0 146 H360 V178 H0z" fill="#3A3F41"/>
+      <path d="M8 162 H352" stroke="#F2B705" stroke-width="3" stroke-dasharray="18 14"/>
+      <g transform="translate(36 76)">
+        <path d="M4 8 L118 0 L124 52 L10 56z" fill="#F2B705" stroke="#23282A" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M30 8 L46 54 M70 4 L84 52" stroke="#C99600" stroke-width="3"/>
+        <path d="M126 22 H164 L184 44 V70 H126z" fill="#F2B705" stroke="#23282A" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M136 28 H160 L174 44 H136z" fill="#9FD0F0" stroke="#23282A" stroke-width="2.5" stroke-linejoin="round"/>
+        <rect x="0" y="56" width="186" height="14" rx="3" fill="#23282A"/>
+        ${[26, 62, 156].map((x) => `<circle cx="${x}" cy="74" r="15" fill="#23282A"/><circle cx="${x}" cy="74" r="6" fill="#9AA0A2"/>`).join("")}
+      </g>
+      <rect x="314" y="96" width="8" height="54" fill="#23282A"/>
+      <rect x="300" y="28" width="36" height="96" rx="8" fill="#23282A"/>${lampu}</svg>`;
   }
 
   function status(r, prev, dari, sampai, panjang) {
     const el = $("status"), rentangTeks = `${fmtPanjang(dari)} - ${fmtPanjang(sampai)}`;
     if (!r) {
-      el.className = "status s-KOSONG";
-      el.innerHTML = `<div class="ikon">📭</div><div><h2>Belum ada data</h2><p>Tidak ada data DT untuk ${rentangTeks}. Pilih rentang lain.</p></div>`;
+      el.className = "hero s-KOSONG";
+      el.innerHTML = `<div><span class="rentang">${ik("kalender")}${rentangTeks}</span><h2>Belum ada data</h2><p>Tidak ada data DT untuk tanggal ini. Pilih rentang lain.</p></div>`;
       $("tiles").innerHTML = ""; return;
     }
     const kal = [];
     if (r.waktu != null) kal.push(`Rata-rata 1 rit BSR ke 107 butuh <b>${jamMenit(r.waktu)}</b> (target ${jamMenit(KL.durasi_bagus_menit ?? 120)}).`);
-    if (r.pctTelat != null) kal.push(`Dari 10 rit, sekitar <b>${Math.round(r.pctTelat / 10)} rit telat</b> (lebih dari ${jamMenit(TELAT)}).`);
+    if (r.pctTelat != null) kal.push(`Dari 10 rit, sekitar <b>${Math.round(r.pctTelat / 10)} rit telat</b>.`);
     if (r.speed != null) kal.push(`DT jalan rata-rata <b>${Math.round(r.speed)} km/jam</b>.`);
     let arah = "";
-    if (prev && prev.nilai != null) arah = r.nilai > prev.nilai + 2 ? `Lebih baik dari ${panjang} hari sebelumnya (nilai ${prev.nilai}).` : r.nilai < prev.nilai - 2 ? `Lebih buruk dari ${panjang} hari sebelumnya (nilai ${prev.nilai}).` : `Sama seperti ${panjang} hari sebelumnya.`;
-    el.className = `status s-${r.kode}`;
-    el.innerHTML = `<div class="ikon">${IKON[r.kode]}</div><div><h2>${JUDUL[r.kode]}</h2>
-      <div class="nilai">Nilai ${r.nilai} dari 100, ${rentangTeks}${r.hariData < panjang ? `, data ada ${r.hariData} dari ${panjang} hari` : ""}</div>
-      <p>${kal.join(" ")} ${arah}</p></div>`;
-    const t = (k, v, b) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="b">${b}</div></div>`;
+    if (prev && prev.nilai != null) arah = r.nilai > prev.nilai + 2 ? `<span class="banding baik">${ik("naik")}Lebih baik dari ${panjang} hari sebelumnya (nilai ${prev.nilai})</span>`
+      : r.nilai < prev.nilai - 2 ? `<span class="banding buruk">${ik("turun")}Lebih buruk dari ${panjang} hari sebelumnya (nilai ${prev.nilai})</span>`
+      : `<span class="banding netral">Sama seperti ${panjang} hari sebelumnya</span>`;
+    el.className = `hero s-${r.kode}`;
+    el.innerHTML = `<div><span class="rentang">${ik("kalender")}${rentangTeks}${r.hariData < panjang ? `, data ada ${r.hariData} dari ${panjang} hari` : ""}</span>
+        <h2>${JUDUL[r.kode]}</h2><p>${kal.join(" ")}</p>${arah}</div>
+      <div class="meter">${meter(r.nilai, WARNA[r.kode])}<div class="k">Nilai jalan</div></div>
+      <div class="adegan">${adegan(r.kode)}</div>`;
+    const t = (gb, warna, k, v, b) => `<div class="tile"><div class="gb" style="background:${warna[1]};color:${warna[0]}">${ik(gb)}</div><div class="k">${k}</div><div class="v">${v}</div><div class="b">${b}</div></div>`;
+    const BIRU2 = ["#2a78d6", "#E2EEFB"], OR = ["#C2531F", "#FCE6DA"], HJ = ["#1B8A5E", "#DDF3EA"], KN = ["#9A6B00", "#FFF1C2"];
     $("tiles").innerHTML =
-      t("Jumlah rit muatan", r.rit ?? "-", banding(r.rit, prev?.rit, " rit", true, Math.round)) +
-      t("Waktu 1 rit muatan", jamMenit(r.waktu), banding(r.waktu, prev?.waktu, "", false, jamMenit)) +
-      t("Rit telat", r.pctTelat != null ? `${Math.round(r.pctTelat)}%` : "-", banding(r.pctTelat, prev?.pctTelat, "%", false, Math.round)) +
-      t("Kecepatan DT", r.speed != null ? `${Math.round(r.speed)} km/j` : "-", banding(r.speed, prev?.speed, " km/j", true, Math.round));
+      t("truk", BIRU2, "Jumlah rit muatan", r.rit ?? "-", banding(r.rit, prev?.rit, " rit", true, Math.round)) +
+      t("jam", HJ, "Waktu 1 rit muatan", jamMenit(r.waktu), banding(r.waktu, prev?.waktu, "", false, jamMenit)) +
+      t("telat", OR, "Rit telat", r.pctTelat != null ? `${Math.round(r.pctTelat)}%` : "-", banding(r.pctTelat, prev?.pctTelat, "%", false, Math.round)) +
+      t("speed", KN, "Kecepatan DT", r.speed != null ? `${Math.round(r.speed)} km/jam` : "-", banding(r.speed, prev?.speed, " km/jam", true, Math.round));
   }
 
   function tabel(P) {
     $("tabel").innerHTML = `<tr><th>${mode === "hari" ? "Tanggal" : mode === "minggu" ? "Minggu" : "Bulan"}</th><th>Kondisi</th><th>Nilai</th><th>Jumlah rit</th><th>Waktu 1 rit</th><th>Rit telat</th><th>Kecepatan DT</th></tr>` +
       [...P].reverse().map((p) => { const r = p.r;
-        return r ? `<tr><td>${p.judul}</td><td><span class="pill p-${r.kode}">${IKON[r.kode]} ${NAMA[r.kode]}</span></td><td>${r.nilai}</td><td>${r.rit ?? "-"}</td>
+        return r ? `<tr><td>${p.judul}</td><td><span class="pill p-${r.kode}">${NAMA[r.kode]}</span></td><td>${r.nilai}</td><td>${r.rit ?? "-"}</td>
           <td>${jamMenit(r.waktu)}</td><td>${r.pctTelat != null ? Math.round(r.pctTelat) + "%" : "-"}</td><td>${r.speed != null ? Math.round(r.speed) + " km/j" : "-"}</td></tr>`
           : `<tr><td>${p.judul}</td><td colspan="6" style="text-align:left;color:#94a3b8">tidak ada data</td></tr>`; }).join("");
   }
@@ -282,12 +320,12 @@
     KL = d.kelayakan || {}; TELAT = d.rit_lambat_menit || 195;
     document.querySelectorAll(".tTelat").forEach((e) => e.textContent = jamMenit(TELAT));
     d.hari.forEach((h) => HARI.set(h.tanggal, h));
-    if (!d.hari.length) { $("status").innerHTML = `<div class="ikon">📭</div><div><h2>Belum ada data</h2><p>Upload data rit atau GPS dulu.</p></div>`; return; }
+    if (!d.hari.length) { $("status").innerHTML = `<div><h2>Belum ada data</h2><p>Upload data rit atau GPS dulu.</p></div>`; return; }
     awalData = tgl(d.hari[0].tanggal); akhirData = tgl(d.hari[d.hari.length - 1].tanggal);
     $("dari").min = $("sampai").min = iso(awalData); $("dari").max = $("sampai").max = iso(akhirData);
-    $("catatan").innerHTML = `<b>Cara baca nilai:</b> tiap hari diberi nilai 0-100 dari kerja DT: makin cepat 1 rit, makin sedikit rit telat,
-      makin kencang DT jalan, dan makin jarang DT berhenti di jalan, nilainya makin tinggi. Nilai 75 ke atas = <b>kondisi baik</b>, 50-74 = <b>perlu perhatian</b>, di bawah 50 = <b>perlu perbaikan</b>.
+    $("catatan").innerHTML = `Tiap hari diberi nilai 0 sampai 100 dari kerja DT: makin cepat 1 rit, makin sedikit rit telat,
+      makin kencang DT jalan, dan makin jarang DT berhenti di jalan, nilainya makin tinggi.
       Data tersedia ${fmtPanjang(awalData)} - ${fmtPanjang(akhirData)}. Pilihan "7 hari / 30 hari / 3 bulan" dihitung mundur dari tanggal data terakhir.`;
     document.querySelector('[data-p="semua"]').click();
-  }).catch((e) => { $("status").innerHTML = `<div class="ikon">⚠️</div><div><h2>Gagal memuat data</h2><p>${e.message}</p></div>`; });
+  }).catch((e) => { $("status").innerHTML = `<div><h2>Gagal memuat data</h2><p>${e.message}. Coba muat ulang halaman.</p></div>`; });
 })();
