@@ -29,7 +29,8 @@ def angka(s):
 def dari_log_trip(d):
     """Satu rit ALR = kosongan 107->BSR, antre+muat di BSR, muatan BSR->107, bongkar di 107."""
     d = d.rename(columns={"No Lambung": "unit", "Durasi (menit)": "menit"})
-    d["tanggal"] = pd.to_datetime(d.Tanggal, dayfirst=True, errors="coerce").dt.normalize()
+    iso = d.Tanggal.astype(str).str.match(r"^\d{4}-").any()
+    d["tanggal"] = pd.to_datetime(d.Tanggal, dayfirst=not iso, errors="coerce").dt.normalize()
     d["menit"] = angka(d.menit); d["km"] = angka(d.KM)
     for c in ("Jam Keluar", "Jam Tiba"):
         d[c] = pd.to_datetime(d[c], errors="coerce", dayfirst=not d[c].astype(str).str.match(r"^\d{4}-").any())
@@ -60,7 +61,7 @@ def dari_log_trip(d):
 def baca_rit():
     harian = []
     for f in sorted(glob.glob(P("data", "rit", "*.csv"))):
-        d = pd.read_csv(f)
+        d = pd.read_csv(f, encoding="utf-8-sig")
         if "Rute" in d.columns:                      # LOG TRIP HAULING (Google Sheet data ban)
             g = dari_log_trip(d)
         elif {"berangkat", "tiba"} <= set(d.columns):
