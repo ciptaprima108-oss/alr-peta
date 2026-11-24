@@ -124,6 +124,7 @@
         i._lok = lokasiTiket(i._teks);
       }));
       tampilTiket(trig, lap);
+      window.dispatchEvent(new CustomEvent("alr:tiket", { detail: { trig, lap } }));
     } catch (e) {
       $("listTrig").innerHTML = `<p class="kecil">Tiket belum bisa dimuat (${esc(e.message)}). Daftar di bawah dari hasil hitung GPS.</p>` + kartuDariRingkasan();
     }
@@ -183,10 +184,13 @@
       if (e.target.closest("a")) return;
       const ll = k.dataset.ll; if (!ll) return;
       map.setView(ll.split(",").map(Number), 16);
-      if (innerWidth < 760) $("panel").classList.remove("buka");
     }));
   }
 
+  // dipakai layar aplikasi (aplikasi.js): geser peta ke STA tertentu
+  window.ALR_keSta = (sta, zoom = 15) => { const ll = posisiSta(sta); if (ll) map.setView(ll, zoom); return ll; };
+  window.ALR_linkLapor = linkLapor; window.ALR_linkNav = linkNav; window.ALR_posisiSta = (sta) => posisiSta(sta);
+  window.ALR_peta = map;
   // ---------- klik peta = lapor di titik itu ----------
   map.on("click", (e) => {
     const t = staTerdekat(e.latlng.lat, e.latlng.lng);
@@ -342,7 +346,6 @@
   $("tutupPengawas").onclick = tutupPengawas;
   layarP.addEventListener("click", (e) => { if (e.target === layarP) tutupPengawas(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !layarP.hidden) tutupPengawas(); });
-  $("btnPanel").onclick = () => $("panel").classList.toggle("buka");
   $("legend").onclick = () => $("legend").classList.toggle("buka");
 
   // ---------- muat data ----------
@@ -361,6 +364,7 @@
     $("listTrig").innerHTML = kartuDariRingkasan() || `<p class="kecil">Tidak ada trigger.</p>`;
     $("nTrig").textContent = (ring.trigger || []).length;
     benderaRingkasan();
+    window.dispatchEvent(new CustomEvent("alr:ringkasan", { detail: ring }));
     pasangKlikKartu();
     ambilTiket();
   }).catch((e) => { console.error(e.stack); $("info").textContent = "Gagal memuat data: " + e.message; });

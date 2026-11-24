@@ -194,6 +194,8 @@
         <b>${x.jam} jam</b> DT berhenti di KM ini, ${x.hidup} jam di antaranya mesin hidup.${x.m != null ? `<br>Arah muatan ${x.m} jam, arah kosongan ${x.ks} jam.` : ""}<br>Kecepatan ${x.sp != null ? Math.round(x.sp) + " km/jam" : "belum ada data"}, ${x.unit} unit lewat.<span class="rr-isi"></span></div>`).join("")}</div>`
       : `<p style="color:#C3C9C3;font-size:17px">Tidak ada KM bermasalah di rentang tanggal ini.</p>`;
     if (window.isiRR) window.isiRR();
+    window.ALR_KM_DATA = { km: KM.km, totM, totK, totSemua, dari, sampai };
+    window.dispatchEvent(new CustomEvent("alr:km", { detail: { top: skor.map((x) => x.k) } }));
     const zt = Object.entries(zonaJam).filter(([, v]) => v);
     if (zt.length) $("topKm").innerHTML += `<div class="kosong-info">Tidak dihitung karena bukan masalah jalan: ${zt.map(([z, v]) => `${z} ${v} jam`).join(", ")}.</div>`;
 
@@ -230,7 +232,7 @@
     const lajurY = dua ? [yA, yB] : [yA];
     L2.forEach((l, li) => urut.forEach((k, i) => {
       const x = x0 + i * w, j = jamOf(l.tot, k), c = kelas(k, j), y = lajurY[li], cx = x + w / 2;
-      g += `<rect x="${x + 1.5}" y="${y}" width="${w - 3}" height="${hgt}" rx="4" fill="${c === "z" ? "url(#arsir)" : WK[c]}"><title>${judul(k, l, j)}</title></rect>`;
+      g += `<rect class="kotak-km" data-km="${k.km}" data-lajur="${l.nama}" x="${x + 1.5}" y="${y}" width="${w - 3}" height="${hgt}" rx="4" fill="${c === "z" ? "url(#arsir)" : WK[c]}"><title>${judul(k, l, j)}</title></rect>`;
       if (c === "z") return;
       g += `<text x="${cx}" y="${y + 22}" text-anchor="middle" font-size="${j >= 100 ? 15 : 17}" font-weight="700" fill="${TK[c]}" pointer-events="none">${j}</text>`;
       g += `<text x="${cx}" y="${y + 35}" text-anchor="middle" font-size="10" fill="${TK[c]}" pointer-events="none">jam</text>`;
@@ -320,6 +322,8 @@
         <h2>${JUDUL[r.kode]}</h2><p>${kal.join(" ")}</p>${arah}</div>
       <div class="meter">${meter(r.nilai, WARNA[r.kode])}<div class="k">Nilai jalan</div></div>
       <div class="adegan">${adegan(r.kode)}</div>`;
+    window.ALR_STATUS = { kode: r.kode, judul: JUDUL[r.kode], nilai: r.nilai, rentang: rentangTeks, kalimat: kal.join(" ") };
+    window.dispatchEvent(new CustomEvent("alr:status", { detail: window.ALR_STATUS }));
     const t = (gb, warna, k, v, b) => `<div class="tile"><div class="gb" style="background:${warna[1]};color:${warna[0]}">${ik(gb)}</div><div class="k">${k}</div><div class="v">${v}</div><div class="b">${b}</div></div>`;
     const BIRU2 = ["#2a78d6", "#E2EEFB"], OR = ["#C2531F", "#FCE6DA"], HJ = ["#1B8A5E", "#DDF3EA"], KN = ["#9A6B00", "#FFF1C2"];
     $("tiles").innerHTML =

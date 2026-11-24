@@ -19,11 +19,14 @@
 <link rel="stylesheet" href="tema.css?v=202611240419">
 <link rel="stylesheet" href="style.css?v=202611240419">
 <link rel="stylesheet" href="kondisi.css?v=202611240419">
+<link rel="stylesheet" href="aplikasi.css?v=202611240419">
 </head>
 <body>
+<div id="splash" aria-hidden="true"><div class="sp-isi"><span class="sp-logo"><img src="ikon/logo_alr.png" alt=""></span><b>ALR</b><small>Jalan hauling BSR ke 107</small><i class="sp-bar"><i></i></i></div></div>
 <header class="appbar"><div class="appbar-isi">
   <a class="merek" href="./"><span class="logo logo-alr"><img src="ikon/logo_alr.png" alt="Logo ALR"></span><span><b>ALR</b><small id="info">memuat data...</small></span></a>
   <div class="kanan tombol">
+    <button id="btnSuara" class="ikon-saja" type="button"></button>
     <button id="btnLokasi" title="Cari posisi saya di jalan ALR"><svg class="ik"><use href="#i-lokasi"/></svg><span class="teks-hp">Lokasi saya</span></button>
     <button id="btnPengawas" title="Pengguna ALR"><svg class="ik"><use href="#i-orang"/></svg><span class="teks-hp">Pengguna</span></button>
     <button id="btnPanel" class="utama"><svg class="ik"><use href="#i-awas"/></svg><span class="teks-hp">Trigger</span> <span id="nTrig" class="badge">0</span></button>
@@ -32,21 +35,6 @@
 
 <main id="petaArea">
   <div id="map"></div>
-  <aside id="panel">
-    <section>
-      <h3><span class="tgb" style="background:var(--merah-muda);color:var(--merah)"><svg class="ik"><use href="#i-awas"/></svg></span>Trigger jalan merah</h3>
-      <p class="kecil">Muncul otomatis kalau beberapa unit melambat atau tertahan di segmen yang sama. Pengawas ALR/RM cek ke lokasi lalu upload foto/video di tiketnya.</p>
-      <div id="listTrig"><p class="kecil">Tidak ada trigger.</p></div>
-    </section>
-    <section>
-      <h3><span class="tgb" style="background:var(--biru-muda);color:var(--biru)"><svg class="ik"><use href="#i-kamera"/></svg></span>Laporan lapangan</h3>
-      <div id="listLap"><p class="kecil">Belum ada laporan.</p></div>
-    </section>
-    <section>
-      <h3><span class="tgb" style="background:var(--debu);color:var(--pudar)"><svg class="ik"><use href="#i-daftar"/></svg></span>Ringkasan segmen</h3>
-      <div id="ringkas"></div>
-    </section>
-  </aside>
   <div class="legend" id="legend" title="Ketuk untuk lihat semua warna">
   <b>Arti warna jalan</b>
   <div><i style="background:#E5341F"></i>Merah: melambat / tertahan</div>
@@ -97,21 +85,55 @@
   </div>
 </div>
 
-<div class="wrap kondisi" id="kondisi">
-  <div class="judul-bagian pembuka"><span class="gb"><svg class="ik"><use href="#i-grafik"/></svg></span><div><h2>Kondisi jalan ALR</h2>
-    <p>Dinilai dari kerja DT yang lewat. Pilih rentang tanggal di bawah.</p></div></div>
-  <div class="filter">
-    <div class="grup"><span class="lbl"><svg class="ik"><use href="#i-kalender"/></svg>Rentang</span>
-      <button class="chip" data-p="7">7 hari</button><button class="chip" data-p="30">30 hari</button>
-      <button class="chip" data-p="90">3 bulan</button><button class="chip" data-p="semua">Semua</button></div>
-    <div class="grup"><span class="lbl">Dari</span><input type="date" id="dari"><span class="lbl">sampai</span><input type="date" id="sampai"></div>
-    <div class="grup"><span class="lbl"><svg class="ik"><use href="#i-grafik"/></svg>Lihat per</span>
-      <button class="chip aktif" data-m="hari">Hari</button><button class="chip" data-m="minggu">Minggu</button><button class="chip" data-m="bulan">Bulan</button></div>
+<section id="beranda" class="beranda" aria-label="Menu ALR">
+  <div class="sapa" id="sapa">
+    <div class="sapa-atas"><span class="sapa-lampu" id="sapaLampu"></span><div><small id="sapaTgl">Memuat data jalan...</small><h2 id="sapaJudul">Kondisi jalan ALR</h2></div>
+      <div class="sapa-nilai" id="sapaNilai" hidden><b>-</b><span>nilai jalan</span></div></div>
+    <p id="sapaIsi"></p>
   </div>
-
-  <section class="hero s-KOSONG" id="status"><div><h2>Memuat data...</h2></div></section>
-  <div class="tiles" id="tiles"></div>
-
+  <div class="menu" id="menu">
+    <button type="button" class="ubin u-merah" data-buka="trigger"><span class="u-gb"><svg class="ik"><use href="#i-awas"/></svg><i class="u-badge" id="ubinTrig" hidden>0</i></span><b>Trigger jalan</b><small id="subTrig">Jalan merah yang perlu dicek</small></button>
+    <button type="button" class="ubin u-kuning" data-buka="km"><span class="u-gb"><svg class="ik"><use href="#i-jalan"/></svg></span><b>Jalan per KM</b><small id="subKm">Di KM mana DT berhenti lama</small></button>
+    <button type="button" class="ubin u-hijau" data-buka="rr"><span class="u-gb"><svg class="ik"><use href="#i-truk"/></svg></span><b>RR &amp; traksi</b><small id="subRr">Berat jalan dan rawan selip</small></button>
+    <button type="button" class="ubin u-biru" data-buka="grafik"><span class="u-gb"><svg class="ik"><use href="#i-grafik"/></svg></span><b>Nilai &amp; grafik</b><small id="subGrafik">Kerja DT per hari</small></button>
+    <button type="button" class="ubin u-biru2" data-buka="laporan"><span class="u-gb"><svg class="ik"><use href="#i-kamera"/></svg><i class="u-badge" id="ubinLap" hidden>0</i></span><b>Laporan lapangan</b><small id="subLap">Foto dan video dari pengawas</small></button>
+    <button type="button" class="ubin u-abu" data-buka="pengguna"><span class="u-gb"><svg class="ik"><use href="#i-orang"/></svg></span><b>Pengguna</b><small id="subPengguna">ID card per divisi</small></button>
+  </div>
+  <div class="notif-ajak" id="notifAjak" hidden>
+    <span class="u-gb"><svg class="ik"><use href="#i-lonceng"/></svg></span>
+    <div><b>Nyalakan notifikasi ALR</b><small id="notifAjakIsi">Dapat pemberitahuan kalau ada trigger atau laporan baru.</small></div>
+    <button type="button" id="btnNotif">Nyalakan</button>
+  </div>
+</section>
+<section class="lyr kondisi" id="lyr-trigger" hidden aria-labelledby="lyrJ-trigger">
+  <div class="lyr-atas"><button type="button" class="kembali" data-tutup><svg class="ik"><use href="#i-kiri"/></svg><span>Kembali</span></button>
+    <h2 id="lyrJ-trigger"><span class="lyr-gb" style="--w:#C8321F"><svg class="ik"><use href="#i-awas"/></svg></span>Trigger jalan</h2></div>
+  <div class="lyr-badan"><div class="lyr-filter"></div>
+    <section class="kartu-lyr">
+      <h3><span class="tgb" style="background:var(--merah-muda);color:var(--merah)"><svg class="ik"><use href="#i-awas"/></svg></span>Trigger jalan merah</h3>
+      <p class="kecil">Muncul otomatis kalau beberapa unit melambat atau tertahan di segmen yang sama. Pengawas ALR/RM cek ke lokasi lalu upload foto/video di tiketnya.</p>
+      <div id="listTrig"><p class="kecil">Tidak ada trigger.</p></div>
+    </section>
+    <section class="kartu-lyr">
+      <h3><span class="tgb" style="background:var(--debu);color:var(--pudar)"><svg class="ik"><use href="#i-daftar"/></svg></span>Ringkasan segmen</h3>
+      <div id="ringkas"></div>
+    </section>
+  </div>
+</section>
+<section class="lyr kondisi" id="lyr-laporan" hidden aria-labelledby="lyrJ-laporan">
+  <div class="lyr-atas"><button type="button" class="kembali" data-tutup><svg class="ik"><use href="#i-kiri"/></svg><span>Kembali</span></button>
+    <h2 id="lyrJ-laporan"><span class="lyr-gb" style="--w:#2a78d6"><svg class="ik"><use href="#i-kamera"/></svg></span>Laporan lapangan</h2></div>
+  <div class="lyr-badan"><div class="lyr-filter"></div>
+    <section class="kartu-lyr">
+      <h3><span class="tgb" style="background:var(--biru-muda);color:var(--biru)"><svg class="ik"><use href="#i-kamera"/></svg></span>Laporan lapangan</h3>
+      <div id="listLap"><p class="kecil">Belum ada laporan.</p></div>
+    </section>
+  </div>
+</section>
+<section class="lyr kondisi" id="lyr-km" hidden aria-labelledby="lyrJ-km" data-filter="1">
+  <div class="lyr-atas"><button type="button" class="kembali" data-tutup><svg class="ik"><use href="#i-kiri"/></svg><span>Kembali</span></button>
+    <h2 id="lyrJ-km"><span class="lyr-gb" style="--w:#F2B705"><svg class="ik"><use href="#i-jalan"/></svg></span>Jalan per KM</h2></div>
+  <div class="lyr-badan"><div class="lyr-filter"></div>
   <section class="jalur" aria-labelledby="jJudul"><div class="dalam">
     <div class="judul-bagian"><span class="gb"><svg class="ik"><use href="#i-jalan"/></svg></span><div><h2 id="jJudul">Di KM mana DT berhenti lama</h2>
     <p>Jalan ALR dari BSR (STA 29) sampai 107 (STA 0), per 1 KM, mengikuti tanggal yang dipilih. Jalur atas untuk DT bermuatan, jalur bawah untuk DT kosongan.</p></div></div>
@@ -125,6 +147,12 @@
     <h3 class="sub-jalur">3 KM dengan jam berhenti paling banyak</h3>
     <div id="topKm"></div>
   </div></section>
+  </div>
+</section>
+<section class="lyr kondisi" id="lyr-rr" hidden aria-labelledby="lyrJ-rr">
+  <div class="lyr-atas"><button type="button" class="kembali" data-tutup><svg class="ik"><use href="#i-kiri"/></svg><span>Kembali</span></button>
+    <h2 id="lyrJ-rr"><span class="lyr-gb" style="--w:#2E7D32"><svg class="ik"><use href="#i-truk"/></svg></span>RR &amp; traksi</h2></div>
+  <div class="lyr-badan"><div class="lyr-filter"></div>
   <section class="jalur rrsec" id="rr" aria-labelledby="rrJudul"><div class="dalam">
     <div class="judul-bagian"><span class="gb"><svg class="ik"><use href="#i-truk"/></svg></span><div><h2 id="rrJudul">Rolling resistance &amp; traksi per KM</h2>
     <p>Seberapa berat jalan dilawan ban DT, dan di KM mana DT bisa selip kalau jalan basah. Ini perkiraan dari kecepatan DT bermuatan dan tanjakan, bukan hasil ukur alat.</p></div></div>
@@ -134,6 +162,15 @@
     <div class="leg-strip"><span><i class="h"></i>RR ringan / traksi aman</span><span><i class="k"></i>RR sedang / waspada saat basah</span><span><i class="m"></i>RR berat / rawan selip saat basah</span><span><i class="z"></i>Arsir: zona antre / parkir</span></div>
     <details class="cara-rr"><summary>Cara menghitung dan angka yang dipakai</summary><div id="rrCara"></div></details>
   </div></section>
+  </div>
+</section>
+<section class="lyr kondisi" id="lyr-grafik" hidden aria-labelledby="lyrJ-grafik" data-filter="1">
+  <div class="lyr-atas"><button type="button" class="kembali" data-tutup><svg class="ik"><use href="#i-kiri"/></svg><span>Kembali</span></button>
+    <h2 id="lyrJ-grafik"><span class="lyr-gb" style="--w:#2a78d6"><svg class="ik"><use href="#i-grafik"/></svg></span>Nilai &amp; grafik</h2></div>
+  <div class="lyr-badan"><div class="lyr-filter"></div>
+  <section class="hero s-KOSONG" id="status"><div><h2>Memuat data...</h2></div></section>
+  <div class="tiles" id="tiles"></div>
+
   <div class="judul-bagian bagian"><span class="gb"><svg class="ik"><use href="#i-grafik"/></svg></span><div><h2>Nilai jalan dari hari ke hari</h2>
     <p>Satu angka 0 sampai 100 per hari dari kerja DT. Grafik lain bisa dibuka di bawahnya kalau perlu.</p></div></div>
   <div class="grid">
@@ -185,6 +222,18 @@
       <div style="background:var(--merah-muda)"><i style="background:var(--merah)"></i><div><b>Perlu perbaikan</b>Nilai di bawah 50</div></div>
     </div>
     <p class="catatan" id="catatan"></p></section>
+  </div>
+</section>
+<div id="filterSimpan" hidden>
+  <div class="filter">
+    <div class="grup"><span class="lbl"><svg class="ik"><use href="#i-kalender"/></svg>Rentang</span>
+      <button class="chip" data-p="7">7 hari</button><button class="chip" data-p="30">30 hari</button>
+      <button class="chip" data-p="90">3 bulan</button><button class="chip" data-p="semua">Semua</button></div>
+    <div class="grup"><span class="lbl">Dari</span><input type="date" id="dari"><span class="lbl">sampai</span><input type="date" id="sampai"></div>
+    <div class="grup"><span class="lbl"><svg class="ik"><use href="#i-grafik"/></svg>Lihat per</span>
+      <button class="chip aktif" data-m="hari">Hari</button><button class="chip" data-m="minggu">Minggu</button><button class="chip" data-m="bulan">Bulan</button></div>
+  </div>
+
 </div>
 
 
@@ -196,5 +245,6 @@
 <script src="app.js?v=202611240419"></script>
 <script src="rr.js?v=202611240419"></script>
 <script src="grafik.js?v=202611240419"></script>
+<script src="aplikasi.js?v=202611240419"></script>
 </body>
 </html>

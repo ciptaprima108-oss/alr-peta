@@ -77,6 +77,6 @@
 
   fetch("data/rr_traksi.json", { cache: "no-cache" }).then((r) => r.ok ? r.json() : null).then((d) => {
     if (!d) { const s = $("rr"); if (s) s.hidden = true; return; }
-    D = d; gambar();
+    D = d; window.ALR_RR = d; gambar(); window.dispatchEvent(new CustomEvent("alr:rr", { detail: d }));
   }).catch(() => { const s = $("rr"); if (s) s.hidden = true; });
 })();
