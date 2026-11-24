@@ -357,9 +357,9 @@
 
   // ---------- muat data ----------
   Promise.all([
-    fetch("data/segmen.geojson").then((r) => r.json()),
-    fetch("data/titik.geojson").then((r) => r.json()),
-    fetch("data/ringkasan.json").then((r) => r.json()),
+    fetch("data/segmen.geojson", { cache: "no-cache" }).then((r) => r.json()),
+    fetch("data/titik.geojson", { cache: "no-cache" }).then((r) => r.json()),
+    fetch("data/ringkasan.json", { cache: "no-cache" }).then((r) => r.json()),
   ]).then(([seg, titik, ring]) => {
     segmen = seg.features; ringkasan = ring;
     map.fitBounds(L.geoJSON(seg).getBounds(), { padding: [20, 20] });   // set view dulu baru gambar
@@ -386,4 +386,5 @@
   }
   cekVersi();
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") cekVersi(); });
+  setInterval(() => { if (document.visibilityState === "visible") cekVersi(); }, 5 * 60 * 1000);   // data GPS baru tiap 30 menit
 })();
