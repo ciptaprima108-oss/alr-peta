@@ -202,5 +202,15 @@
         "kelola"
       ]
     }
-  ]
+  ],
+  "tracksolid": {
+    "url": "https://hk-open.tracksolidpro.com/route/rest",
+    "zona_jam": 7,
+    "filter_nama": "",
+    "tarik_awal_jam": 24,
+    "simpan_rapat_hari": 3,
+    "simpan_hari": 60,
+    "margin_derajat": 0.02,
+    "jeda_detik": 0.3
+  }
 }

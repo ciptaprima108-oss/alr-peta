@@ -5,8 +5,8 @@ on:
     branches: [main]
     paths-ignore: ["docs/data/**"]
   workflow_dispatch:
-  # schedule:            # aktifkan kalau nanti data GPS ditarik otomatis
-  #   - cron: "0 * * * *"
+  schedule:              # tarik data TrackSolid tiap 30 menit (jam bisa telat 5-15 mnt, normal di GitHub)
+    - cron: "7,37 * * * *"
 
 permissions:
   contents: write
@@ -31,25 +31,61 @@ jobs:
           python-version: "3.12"
       - run: pip install pandas numpy openpyxl
 
+      # data GPS live disimpan di cache Actions (bukan di repo, supaya repo tidak bengkak)
+      - name: Ambil data GPS live sebelumnya
+        uses: actions/cache/restore@v4
+        with:
+          path: data/gps/live_tracksolid.csv
+          key: gps-live-${{ github.run_id }}
+          restore-keys: gps-live-
+
+      - name: Tarik data terbaru dari TrackSolid
+        id: tarik
+        if: github.event_name != 'push'
+        env:
+          TS_APP_KEY: ${{ secrets.TS_APP_KEY }}
+          TS_APP_SECRET: ${{ secrets.TS_APP_SECRET }}
+          TS_USER: ${{ secrets.TS_USER }}
+          TS_PASS: ${{ secrets.TS_PASS }}
+          TS_URL: ${{ secrets.TS_URL }}
+          TS_TARGET: ${{ secrets.TS_TARGET }}
+        run: python scripts/tarik_tracksolid.py
+
+      - name: Simpan data GPS live
+        if: steps.tarik.outputs.lanjut == 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: data/gps/live_tracksolid.csv
+          key: gps-live-${{ github.run_id }}
+
       - name: Hitung status jalan per segmen
+        if: steps.tarik.outputs.lanjut != 'false'
         run: python scripts/hitung_trigger.py
 
       - name: Hitung performa harian (grafik kelayakan)
+        if: steps.tarik.outputs.lanjut != 'false'
         run: cd scripts && python hitung_performa.py
 
       - name: Hitung perkiraan RR & traksi per KM
+        if: steps.tarik.outputs.lanjut != 'false'
         run: cd scripts && python hitung_rr_traksi.py
 
       - name: Simpan hasil ke repo
+        if: steps.tarik.outputs.lanjut != 'false'
         run: |
           git config user.name "alr-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/data data/elevasi_jalur.csv 2>/dev/null || git add docs/data
+          # run terjadwal: commit cuma sekali sehari (jam 00 WIB); peta tetap update tiap 30 mnt lewat Pages
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$(TZ=Asia/Jakarta date +%H)" != "00" ]; then
+            echo "Run terjadwal, tidak commit"; exit 0
+          fi
           git diff --cached --quiet || git commit -m "Update status jalan ALR [skip ci]"
           git pull --rebase -X theirs || true
           git push
 
       - name: Bikin tiket trigger + notif pengawas
+        if: steps.tarik.outputs.lanjut != 'false'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
@@ -57,16 +93,21 @@ jobs:
         run: python scripts/buat_tiket.py
 
       - name: Stempel versi (supaya browser ambil file terbaru)
+        if: steps.tarik.outputs.lanjut != 'false'
         run: |
           v=$(date +%Y%m%d%H%M)
           sed -i -E "s#([a-z_]+)\.(js|css)\?v=[0-9]+\"#\1.\2?v=$v\"#g" docs/*.html
           sed -i -E "s#<meta name=\"versi\" content=\"v[0-9]+\">#<meta name=\"versi\" content=\"v$v\">#" docs/index.html
           echo "v$v" > docs/versi.txt
       - uses: actions/configure-pages@v5
+        if: steps.tarik.outputs.lanjut != 'false'
       - uses: actions/upload-pages-artifact@v4
+        if: steps.tarik.outputs.lanjut != 'false'
         with:
           path: docs
       - name: Tunggu artifact terdaftar
+        if: steps.tarik.outputs.lanjut != 'false'
         run: sleep 20
       - id: deploy
+        if: steps.tarik.outputs.lanjut != 'false'
         uses: actions/deploy-pages@v4
