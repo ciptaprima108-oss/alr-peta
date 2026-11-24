@@ -221,7 +221,7 @@
           : `<tr><td>${p.judul}</td><td colspan="6" style="text-align:left;color:#94a3b8">tidak ada data</td></tr>`; }).join("");
   }
 
-  Promise.all([fetch("data/performa.json").then((r) => r.json()), fetch("data/per_km.json").then((r) => r.ok ? r.json() : null).catch(() => null)]).then(([d, km]) => {
+  Promise.all([fetch("data/performa.json", { cache: "no-cache" }).then((r) => r.json()), fetch("data/per_km.json", { cache: "no-cache" }).then((r) => r.ok ? r.json() : null).catch(() => null)]).then(([d, km]) => {
     KM = km;
     KL = d.kelayakan || {}; TELAT = d.rit_lambat_menit || 195;
     document.querySelectorAll(".tTelat").forEach((e) => e.textContent = jamMenit(TELAT));

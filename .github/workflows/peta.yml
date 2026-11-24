@@ -52,6 +52,10 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python scripts/buat_tiket.py
 
+      - name: Stempel versi (supaya browser ambil file terbaru)
+        run: |
+          v=$(date +%Y%m%d%H%M)
+          sed -i -E "s#(grafik|app)\.js(\?v=[0-9]+)?\"#\1.js?v=$v\"#; s#style\.css(\?v=[0-9]+)?\"#style.css?v=$v\"#" docs/*.html
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
