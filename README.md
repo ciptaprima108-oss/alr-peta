@@ -8,7 +8,7 @@ Peta: `https://<akun>.github.io/alr-peta/`
 
 ## Alur kerja
 
-1. **Upload data GPS**: export TrackSolid (CSV/XLSX) diupload ke folder `data/gps/` (GitHub: *Add file > Upload files*).
+1. **Data GPS otomatis tiap 30 menit** dari TrackSolid Pro Open API (`scripts/tarik_tracksolid.py`). Isi 4 kunci di *Settings > Secrets and variables > Actions*: `TS_APP_KEY`, `TS_APP_SECRET`, `TS_USER`, `TS_PASS_MD5` (+ opsional `TS2_USER`, `TS2_PASS_MD5` akun 2, `TS_URL`, `TS_MAPPING_CSV`). Nilainya sama dengan Script Properties di Apps Script "Tracking GPS WHL". Tanpa kunci API, cukup `TS_SHEET_ID` (ID sheet "data ban"): data diambil dari tab LOG TRACKSOLID (per jam). Data live disimpan di cache Actions, tidak di-commit. Cara manual tetap bisa: upload export TrackSolid (CSV/XLSX) ke folder `data/gps/`.
    Kolom yang dikenali: nama unit / device name, waktu / GPS time, lat / latitude, lon / longitude, speed, ACC (opsional).
 2. **Otomatis (GitHub Action)**: `scripts/hitung_trigger.py` memotong jalan per 200 m, menghitung speed unit 24 jam terakhir,
    lalu mewarnai segmen: merah / kuning / hijau / abu (zona antre & parkir tidak dihitung).
