@@ -152,7 +152,7 @@
     "berhenti": null
    },
    "indeks": 56,
-   "status": "Perlu perhatian"
+   "status": "Kurang layak"
   },
   {
    "tanggal": "2026-10-01",
@@ -172,7 +172,7 @@
     "berhenti": null
    },
    "indeks": 60,
-   "status": "Perlu perhatian"
+   "status": "Kurang layak"
   },
   {
    "tanggal": "2026-10-02",
@@ -192,7 +192,7 @@
     "berhenti": null
    },
    "indeks": 60,
-   "status": "Perlu perhatian"
+   "status": "Kurang layak"
   },
   {
    "tanggal": "2026-10-03",
@@ -212,7 +212,7 @@
     "berhenti": null
    },
    "indeks": 66,
-   "status": "Perlu perhatian"
+   "status": "Kurang layak"
   },
   {
    "tanggal": "2026-10-04",
@@ -232,7 +232,7 @@
     "berhenti": null
    },
    "indeks": 71,
-   "status": "Perlu perhatian"
+   "status": "Kurang layak"
   },
   {
    "tanggal": "2026-10-05",
@@ -292,7 +292,7 @@
     "berhenti": null
    },
    "indeks": 51,
-   "status": "Perlu perhatian"
+   "status": "Kurang layak"
   },
   {
    "tanggal": "2026-10-08",
@@ -312,7 +312,7 @@
     "berhenti": null
    },
    "indeks": 61,
-   "status": "Perlu perhatian"
+   "status": "Kurang layak"
   },
   {
    "tanggal": "2026-10-09",
@@ -392,7 +392,7 @@
     "berhenti": null
    },
    "indeks": 57,
-   "status": "Perlu perhatian"
+   "status": "Kurang layak"
   },
   {
    "tanggal": "2026-10-13",
@@ -492,7 +492,7 @@
     "berhenti": null
    },
    "indeks": 74,
-   "status": "Perlu perhatian"
+   "status": "Kurang layak"
   },
   {
    "tanggal": "2026-10-18",
@@ -532,7 +532,7 @@
     "berhenti": null
    },
    "indeks": 67,
-   "status": "Perlu perhatian"
+   "status": "Kurang layak"
   },
   {
    "tanggal": "2026-10-20",
@@ -552,7 +552,7 @@
     "berhenti": null
    },
    "indeks": 61,
-   "status": "Perlu perhatian"
+   "status": "Kurang layak"
   },
   {
    "tanggal": "2026-10-21",
@@ -572,7 +572,7 @@
     "berhenti": null
    },
    "indeks": 72,
-   "status": "Perlu perhatian"
+   "status": "Kurang layak"
   },
   {
    "tanggal": "2026-10-22",
@@ -592,7 +592,7 @@
     "berhenti": null
    },
    "indeks": 59,
-   "status": "Perlu perhatian"
+   "status": "Kurang layak"
   },
   {
    "tanggal": "2026-10-23",
@@ -612,7 +612,7 @@
     "berhenti": null
    },
    "indeks": 65,
-   "status": "Perlu perhatian"
+   "status": "Kurang layak"
   },
   {
    "tanggal": "2026-10-24",
@@ -632,7 +632,7 @@
     "berhenti": null
    },
    "indeks": 52,
-   "status": "Perlu perhatian"
+   "status": "Kurang layak"
   },
   {
    "tanggal": "2026-11-22",
@@ -652,7 +652,7 @@
     "berhenti": 79.0
    },
    "indeks": 72,
-   "status": "Perlu perhatian"
+   "status": "Kurang layak"
   }
  ]
 }

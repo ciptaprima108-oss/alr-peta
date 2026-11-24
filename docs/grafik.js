@@ -1,121 +1,170 @@
-// Grafik performa jalan ALR: harian / mingguan / bulanan dari docs/data/performa.json
+// Halaman Kondisi Jalan ALR: nilai kelayakan dari performa DT, filter rentang tanggal, per hari/minggu/bulan
 (function () {
   const $ = (id) => document.getElementById(id);
-  const WARNA = { Layak: "#16a34a", "Perlu perhatian": "#f59e0b", "Tidak layak": "#dc2626" };
-  const IKON = { Layak: "✅", "Perlu perhatian": "⚠️", "Tidak layak": "⛔" };
-  const BIRU = "#2563eb", BIRU_MUDA = "#93c5fd", ABU = "#9ca3af";
+  const WARNA = { LAYAK: "#16a34a", KURANG: "#f59e0b", TIDAK: "#dc2626", KOSONG: "#eef2f6" };
   const BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-  let DATA = null, KL = {}, mode = "hari", grafik = {};
+  const BIRU = "#2563eb";
+  let HARI = new Map(), KL = {}, TELAT = 195, mode = "hari", grafik = {}, awalData, akhirData;
 
+  // ---------- util ----------
   const tgl = (s) => new Date(s + "T00:00:00");
-  const fmtTgl = (d) => `${d.getDate()} ${BULAN[d.getMonth()]}`;
-  const senin = (d) => { const x = new Date(d); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; };
   const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-  const statusDari = (i) => i == null ? null : i >= (KL.batas_layak ?? 75) ? "Layak" : i >= (KL.batas_perhatian ?? 50) ? "Perlu perhatian" : "Tidak layak";
+  const tambah = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+  const fmt = (d) => `${d.getDate()} ${BULAN[d.getMonth()]}`;
+  const fmtPanjang = (d) => `${d.getDate()} ${BULAN[d.getMonth()]} ${d.getFullYear()}`;
+  const senin = (d) => tambah(d, -((d.getDay() + 6) % 7));
+  const jamMenit = (m) => { if (m == null) return "-"; m = Math.round(m); const j = Math.floor(m / 60), s = m % 60; return j ? `${j} jam${s ? " " + s + " mnt" : ""}` : `${s} mnt`; };
   const rata = (a) => { const v = a.filter((x) => x != null); return v.length ? v.reduce((s, x) => s + x, 0) / v.length : null; };
   const rataBobot = (a, w) => { let s = 0, n = 0; a.forEach((x, i) => { if (x != null && w[i]) { s += x * w[i]; n += w[i]; } }); return n ? s / n : rata(a); };
-  const r1 = (x) => x == null ? null : Math.round(x * 10) / 10;
+  const kodeStatus = (i) => i == null ? "KOSONG" : i >= (KL.batas_layak ?? 75) ? "LAYAK" : i >= (KL.batas_perhatian ?? 50) ? "KURANG" : "TIDAK";
+  const NAMA = { LAYAK: "LAYAK", KURANG: "KURANG LAYAK", TIDAK: "TIDAK LAYAK", KOSONG: "Tidak ada data" };
+  const IKON = { LAYAK: "✅", KURANG: "⚠️", TIDAK: "⛔", KOSONG: "📭" };
 
-  function kelompok(hari, m) {
-    if (m === "hari") return hari.map((h) => ({ ...h, kunci: h.tanggal, label: fmtTgl(tgl(h.tanggal)), judul: tgl(h.tanggal).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" }), n_hari: 1 }));
-    const g = new Map();
-    for (const h of hari) {
-      const d = tgl(h.tanggal), k = m === "minggu" ? iso(senin(d)) : h.tanggal.slice(0, 7);
-      if (!g.has(k)) g.set(k, []); g.get(k).push(h);
-    }
-    return [...g.entries()].map(([k, a]) => {
-      const nt = a.map((x) => x.n_trip), tot = nt.reduce((s, x) => s + (x || 0), 0), lam = a.reduce((s, x) => s + (x.n_lambat || 0), 0);
-      const idx = rata(a.map((x) => x.indeks));
-      let label, judul;
-      if (m === "minggu") { const s = tgl(k), e = new Date(s); e.setDate(e.getDate() + 6); label = `${fmtTgl(s)}`; judul = `Minggu ${fmtTgl(s)} - ${fmtTgl(e)} ${e.getFullYear()}`; }
-      else { const [y, mo] = k.split("-"); label = `${BULAN[+mo - 1]} ${y}`; judul = `Bulan ${BULAN[+mo - 1]} ${y}`; }
-      return { kunci: k, label, judul, n_hari: a.length, n_trip: tot || null, n_lambat: lam,
-        median_menit: r1(rataBobot(a.map((x) => x.median_menit), nt)), p90_menit: r1(rataBobot(a.map((x) => x.p90_menit), nt)),
-        pct_lambat: tot ? r1(lam / tot * 100) : null, gps_speed: r1(rata(a.map((x) => x.gps_speed))),
-        gps_pct_berhenti: r1(rata(a.map((x) => x.gps_pct_berhenti))), indeks: idx == null ? null : Math.round(idx), status: statusDari(idx) };
-    });
+  // ringkas sekumpulan hari (yang ada datanya) jadi satu angka per ukuran
+  function ringkas(hari) {
+    const a = hari.filter(Boolean);
+    if (!a.length) return null;
+    const nt = a.map((x) => x.n_trip), rit = nt.reduce((s, x) => s + (x || 0), 0), telat = a.reduce((s, x) => s + (x.n_lambat || 0), 0);
+    const nilai = rata(a.map((x) => x.indeks));
+    return { hariData: a.length, rit: rit || null, waktu: rataBobot(a.map((x) => x.median_menit), nt), pctTelat: rit ? telat / rit * 100 : null,
+      speed: rata(a.map((x) => x.gps_speed)), berhenti: rata(a.map((x) => x.gps_pct_berhenti)), nilai: nilai == null ? null : Math.round(nilai), kode: kodeStatus(nilai) };
   }
 
-  function opsi(yMax, satuan) {
-    return { responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: "index", intersect: false },
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => ` ${c.dataset.label}: ${c.parsed.y ?? "-"} ${satuan}` } } },
-      scales: { x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkipPadding: 12, color: "#6b7280" } },
-        y: { beginAtZero: true, max: yMax, grid: { color: "#eef0f3" }, border: { display: false }, ticks: { color: "#6b7280" } } } };
+  // ---------- rentang ----------
+  function rentang() { return [tgl($("dari").value), tgl($("sampai").value)]; }
+  function setRentang(dari, sampai) {
+    $("dari").value = iso(dari < awalData ? awalData : dari); $("sampai").value = iso(sampai);
+    gambar();
   }
-  function buat(id, cfg) { grafik[id]?.destroy(); grafik[id] = new Chart($(id), cfg); }
-  const garisTarget = (n, v, label) => ({ type: "line", label, data: Array(n).fill(v), borderColor: "#6b7280", borderWidth: 1.5, borderDash: [6, 4], pointRadius: 0, pointHitRadius: 0 });
-  const batang = (label, data, warna) => ({ type: "bar", label, data, backgroundColor: warna, borderRadius: 4, borderSkipped: "start", maxBarThickness: 34 });
-  const garis = (label, data, warna, dash) => ({ type: "line", label, data, borderColor: warna, backgroundColor: warna, borderWidth: 2, borderDash: dash || [], pointRadius: 3.5, pointHoverRadius: 6, spanGaps: true, tension: 0.25 });
-
-  function gambar() {
-    const rows = kelompok(DATA.hari, mode), L = rows.map((r) => r.label), n = rows.length;
-    const o1 = opsi(100, "");
-    o1.plugins.tooltip.callbacks.label = (c) => ` Nilai ${c.parsed.y ?? "-"} · ${rows[c.dataIndex].status || "-"}`;
-    buat("cIndeks", { data: { labels: L, datasets: [batang("Nilai", rows.map((r) => r.indeks), rows.map((r) => WARNA[r.status] || ABU)),
-      garisTarget(n, KL.batas_layak ?? 75, "Batas layak"), garisTarget(n, KL.batas_perhatian ?? 50, "Batas perhatian")] }, options: o1 });
-    const o2 = opsi(undefined, "menit"); o2.plugins.legend = { display: true, labels: { boxWidth: 14, usePointStyle: true, filter: (i) => !i.text.startsWith("Target") } };
-    buat("cDurasi", { data: { labels: L, datasets: [garis("Median", rows.map((r) => r.median_menit), BIRU), garis("p90", rows.map((r) => r.p90_menit), BIRU_MUDA, [3, 3]),
-      garisTarget(n, KL.durasi_bagus_menit ?? 120, "Target")] }, options: o2 });
-    buat("cLambat", { data: { labels: L, datasets: [batang("Rit lambat", rows.map((r) => r.pct_lambat), BIRU)] }, options: opsi(undefined, "%") });
-    buat("cRit", { data: { labels: L, datasets: [batang("Jumlah rit", rows.map((r) => r.n_trip), BIRU)] }, options: opsi(undefined, "rit") });
-    buat("cSpeed", { data: { labels: L, datasets: [garis("Speed", rows.map((r) => r.gps_speed), BIRU), garisTarget(n, KL.speed_bagus_kmh ?? 20, "Target")] }, options: opsi(undefined, "km/jam") });
-
-    // pilihan periode (default terakhir)
-    const sel = $("pilihPeriode"), lama = sel.value;
-    sel.innerHTML = rows.map((r, i) => `<option value="${i}">${r.judul}</option>`).reverse().join("");
-    sel.value = rows[+lama] && sel.dataset.mode === mode ? lama : String(n - 1); sel.dataset.mode = mode;
-    vonis(rows, +sel.value);
-    tabel(rows);
-  }
-
-  function selisih(a, b, satuan, lebihBaikNaik) {
-    if (a == null || b == null) return "";
-    const d = r1(a - b); if (!d) return `<span class="sub">sama dengan sebelumnya</span>`;
-    const baik = lebihBaikNaik ? d > 0 : d < 0;
-    return `<span class="${baik ? "naik" : "turun"}">${d > 0 ? "▲" : "▼"} ${Math.abs(d)} ${satuan}</span> <span class="sub">vs sebelumnya</span>`;
-  }
-  function vonis(rows, i) {
-    const r = rows[i], p = rows[i - 1], st = r.status;
-    const v = $("vonis"); v.style.borderLeftColor = WARNA[st] || ABU;
-    const arah = p && r.indeks != null && p.indeks != null ? (r.indeks > p.indeks + 2 ? "membaik" : r.indeks < p.indeks - 2 ? "memburuk" : "stabil") : null;
-    const masalah = [];
-    if (r.median_menit != null && r.median_menit > (KL.durasi_bagus_menit ?? 120)) masalah.push(`durasi rit ${r.median_menit} menit (target ${KL.durasi_bagus_menit ?? 120})`);
-    if (r.pct_lambat != null && r.pct_lambat >= 20) masalah.push(`${r.pct_lambat}% rit lambat`);
-    if (r.gps_speed != null && r.gps_speed < (KL.speed_bagus_kmh ?? 20)) masalah.push(`speed DT ${r.gps_speed} km/jam`);
-    if (r.gps_pct_berhenti != null && r.gps_pct_berhenti >= 15) masalah.push(`DT berhenti ${r.gps_pct_berhenti}% waktu di jalan`);
-    v.innerHTML = `<h2>${IKON[st] || ""} Jalan ALR ${st ? st.toUpperCase() : "belum bisa dinilai"} <span style="font-weight:500;color:#6b7280">· nilai ${r.indeks ?? "-"}/100</span></h2>
-      <p><b>${r.judul}</b>${r.n_hari > 1 ? ` (${r.n_hari} hari ada data)` : ""}${arah ? ` · dibanding periode sebelumnya: <b class="${arah === "membaik" ? "naik" : arah === "memburuk" ? "turun" : ""}">${arah}</b>` : ""}</p>
-      <p>${masalah.length ? "Yang bikin nilai turun: " + masalah.join(", ") + "." : "Semua ukuran dalam target."}</p>`;
-    const t = (lbl, val, sub) => `<div class="tile"><div class="lbl">${lbl}</div><div class="val">${val ?? "-"}</div><div class="sub">${sub || ""}</div></div>`;
-    $("tiles").innerHTML =
-      t("Nilai kelayakan", r.indeks, selisih(r.indeks, p?.indeks, "poin", true)) +
-      t("Jumlah rit", r.n_trip, selisih(r.n_trip, p?.n_trip, "rit", true)) +
-      t("Durasi rit median", r.median_menit != null ? r.median_menit + " mnt" : null, selisih(r.median_menit, p?.median_menit, "mnt", false)) +
-      t("Rit lambat", r.pct_lambat != null ? r.pct_lambat + "%" : null, selisih(r.pct_lambat, p?.pct_lambat, "%", false)) +
-      t("Speed DT di jalan", r.gps_speed != null ? r.gps_speed + " km/j" : null, selisih(r.gps_speed, p?.gps_speed, "km/j", true)) +
-      t("DT berhenti di jalan", r.gps_pct_berhenti != null ? r.gps_pct_berhenti + "%" : null, selisih(r.gps_pct_berhenti, p?.gps_pct_berhenti, "%", false));
-  }
-  function tabel(rows) {
-    const f = (x, s = "") => x == null ? "-" : x + s;
-    $("tabel").innerHTML = `<tr><th>Periode</th><th>Status</th><th>Nilai</th><th>Rit</th><th>Durasi median</th><th>p90</th><th>Rit lambat</th><th>Speed DT</th><th>Berhenti</th></tr>` +
-      [...rows].reverse().map((r) => `<tr><td>${r.judul}</td><td>${r.status ? `<span class="pill p-${r.status.split(" ")[0]}">${IKON[r.status]} ${r.status}</span>` : "-"}</td>
-        <td>${f(r.indeks)}</td><td>${f(r.n_trip)}</td><td>${f(r.median_menit, " mnt")}</td><td>${f(r.p90_menit, " mnt")}</td>
-        <td>${f(r.pct_lambat, "%")}</td><td>${f(r.gps_speed, " km/j")}</td><td>${f(r.gps_pct_berhenti, "%")}</td></tr>`).join("");
-  }
-
-  document.querySelectorAll("#mode button").forEach((b) => b.onclick = () => {
-    document.querySelectorAll("#mode button").forEach((x) => x.classList.toggle("aktif", x === b));
+  document.querySelectorAll("[data-p]").forEach((b) => b.onclick = () => {
+    document.querySelectorAll("[data-p]").forEach((x) => x.classList.toggle("aktif", x === b));
+    const p = b.dataset.p;
+    setRentang(p === "semua" ? awalData : tambah(akhirData, -(+p - 1)), akhirData);
+  });
+  ["dari", "sampai"].forEach((id) => $(id).onchange = () => { document.querySelectorAll("[data-p]").forEach((x) => x.classList.remove("aktif")); gambar(); });
+  document.querySelectorAll("[data-m]").forEach((b) => b.onclick = () => {
+    document.querySelectorAll("[data-m]").forEach((x) => x.classList.toggle("aktif", x === b));
     mode = b.dataset.m; gambar();
   });
-  $("pilihPeriode").onchange = (e) => vonis(kelompok(DATA.hari, mode), +e.target.value);
+
+  // ---------- periode (hari/minggu/bulan), tanggal tanpa data tetap ditampilkan ----------
+  function periode(dari, sampai) {
+    const out = [], peta = new Map();
+    for (let d = new Date(dari); d <= sampai; d = tambah(d, 1)) {
+      const k = mode === "hari" ? iso(d) : mode === "minggu" ? iso(senin(d)) : iso(d).slice(0, 7);
+      if (!peta.has(k)) {
+        let label, judul;
+        if (mode === "hari") { label = fmt(d); judul = d.toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "short", year: "numeric" }); }
+        else if (mode === "minggu") { const s = senin(d); label = fmt(s); judul = `${fmt(s)} - ${fmtPanjang(tambah(s, 6))}`; }
+        else { label = `${BULAN[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`; judul = `${BULAN[d.getMonth()]} ${d.getFullYear()}`; }
+        peta.set(k, { label, judul, hari: [] }); out.push(peta.get(k));
+      }
+      peta.get(k).hari.push(HARI.get(iso(d)) || null);
+    }
+    return out.map((p) => ({ ...p, r: ringkas(p.hari) }));
+  }
+
+  function rentangKosong(dari, sampai) {
+    const hasil = []; let mulai = null;
+    for (let d = new Date(dari); d <= tambah(sampai, 1); d = tambah(d, 1)) {
+      const kosong = d <= sampai && !HARI.has(iso(d));
+      if (kosong && !mulai) mulai = new Date(d);
+      if (!kosong && mulai) { const akhir = tambah(d, -1), n = Math.round((akhir - mulai) / 864e5) + 1; hasil.push(n === 1 ? `${fmt(mulai)}` : `${fmt(mulai)} - ${fmt(akhir)} (${n} hari)`); mulai = null; }
+    }
+    return hasil;
+  }
+
+  // ---------- grafik ----------
+  function opsi(satuan, extra = {}) {
+    return { responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: "index", intersect: false },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { title: (c) => c[0] && c[0].chart.$judul[c[0].dataIndex],
+        label: (c) => c.dataset.label === "Target" ? ` Target: ${c.parsed.y} ${satuan}` : c.parsed.y == null ? " Tidak ada data" : ` ${c.dataset.label}: ${c.parsed.y} ${satuan}` } } },
+      scales: { x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkipPadding: 14, color: "#64748b" } },
+        y: { beginAtZero: true, grid: { color: "#eef2f6" }, border: { display: false }, ticks: { color: "#64748b" }, ...extra } } };
+  }
+  function buat(id, data, o, judul) { grafik[id]?.destroy(); grafik[id] = new Chart($(id), { data, options: o }); grafik[id].$judul = judul; }
+  const target = (n, v) => ({ type: "line", label: "Target", data: Array(n).fill(v), borderColor: "#94a3b8", borderWidth: 1.5, borderDash: [6, 4], pointRadius: 0, pointHitRadius: 0 });
+  const batang = (label, data, warna) => ({ type: "bar", label, data, backgroundColor: warna, borderRadius: 4, borderSkipped: "start", maxBarThickness: 32 });
+  const garis = (label, data) => ({ type: "line", label, data, borderColor: BIRU, backgroundColor: BIRU, borderWidth: 2, pointRadius: 3, pointHoverRadius: 6, spanGaps: false, tension: 0.2 });
+  const s1 = (x) => x == null ? null : Math.round(x * 10) / 10;
+
+  function gambar() {
+    let [dari, sampai] = rentang();
+    if (isNaN(dari) || isNaN(sampai)) return;
+    if (dari > sampai) [dari, sampai] = [sampai, dari];
+    const P = periode(dari, sampai), L = P.map((p) => p.label), J = P.map((p) => p.judul), n = P.length;
+
+    const o = opsi("", { max: 100 });
+    o.plugins.tooltip.callbacks.label = (c) => { const r = P[c.dataIndex].r; return r ? ` Nilai ${r.nilai} · ${NAMA[r.kode]}` : " Tidak ada data (belum diupload)"; };
+    buat("cNilai", { labels: L, datasets: [batang("Nilai", P.map((p) => p.r ? p.r.nilai : 100), P.map((p) => WARNA[p.r ? p.r.kode : "KOSONG"])),
+      target(n, KL.batas_layak ?? 75)] }, o, J);
+    buat("cWaktu", { labels: L, datasets: [garis("Waktu 1 rit", P.map((p) => p.r && s1(p.r.waktu / 60))), target(n, s1((KL.durasi_bagus_menit ?? 120) / 60))] }, opsi("jam"), J);
+    buat("cTelat", { labels: L, datasets: [batang("Rit telat", P.map((p) => p.r && s1(p.r.pctTelat)), BIRU)] }, opsi("%"), J);
+    buat("cRit", { labels: L, datasets: [batang("Jumlah rit", P.map((p) => p.r && p.r.rit), BIRU)] }, opsi("rit"), J);
+    buat("cSpeed", { labels: L, datasets: [garis("Kecepatan", P.map((p) => p.r && s1(p.r.speed))), target(n, KL.speed_bagus_kmh ?? 20)] }, opsi("km/jam"), J);
+
+    const kosong = rentangKosong(dari, sampai);
+    $("infoKosong").hidden = !kosong.length;
+    $("infoKosong").innerHTML = kosong.length ? `📭 <b>Kenapa ada yang kosong?</b> Tanggal ini belum ada data yang diupload: ${kosong.join(", ")}.` : "";
+
+    // ringkasan seluruh rentang + banding dengan rentang sebelumnya yang sama panjang
+    const semua = [], sebelum = [], panjang = Math.round((sampai - dari) / 864e5) + 1;
+    for (let d = new Date(dari); d <= sampai; d = tambah(d, 1)) semua.push(HARI.get(iso(d)));
+    for (let d = tambah(dari, -panjang); d < dari; d = tambah(d, 1)) sebelum.push(HARI.get(iso(d)));
+    status(ringkas(semua), ringkas(sebelum), dari, sampai, panjang);
+    tabel(P);
+  }
+
+  function banding(a, b, satuan, naikBaik, f = (x) => s1(x)) {
+    if (a == null || b == null) return `<span class="netral">belum ada pembanding</span>`;
+    const d = a - b; if (Math.abs(d) < 0.05 * Math.max(1, Math.abs(b))) return `<span class="netral">sama seperti sebelumnya</span>`;
+    const baik = naikBaik ? d > 0 : d < 0;
+    return `<span class="${baik ? "baik" : "buruk"}">${d > 0 ? "▲ naik" : "▼ turun"} ${f(Math.abs(d))}${satuan}</span> <span class="netral">· ${baik ? "lebih baik" : "lebih buruk"}</span>`;
+  }
+
+  function status(r, prev, dari, sampai, panjang) {
+    const el = $("status"), rentangTeks = `${fmtPanjang(dari)} - ${fmtPanjang(sampai)}`;
+    if (!r) {
+      el.className = "status s-KOSONG";
+      el.innerHTML = `<div class="ikon">📭</div><div><h2>Belum ada data</h2><p>Tidak ada data DT untuk ${rentangTeks}. Pilih rentang lain.</p></div>`;
+      $("tiles").innerHTML = ""; return;
+    }
+    const kal = [];
+    if (r.waktu != null) kal.push(`Rata-rata 1 rit BSR ke 107 butuh <b>${jamMenit(r.waktu)}</b> (target ${jamMenit(KL.durasi_bagus_menit ?? 120)}).`);
+    if (r.pctTelat != null) kal.push(`Dari 10 rit, sekitar <b>${Math.round(r.pctTelat / 10)} rit telat</b> (lebih dari ${jamMenit(TELAT)}).`);
+    if (r.speed != null) kal.push(`DT jalan rata-rata <b>${Math.round(r.speed)} km/jam</b>.`);
+    let arah = "";
+    if (prev && prev.nilai != null) arah = r.nilai > prev.nilai + 2 ? `Lebih baik dari ${panjang} hari sebelumnya (nilai ${prev.nilai}).` : r.nilai < prev.nilai - 2 ? `Lebih buruk dari ${panjang} hari sebelumnya (nilai ${prev.nilai}).` : `Sama seperti ${panjang} hari sebelumnya.`;
+    el.className = `status s-${r.kode}`;
+    el.innerHTML = `<div class="ikon">${IKON[r.kode]}</div><div><h2>Jalan ALR ${NAMA[r.kode]}</h2>
+      <div class="nilai">Nilai ${r.nilai} dari 100 · ${rentangTeks}${r.hariData < panjang ? ` · data ada ${r.hariData} dari ${panjang} hari` : ""}</div>
+      <p>${kal.join(" ")} ${arah}</p></div>`;
+    const t = (k, v, b) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="b">${b}</div></div>`;
+    $("tiles").innerHTML =
+      t("🚚 Jumlah rit", r.rit ?? "-", banding(r.rit, prev?.rit, " rit", true, Math.round)) +
+      t("⏱️ Waktu 1 rit", jamMenit(r.waktu), banding(r.waktu, prev?.waktu, "", false, jamMenit)) +
+      t("🐢 Rit telat", r.pctTelat != null ? `${Math.round(r.pctTelat)}%` : "-", banding(r.pctTelat, prev?.pctTelat, "%", false, Math.round)) +
+      t("💨 Kecepatan DT", r.speed != null ? `${Math.round(r.speed)} km/j` : "-", banding(r.speed, prev?.speed, " km/j", true, Math.round));
+  }
+
+  function tabel(P) {
+    $("tabel").innerHTML = `<tr><th>${mode === "hari" ? "Tanggal" : mode === "minggu" ? "Minggu" : "Bulan"}</th><th>Kondisi</th><th>Nilai</th><th>Jumlah rit</th><th>Waktu 1 rit</th><th>Rit telat</th><th>Kecepatan DT</th></tr>` +
+      [...P].reverse().map((p) => { const r = p.r;
+        return r ? `<tr><td>${p.judul}</td><td><span class="pill p-${r.kode}">${IKON[r.kode]} ${NAMA[r.kode]}</span></td><td>${r.nilai}</td><td>${r.rit ?? "-"}</td>
+          <td>${jamMenit(r.waktu)}</td><td>${r.pctTelat != null ? Math.round(r.pctTelat) + "%" : "-"}</td><td>${r.speed != null ? Math.round(r.speed) + " km/j" : "-"}</td></tr>`
+          : `<tr><td>${p.judul}</td><td colspan="6" style="text-align:left;color:#94a3b8">tidak ada data</td></tr>`; }).join("");
+  }
 
   fetch("data/performa.json").then((r) => r.json()).then((d) => {
-    DATA = d; KL = d.kelayakan || {};
-    $("tDur").textContent = KL.durasi_bagus_menit ?? 120; $("tLambat").textContent = d.rit_lambat_menit;
-    const isi = (c, v) => document.querySelectorAll(c).forEach((e) => e.textContent = v);
-    isi(".k-dur-b", KL.durasi_bagus_menit); isi(".k-dur-j", KL.durasi_jelek_menit); isi(".k-lam", KL.pct_lambat_jelek);
-    isi(".k-sp-b", KL.speed_bagus_kmh); isi(".k-sp-j", KL.speed_jelek_kmh); isi(".k-ber", KL.pct_berhenti_jelek);
-    if (!d.hari.length) { $("vonis").innerHTML = "<h2>Belum ada data performa</h2><p>Upload data rit atau GPS dulu.</p>"; return; }
-    gambar();
-  }).catch((e) => { $("vonis").innerHTML = `<h2>Gagal memuat data</h2><p>${e.message}</p>`; });
+    KL = d.kelayakan || {}; TELAT = d.rit_lambat_menit || 195;
+    document.querySelectorAll(".tTelat").forEach((e) => e.textContent = jamMenit(TELAT));
+    d.hari.forEach((h) => HARI.set(h.tanggal, h));
+    if (!d.hari.length) { $("status").innerHTML = `<div class="ikon">📭</div><div><h2>Belum ada data</h2><p>Upload data rit atau GPS dulu.</p></div>`; return; }
+    awalData = tgl(d.hari[0].tanggal); akhirData = tgl(d.hari[d.hari.length - 1].tanggal);
+    $("dari").min = $("sampai").min = iso(awalData); $("dari").max = $("sampai").max = iso(akhirData);
+    $("catatan").innerHTML = `<b>Cara baca nilai:</b> tiap hari diberi nilai 0-100 dari kerja DT: makin cepat 1 rit, makin sedikit rit telat,
+      makin kencang DT jalan, dan makin jarang DT berhenti di jalan, nilainya makin tinggi. Nilai 75 ke atas = <b>layak</b>, 50-74 = <b>kurang layak</b>, di bawah 50 = <b>tidak layak</b>.
+      Data tersedia ${fmtPanjang(awalData)} - ${fmtPanjang(akhirData)}. Pilihan "7 hari / 30 hari / 3 bulan" dihitung mundur dari tanggal data terakhir.`;
+    document.querySelector('[data-p="semua"]').click();
+  }).catch((e) => { $("status").innerHTML = `<div class="ikon">⚠️</div><div><h2>Gagal memuat data</h2><p>${e.message}</p></div>`; });
 })();

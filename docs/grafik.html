@@ -3,87 +3,111 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Performa Jalan ALR</title>
-<link rel="stylesheet" href="style.css">
+<title>Kondisi Jalan ALR</title>
 <style>
-  body { background: #f3f4f6; overflow-y: auto; }
-  header a { color: #fff; text-decoration: none; }
-  .wrap { max-width: 1180px; margin: 0 auto; padding: 14px 16px 40px; }
-  .seg { display: inline-flex; background: #e5e7eb; border-radius: 10px; padding: 3px; gap: 2px; }
-  .seg button { background: transparent; padding: 7px 14px; font-weight: 600; color: #374151; }
-  .seg button.aktif { background: #fff; color: #111; box-shadow: 0 1px 3px rgba(0,0,0,.15); }
-  .baris-atas { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-  select { font: inherit; font-size: 14px; padding: 7px 10px; border-radius: 8px; border: 1px solid #d1d5db; background: #fff; }
-  .vonis { background: #fff; border-radius: 12px; padding: 16px 18px; margin-bottom: 12px; border-left: 8px solid #9ca3af; }
-  .vonis h2 { margin: 0 0 4px; font-size: 22px; }
-  .vonis p { margin: 2px 0; color: #374151; font-size: 14px; }
-  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 12px; }
-  .tile { background: #fff; border-radius: 12px; padding: 12px 14px; }
-  .tile .lbl { font-size: 12.5px; color: #6b7280; }
-  .tile .val { font-size: 26px; font-weight: 700; margin-top: 2px; }
-  .tile .sub { font-size: 12px; color: #6b7280; }
-  .naik { color: #15803d; } .turun { color: #b91c1c; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .kartu-g { background: #fff; border-radius: 12px; padding: 12px 14px; }
-  .kartu-g h3 { margin: 0; font-size: 15px; }
-  .kartu-g p { margin: 2px 0 8px; font-size: 12.5px; color: #6b7280; }
+  :root { --bg:#eef1f5; --kartu:#ffffff; --teks:#0f172a; --pudar:#64748b; --garis:#e2e8f0;
+          --hijau:#16a34a; --hijau-bg:#dcfce7; --kuning:#d97706; --kuning-bg:#fef3c7; --merah:#dc2626; --merah-bg:#fee2e2; --biru:#2563eb; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--teks); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .atas { background: #0f172a; color: #fff; padding: 14px 16px; }
+  .atas .isi { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .atas h1 { margin: 0; font-size: 19px; }
+  .atas p { margin: 2px 0 0; font-size: 13px; color: #cbd5e1; }
+  .atas a { background: #fff; color: #0f172a; text-decoration: none; font-weight: 600; font-size: 14px; padding: 8px 12px; border-radius: 10px; white-space: nowrap; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 14px 16px 40px; }
+
+  .filter { background: var(--kartu); border-radius: 16px; padding: 12px 14px; display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; box-shadow: 0 1px 2px rgba(15,23,42,.06); }
+  .filter .grup { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .filter .lbl { font-size: 12.5px; color: var(--pudar); font-weight: 600; margin-right: 2px; }
+  .chip { border: 1px solid var(--garis); background: #fff; border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 13.5px; cursor: pointer; color: var(--teks); }
+  .chip.aktif { background: #0f172a; color: #fff; border-color: #0f172a; }
+  input[type=date] { font: inherit; font-size: 13.5px; padding: 5px 8px; border: 1px solid var(--garis); border-radius: 8px; background: #fff; color: var(--teks); }
+
+  .status { margin-top: 12px; border-radius: 18px; padding: 18px 20px; display: flex; gap: 16px; align-items: center; }
+  .status .ikon { font-size: 46px; line-height: 1; }
+  .status h2 { margin: 0; font-size: 26px; letter-spacing: .3px; }
+  .status .nilai { font-size: 15px; font-weight: 600; margin-top: 2px; }
+  .status p { margin: 6px 0 0; font-size: 15px; line-height: 1.45; }
+  .s-LAYAK { background: var(--hijau-bg); color: #14532d; }
+  .s-KURANG { background: var(--kuning-bg); color: #78350f; }
+  .s-TIDAK { background: var(--merah-bg); color: #7f1d1d; }
+  .s-KOSONG { background: #fff; color: var(--pudar); }
+
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; }
+  .tile { background: var(--kartu); border-radius: 16px; padding: 14px; box-shadow: 0 1px 2px rgba(15,23,42,.06); }
+  .tile .k { font-size: 13px; color: var(--pudar); }
+  .tile .v { font-size: 26px; font-weight: 750; margin: 4px 0 2px; }
+  .tile .b { font-size: 12.5px; }
+  .baik { color: var(--hijau); } .buruk { color: var(--merah); } .netral { color: var(--pudar); }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
   .grid > * { min-width: 0; }
-  .kanvas { position: relative; height: 240px; width: 100%; }
+  .kartu { background: var(--kartu); border-radius: 16px; padding: 14px 16px; box-shadow: 0 1px 2px rgba(15,23,42,.06); }
+  .kartu h3 { margin: 0; font-size: 15.5px; }
+  .kartu .ket { margin: 3px 0 10px; font-size: 13px; color: var(--pudar); }
+  .kanvas { position: relative; height: 230px; width: 100%; }
   .lebar { grid-column: 1 / -1; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; }
-  th, td { padding: 7px 8px; border-bottom: 1px solid #e5e7eb; text-align: right; white-space: nowrap; }
+  .kosong-info { margin-top: 8px; font-size: 12.5px; color: var(--pudar); background: #f8fafc; border-radius: 8px; padding: 6px 10px; }
+
+  details { margin-top: 12px; background: var(--kartu); border-radius: 16px; padding: 4px 16px; box-shadow: 0 1px 2px rgba(15,23,42,.06); }
+  summary { cursor: pointer; font-weight: 650; padding: 10px 0; }
+  .tbl { overflow-x: auto; padding-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { padding: 8px; border-bottom: 1px solid var(--garis); text-align: right; white-space: nowrap; }
   th:first-child, td:first-child { text-align: left; }
-  th { background: #111827; color: #fff; position: sticky; top: 0; }
-  .tbl { overflow-x: auto; border-radius: 12px; margin-top: 12px; max-height: 420px; }
-  .pill { display: inline-block; padding: 1px 8px; border-radius: 10px; font-weight: 700; font-size: 12px; }
-  .p-Layak { background: #dcfce7; color: #166534; } .p-Perlu { background: #fef3c7; color: #92400e; } .p-Tidak { background: #fee2e2; color: #991b1b; }
-  .cara { font-size: 13px; color: #374151; background: #fff; border-radius: 12px; padding: 12px 16px; margin-top: 12px; line-height: 1.5; }
-  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } .vonis h2 { font-size: 19px; } .tile .val { font-size: 22px; } }
+  th { color: var(--pudar); font-weight: 600; font-size: 12.5px; }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-weight: 700; font-size: 12px; }
+  .p-LAYAK { background: var(--hijau-bg); color: #166534; } .p-KURANG { background: var(--kuning-bg); color: #92400e; } .p-TIDAK { background: var(--merah-bg); color: #991b1b; }
+  .catatan { margin-top: 12px; font-size: 13px; color: var(--pudar); line-height: 1.55; }
+
+  @media (max-width: 800px) {
+    .tiles { grid-template-columns: 1fr 1fr; }
+    .grid { grid-template-columns: 1fr; }
+    .status { padding: 14px 16px; } .status h2 { font-size: 21px; } .status .ikon { font-size: 38px; }
+    .tile .v { font-size: 22px; }
+  }
 </style>
 </head>
 <body>
-<header>
-  <div class="judul"><b>Performa Jalan ALR</b><span>Layak atau tidak, dilihat dari performa DT yang lewat</span></div>
-  <div class="tombol"><a href="./"><button>🗺️ Peta</button></a></div>
-</header>
+<div class="atas"><div class="isi">
+  <div><h1>Kondisi Jalan ALR</h1><p>Apakah jalan BSR → 107 layak? Dilihat dari kerja DT yang lewat</p></div>
+  <a href="./">🗺️ Peta</a>
+</div></div>
 
 <div class="wrap">
-  <div class="baris-atas">
-    <div class="seg" id="mode">
-      <button data-m="hari" class="aktif">Harian</button><button data-m="minggu">Mingguan</button><button data-m="bulan">Bulanan</button>
-    </div>
-    <select id="pilihPeriode" title="Periode yang dinilai"></select>
+  <div class="filter">
+    <div class="grup"><span class="lbl">Rentang</span>
+      <button class="chip" data-p="7">7 hari</button><button class="chip" data-p="30">30 hari</button>
+      <button class="chip" data-p="90">3 bulan</button><button class="chip" data-p="semua">Semua</button></div>
+    <div class="grup"><span class="lbl">Dari</span><input type="date" id="dari"><span class="lbl">sampai</span><input type="date" id="sampai"></div>
+    <div class="grup"><span class="lbl">Lihat per</span>
+      <button class="chip aktif" data-m="hari">Hari</button><button class="chip" data-m="minggu">Minggu</button><button class="chip" data-m="bulan">Bulan</button></div>
   </div>
 
-  <div class="vonis" id="vonis"><h2>Memuat...</h2></div>
+  <div class="status s-KOSONG" id="status"><div class="ikon">⏳</div><div><h2>Memuat...</h2></div></div>
   <div class="tiles" id="tiles"></div>
 
   <div class="grid">
-    <div class="kartu-g lebar"><h3>Nilai kelayakan jalan (0-100)</h3>
-      <p>Hijau ≥ 75 layak · kuning 50-74 perlu perhatian · merah &lt; 50 tidak layak</p>
-      <div class="kanvas"><canvas id="cIndeks"></canvas></div></div>
-    <div class="kartu-g"><h3>Durasi 1 rit muatan BSR → 107 (menit)</h3>
-      <p>Median dan p90 (10% rit terlama). Garis putus = target <span id="tDur"></span> menit</p>
-      <div class="kanvas"><canvas id="cDurasi"></canvas></div></div>
-    <div class="kartu-g"><h3>Rit lambat (%)</h3>
-      <p>Persen rit yang lebih dari <span id="tLambat"></span> menit</p>
-      <div class="kanvas"><canvas id="cLambat"></canvas></div></div>
-    <div class="kartu-g"><h3>Jumlah rit muatan</h3>
-      <p>Total rit BSR → 107</p>
+    <div class="kartu lebar"><h3>Nilai jalan</h3>
+      <div class="ket">Hijau = layak · Kuning = kurang layak · Merah = tidak layak · Abu-abu = tidak ada data</div>
+      <div class="kanvas"><canvas id="cNilai"></canvas></div><div class="kosong-info" id="infoKosong" hidden></div></div>
+    <div class="kartu"><h3>⏱️ Waktu 1 rit muatan (jam)</h3>
+      <div class="ket">Rata-rata waktu DT dari BSR sampai 107. Garis putus-putus = target</div>
+      <div class="kanvas"><canvas id="cWaktu"></canvas></div></div>
+    <div class="kartu"><h3>🐢 Rit telat (%)</h3>
+      <div class="ket">Rit yang butuh lebih dari <span class="tTelat"></span>. Makin rendah makin bagus</div>
+      <div class="kanvas"><canvas id="cTelat"></canvas></div></div>
+    <div class="kartu"><h3>🚚 Jumlah rit muatan</h3>
+      <div class="ket">Berapa kali DT bawa muatan BSR → 107</div>
       <div class="kanvas"><canvas id="cRit"></canvas></div></div>
-    <div class="kartu-g"><h3>Speed rata-rata DT di ALR (km/jam)</h3>
-      <p>Dari GPS TrackSolid, mesin hidup & sedang jalan, di luar zona antre/parkir</p>
+    <div class="kartu"><h3>💨 Kecepatan DT di jalan (km/jam)</h3>
+      <div class="ket">Dari GPS, saat DT sedang jalan. Garis putus-putus = target</div>
       <div class="kanvas"><canvas id="cSpeed"></canvas></div></div>
   </div>
 
-  <div class="tbl"><table id="tabel"></table></div>
+  <details><summary>📋 Lihat angka detail</summary><div class="tbl"><table id="tabel"></table></div></details>
 
-  <div class="cara"><b>Cara nilai dihitung.</b> Tiap hari diberi skor 0-100 dari data yang tersedia, lalu dirata-rata:
-    durasi rit median (≤ <span class="k-dur-b"></span> mnt = 100, ≥ <span class="k-dur-j"></span> mnt = 0),
-    persen rit lambat (0% = 100, ≥ <span class="k-lam"></span>% = 0),
-    speed DT di jalan (≥ <span class="k-sp-b"></span> km/jam = 100, ≤ <span class="k-sp-j"></span> = 0),
-    dan persen waktu DT berhenti dengan mesin hidup di jalan (0% = 100, ≥ <span class="k-ber"></span>% = 0).
-    Mingguan/bulanan = rata-rata nilai harian. Batas bisa diubah di <code>config.json</code> bagian <code>kelayakan</code>.</div>
+  <div class="catatan" id="catatan"></div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
