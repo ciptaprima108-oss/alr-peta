@@ -13,7 +13,7 @@
   window.addEventListener("load", tutupSplash); setTimeout(tutupSplash, 3500);
 
   // ---------- suara: klik halus + suara cewek bahasa Indonesia ----------
-  let suaraNyala = simpan.get("alr_suara", true), ctx = null, suaraCewek = null;
+  let suaraNyala = simpan.get("alr_suara", true), getarNyala = simpan.get("alr_getar", true), ctx = null, suaraCewek = null;
   function pilihSuara() {
     const v = speechSynthesis?.getVoices?.() || [];
     const id = v.filter((x) => /^id|ind/i.test(x.lang));
@@ -35,7 +35,7 @@
       g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.06, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
       o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + 0.1);
     } catch {}
-    if (navigator.vibrate) navigator.vibrate(8);
+    if (getarNyala && navigator.vibrate) navigator.vibrate(8);
   }
   function denting() {           // bunyi "teng-teng" pendek sebelum suara ALR
     if (!suaraNyala) return;
@@ -48,13 +48,9 @@
         o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + 0.5);
       });
     } catch {}
-    if (navigator.vibrate) navigator.vibrate([60, 60, 60]);
+    if (getarNyala && navigator.vibrate) navigator.vibrate([60, 60, 60]);
   }
   const umumkan = (teks) => { denting(); setTimeout(() => bicara(teks), 650); };
-  const tombolSuara = $("btnSuara");
-  const gambarTombolSuara = () => { if (!tombolSuara) return; tombolSuara.innerHTML = `<svg class="ik"><use href="#i-${suaraNyala ? "suara" : "bisu"}"/></svg>`; tombolSuara.title = suaraNyala ? "Suara nyala (ketuk untuk matikan)" : "Suara mati (ketuk untuk nyalakan)"; tombolSuara.setAttribute("aria-pressed", suaraNyala); };
-  gambarTombolSuara();
-  tombolSuara && (tombolSuara.onclick = () => { suaraNyala = !suaraNyala; simpan.set("alr_suara", suaraNyala); gambarTombolSuara(); if (suaraNyala) umumkan("ALR, suara nyala"); else speechSynthesis?.cancel(); toast(suaraNyala ? "Suara ALR dinyalakan" : "Suara ALR dimatikan", "", "suara"); });
 
   // ---------- toast "ALR: ..." di atas layar ----------
   const wadahToast = document.createElement("div"); wadahToast.className = "toast-wadah"; wadahToast.setAttribute("aria-live", "polite"); document.body.appendChild(wadahToast);
@@ -214,24 +210,94 @@
     const o = { body: isi, icon: "ikon/icon-192.png", badge: "ikon/icon-192.png", tag: "alr-" + judul, data: { url: "./#" + lyr } };
     sw ? sw.showNotification(judul, o) : new Notification(judul, o);
   }
-  function aturAjakan() {
-    const ajak = $("notifAjak"), isi = $("notifAjakIsi");
+  // ---------- layar profil & pengaturan ----------
+  const ios = /iphone|ipad/i.test(navigator.userAgent);
+  function aturNotif() {
+    const ket = $("pfNotifKet"), btn = $("btnNotif"); let perlu = false;
     if (!bisaNotif) {
-      const ios = /iphone|ipad/i.test(navigator.userAgent);
-      ajak.hidden = !ios || diLayarUtama;
-      isi.textContent = "Di iPhone: buka menu Bagikan, pilih Tambah ke Layar Utama, lalu buka ALR dari ikon itu supaya notifikasi bisa dinyalakan.";
-      $("btnNotif").hidden = true; return;
-    }
-    ajak.hidden = Notification.permission === "granted" || Notification.permission === "denied";
+      ket.textContent = ios && !diLayarUtama ? "Di iPhone: pencet tombol Bagikan di Safari, pilih Tambah ke Layar Utama, lalu buka ALR dari ikon itu. Setelah itu notifikasi bisa dinyalakan di sini."
+        : "HP atau browser ini belum mendukung notifikasi.";
+      btn.hidden = true; perlu = ios && !diLayarUtama;
+    } else if (Notification.permission === "granted") { ket.textContent = "Nyala. Kamu dapat pemberitahuan ALR saat ada jalan merah atau laporan baru."; btn.hidden = true; }
+    else if (Notification.permission === "denied") { ket.textContent = "Diblokir. Buka Pengaturan HP, cari ALR, lalu izinkan Notifikasi."; btn.hidden = true; perlu = true; }
+    else { btn.hidden = false; perlu = true; }
+    $("profilTitik").hidden = !perlu;
   }
-  aturAjakan();
+  aturNotif();
   $("btnNotif").onclick = async () => {
     klik();
     const izin = await Notification.requestPermission();
-    aturAjakan();
+    aturNotif();
     if (izin === "granted") { toast("ALR: Notifikasi dinyalakan", "Kamu akan dapat pemberitahuan kalau ada jalan merah atau laporan baru."); umumkan("ALR, notifikasi nyala"); sw?.showNotification("ALR: Notifikasi aktif", { body: "Contoh pemberitahuan dari ALR.", icon: "ikon/icon-192.png" }); }
   };
+  $("swSuara").checked = suaraNyala; $("swGetar").checked = getarNyala;
+  $("swSuara").onchange = (e) => { suaraNyala = e.target.checked; simpan.set("alr_suara", suaraNyala); if (suaraNyala) umumkan("ALR, suara nyala"); else speechSynthesis?.cancel(); };
+  $("swGetar").onchange = (e) => { getarNyala = e.target.checked; simpan.set("alr_getar", getarNyala); if (getarNyala && navigator.vibrate) navigator.vibrate(30); };
+  $("btnCoba").onclick = () => { toast("ALR: Contoh pemberitahuan", "Begini tampilan pemberitahuan kalau ada jalan merah."); umumkan("ALR, ada info jalan"); };
+  $("btnProfil").onclick = () => { klik(); buka("profil"); };
+  // pilih "saya" dari daftar pengguna, tampilkan ID card di profil
+  function isiProfil() {
+    const daftar = window.ALR_PENGGUNA || [], saya = simpan.get("alr_saya", ""), sel = $("pfSaya");
+    sel.innerHTML = `<option value="">Pilih nama...</option>` + daftar.map((p) => `<option value="${esc(p.id || p.nama)}"${(p.id || p.nama) === saya ? " selected" : ""}>${esc(p.nama)} (${esc(p.divisi)})</option>`).join("");
+    $("pfJmlPengguna").textContent = `${daftar.length} orang, ID card per divisi`;
+    const p = daftar.find((x) => (x.id || x.nama) === saya);
+    if (p && window.ALR_idCard) {
+      $("pfKartu").innerHTML = window.ALR_idCard(p).replace(/<div class="idc-aksi">[\s\S]*?<\/div>/, "");
+      const ins = (p.nama || "?").trim().split(/\s+/).map((x) => x[0]).slice(0, 2).join("").toUpperCase();
+      $("profilInisial").textContent = ins; $("btnProfil").classList.add("ada-nama");
+    } else {
+      $("profilInisial").innerHTML = `<svg class="ik"><use href="#i-orang"/></svg>`; $("btnProfil").classList.remove("ada-nama");
+    }
+  }
+  $("pfSaya").onchange = (e) => { simpan.set("alr_saya", e.target.value); klik(); isiProfil(); };
+  window.addEventListener("alr:pengguna", isiProfil);
+  window.addEventListener("alr:ringkasan", (e) => { $("pfTentang").textContent = `ALR, jalan hauling BSR ke 107. Data GPS sampai ${e.detail.data_sampai}, ${e.detail.n_unit} unit. Versi ${document.querySelector('meta[name="versi"]')?.content || ""}.`; });
+
+  // ---------- peta layar penuh ----------
+  function pasangPenuh() {
+    const P = window.ALR_PETA; if (!P) return setTimeout(pasangPenuh, 300);
+    const K = L.Control.extend({ options: { position: "topleft" }, onAdd() {
+      const b = L.DomUtil.create("button", "tombol-penuh"); b.type = "button"; b.title = "Peta layar penuh";
+      b.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>`;
+      L.DomEvent.disableClickPropagation(b); b.onclick = () => { klik(); document.body.classList.contains("peta-penuh") ? (history.state?.peta ? history.back() : penuh(false)) : penuh(true); };
+      return b; } });
+    new K().addTo(P.map);
+  }
+  function penuh(on, dariRiwayat) {
+    document.body.classList.toggle("peta-penuh", on);
+    const b = document.querySelector(".tombol-penuh");
+    if (b) b.innerHTML = on ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>`;
+    if (on && !dariRiwayat) history.pushState({ peta: 1 }, "", "#peta");
+    setTimeout(() => window.ALR_PETA?.map.invalidateSize(), 60);
+    setTimeout(() => window.ALR_PETA?.map.invalidateSize(), 400);
+  }
+  pasangPenuh();
+  window.addEventListener("popstate", () => { if (document.body.classList.contains("peta-penuh") && location.hash !== "#peta") penuh(false, true); });
+  if (location.hash === "#peta") { history.replaceState(null, "", location.pathname); setTimeout(() => penuh(true), 300); }
+
+  // ---------- ikon menu 3D ----------
+  const IKON3D = {
+    trigger: ["#FF8A65", "#D32F2F", '<path d="M32 15 50 46a3 3 0 0 1-2.6 4.5H16.6A3 3 0 0 1 14 46z" fill="#fff"/><path d="M32 18.5 47.4 45.3a2 2 0 0 1-1.7 3H18.3a2 2 0 0 1-1.7-3z" fill="#FFE9E3"/><rect x="29.4" y="27" width="5.2" height="12.5" rx="2.6" fill="#D32F2F"/><circle cx="32" cy="44" r="2.8" fill="#D32F2F"/>'],
+    km: ["#FFE082", "#F2A900", '<path d="M26 14h12l12 38H14z" fill="#2B3134"/><path d="M26 14h12l1 3H25z" fill="#3D4549"/><path d="M14 52 26 14M50 52 38 14" stroke="#fff" stroke-width="2.4"/><path d="M32 18v5M32 28v6M32 39v8" stroke="#FFD54F" stroke-width="3" stroke-linecap="round"/>'],
+    rr: ["#7FE3A0", "#1E8E3E", '<circle cx="32" cy="33" r="17" fill="#263238"/><circle cx="32" cy="33" r="17" fill="none" stroke="#37474F" stroke-width="4" stroke-dasharray="3 3.2"/><circle cx="32" cy="33" r="9" fill="#CFD8DC"/><circle cx="32" cy="33" r="9" fill="none" stroke="#fff" stroke-width="1.5" opacity=".7"/><circle cx="32" cy="33" r="3.2" fill="#607D8B"/><path d="M8 50h48" stroke="#14532D" stroke-width="3" stroke-linecap="round" opacity=".5"/>'],
+    hujan: ["#8FD3FF", "#2A78D6", '<path d="M20 38h24a8 8 0 0 0 .8-16 11 11 0 0 0-21.2 2.6A6.8 6.8 0 0 0 20 38z" fill="#fff"/><path d="M22 36h21a6 6 0 0 0 4.4-2" stroke="#D6ECFF" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M24 43l-2.5 6M32 43l-2.5 6M40 43l-2.5 6" stroke="#E3F4FF" stroke-width="3.4" stroke-linecap="round"/>'],
+    grafik: ["#A5B4FF", "#4B4FD6", '<rect x="15" y="32" width="9" height="17" rx="2.5" fill="#fff"/><rect x="27.5" y="23" width="9" height="26" rx="2.5" fill="#fff"/><rect x="40" y="28" width="9" height="21" rx="2.5" fill="#fff"/><rect x="15" y="32" width="9" height="5" rx="2.5" fill="#FFB74D"/><rect x="27.5" y="23" width="9" height="5" rx="2.5" fill="#4ADE80"/><rect x="40" y="28" width="9" height="5" rx="2.5" fill="#F87171"/><path d="M14 20 26 15l9 5 13-7" stroke="#FFE082" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'],
+    laporan: ["#6EE7F0", "#0E8FA0", '<path d="M14 24a4 4 0 0 1 4-4h6l3-4h10l3 4h6a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4z" fill="#fff"/><circle cx="32" cy="34" r="9.5" fill="#0E5E6A"/><circle cx="32" cy="34" r="6" fill="#26C6DA"/><circle cx="29.8" cy="31.8" r="2" fill="#fff" opacity=".85"/><circle cx="44" cy="26" r="2" fill="#FFB74D"/>'],
+    pengguna: ["#FFC48A", "#E86A1A", '<rect x="16" y="13" width="32" height="40" rx="5" fill="#fff"/><rect x="27" y="10" width="10" height="6" rx="2" fill="#5D4037"/><circle cx="32" cy="28" r="6.5" fill="#FFB074"/><path d="M21.5 44c1.6-6 5.6-8.5 10.5-8.5S41 38 42.5 44z" fill="#E86A1A"/><rect x="22" y="47" width="20" height="2.6" rx="1.3" fill="#FFD9BD"/>'],
+  };
+  function ikon3d(nama) {
+    const [a, b, isi] = IKON3D[nama], id = "i3d-" + nama;
+    return `<svg class="ikon3d" viewBox="0 0 64 64" aria-hidden="true"><defs>
+      <linearGradient id="${id}-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>
+      <linearGradient id="${id}-k" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      <filter id="${id}-s" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="2.2" stdDeviation="1.6" flood-color="#000" flood-opacity=".3"/></filter></defs>
+      <rect x="2" y="5" width="60" height="57" rx="17" fill="${b}"/><rect x="2" y="5" width="60" height="57" rx="17" fill="#000" opacity=".22"/>
+      <rect x="2" y="2" width="60" height="57" rx="17" fill="url(#${id}-g)"/>
+      <path d="M2 19A17 17 0 0 1 19 2h26a17 17 0 0 1 17 17v3c-19 7-41 7-60 0z" fill="url(#${id}-k)"/>
+      <g filter="url(#${id}-s)">${isi}</g></svg>`;
+  }
+  document.querySelectorAll(".ubin[data-buka]").forEach((u) => { const n = u.dataset.buka, g = u.querySelector(".u-gb"); if (IKON3D[n] && g) { const badge = g.querySelector(".u-badge"); g.innerHTML = ikon3d(n); if (badge) u.appendChild(badge); } });
 
   // klik halus untuk tombol-tombol lain
-  document.addEventListener("click", (e) => { if (e.target.closest(".chip, .chip-d, details > summary, .appbar button:not(#btnSuara):not(#btnPanel)")) klik(); });
+  document.addEventListener("click", (e) => { if (e.target.closest(".chip, .chip-d, details > summary, .appbar button:not(#btnProfil):not(#btnPanel)")) klik(); });
 })();

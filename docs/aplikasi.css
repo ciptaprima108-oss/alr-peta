@@ -125,3 +125,67 @@ rect.kotak-km:hover { opacity: .85; }
   .menu .ubin, .sp-isi, .u-badge, .layar:not([hidden]) .layar-isi, .sp-bar i { animation: none; }
 }
 @media (max-width: 430px) { .appbar .merek small { display: none; } .appbar .tombol { gap: 5px; } .appbar .tombol button { padding: 0 10px; } }
+
+/* ---------- ikon menu 3D & badge ---------- */
+.ubin .u-gb { position: static; width: 62px; height: 62px; background: none; margin-bottom: 10px; }
+.ikon3d { width: 62px; height: 62px; display: block; filter: drop-shadow(0 6px 10px rgba(20,25,26,.18)); transition: transform .2s var(--geser); }
+.ubin:active .ikon3d { transform: scale(.92) rotate(-3deg); }
+.ubin .u-badge { top: 14px; right: 14px; border: 0; height: 30px; min-width: 30px; line-height: 30px; font-size: 16px; padding: 0 9px; border-radius: 15px; box-sizing: border-box;
+  background: linear-gradient(#FF5A47, #C8321F); box-shadow: 0 3px 8px rgba(200,50,31,.45), inset 0 1px 0 rgba(255,255,255,.35); }
+
+/* ---------- tombol profil di atas ---------- */
+.appbar .tombol button.profil-btn { position: relative; border-radius: 50%; width: 46px; background: linear-gradient(#FFC48A, #E86A1A); color: #fff; font: 700 18px var(--judul); box-shadow: inset 0 1px 0 rgba(255,255,255,.4); }
+.appbar .tombol button.profil-btn .ik { font-size: 24px; }
+.titik-merah { position: absolute; top: 2px; right: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--kuning); border: 2px solid var(--aspal); }
+@media (max-width: 760px) { .appbar .tombol button.profil-btn { width: 42px; height: 42px; } }
+
+/* ---------- profil & pengaturan ---------- */
+.profil { max-width: 680px; }
+.pf-kepala { background: var(--kertas); border-radius: 20px; box-shadow: var(--bayang); overflow: hidden; padding-bottom: 16px; }
+.pf-sampul { height: 92px; background: linear-gradient(135deg, var(--aspal) 0%, #3A4245 60%, #59471A 100%); border-bottom: 5px solid var(--kuning); display: flex; justify-content: flex-end; padding: 12px; }
+.pf-sampul img { height: 34px; background: #fff; border-radius: 8px; padding: 3px 7px; }
+.pf-kartu { display: flex; flex-direction: column; align-items: center; text-align: center; margin-top: -52px; padding: 0 16px; }
+.pf-kartu .pf-foto { width: 96px; height: 96px; border-radius: 50%; background: linear-gradient(#FFC48A, #E86A1A); color: #fff; display: grid; place-items: center; font-size: 50px; border: 5px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+.pf-kartu b { font: 700 26px var(--judul); margin-top: 8px; } .pf-kartu small { color: var(--pudar); font-size: 15px; max-width: 34ch; }
+.pf-kartu .idc { width: 100%; max-width: 300px; margin: 0 auto; box-shadow: 0 6px 20px rgba(0,0,0,.18); }
+.pf-pilih { display: grid; gap: 4px; margin: 14px 16px 0; font: 600 15px var(--isi); color: var(--pudar); }
+.pf-pilih select { font: 17px var(--isi); padding: 10px 12px; border: 2px solid var(--garis); border-radius: 12px; background: #fff; min-height: 50px; color: var(--tinta); }
+.pf-judul { font: 700 22px var(--judul); margin: 22px 4px 8px; }
+.pf-grup { background: var(--kertas); border-radius: 18px; box-shadow: var(--bayang); overflow: hidden; }
+.pf-baris { display: flex; align-items: center; gap: 14px; padding: 14px 16px; width: 100%; text-align: left; background: none; color: var(--tinta); }
+.pf-baris + .pf-baris { border-top: 1px solid var(--garis); }
+.pf-baris > div { flex: 1; min-width: 0; } .pf-baris b { display: block; font: 700 19px var(--judul); } .pf-baris small { display: block; font-size: 14.5px; color: var(--pudar); line-height: 1.4; }
+.pf-ik { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; font-size: 22px; color: #fff; flex-shrink: 0;
+  background: linear-gradient(color-mix(in srgb, var(--w) 70%, #fff), var(--w)); box-shadow: 0 3px 8px color-mix(in srgb, var(--w) 40%, transparent), inset 0 1px 0 rgba(255,255,255,.35); }
+.pf-tombol { background: var(--aspal); color: #fff; font: 700 15px var(--isi); padding: 10px 14px; border-radius: 12px; flex-shrink: 0; }
+.pf-tombol.abu { background: var(--debu); color: var(--tinta); }
+.pf-panah { font-size: 22px; color: var(--pudar); }
+.saklar { position: relative; width: 56px; height: 32px; flex-shrink: 0; }
+.saklar input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.saklar i { position: absolute; inset: 0; border-radius: 16px; background: #C9CEC8; transition: background .2s; pointer-events: none; }
+.saklar i::after { content: ""; position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 50%; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,.25); transition: transform .2s var(--geser); }
+.saklar input:checked + i { background: var(--hijau); } .saklar input:checked + i::after { transform: translateX(24px); }
+.saklar input:focus-visible + i { outline: 3px solid var(--kuning); outline-offset: 2px; }
+
+/* ---------- peta: layar penuh & label ---------- */
+.tombol-penuh { width: 44px; height: 44px; border-radius: 10px; background: #fff; color: var(--aspal); border: 2px solid rgba(0,0,0,.2); display: grid; place-items: center; padding: 9px; cursor: pointer; }
+.tombol-penuh svg { width: 100%; height: 100%; }
+body.peta-penuh { overflow: hidden; }
+body.peta-penuh main { position: fixed; inset: 0; height: 100vh; height: 100dvh; min-height: 0; z-index: 2400; border: 0; }
+body.peta-penuh .tombol-penuh { background: var(--kuning); }
+.pos-titik { position: absolute; left: -6px; top: -6px; width: 12px; height: 12px; border-radius: 50%; background: var(--kuning); border: 3px solid var(--aspal); }
+.pos-label { position: absolute; white-space: nowrap; background: var(--kuning); color: var(--aspal); border: 2px solid var(--aspal); font: 700 16px/1.2 var(--judul); padding: 2px 8px; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,.35); }
+.pos-kanan { left: 10px; top: 0; transform: translateY(-50%); }
+.pos-kanan-bawah { left: 8px; top: 8px; }
+.pos-kiri { right: 10px; top: 0; transform: translateY(-50%); }
+.pos-kiri-atas { right: 8px; bottom: 8px; }
+/* legenda di HP: kecil dulu, ketuk untuk buka */
+@media (max-width: 760px) {
+  .legend { padding: 8px 12px; }
+  .legend > div { display: none; }
+  .legend b { margin: 0; font-size: 16px; display: flex; align-items: center; gap: 6px; }
+  .legend b::after { content: "+"; font: 700 18px var(--isi); color: var(--pudar); }
+  .legend.buka > div:not(.lengkap), .legend.buka .lengkap { display: block; }
+  .legend.buka b { margin-bottom: 4px; } .legend.buka b::after { content: "–"; }
+}
+.pf-kepala:has(.idc) .pf-sampul { display: none; } .pf-kartu:has(.idc) { margin-top: 16px; }

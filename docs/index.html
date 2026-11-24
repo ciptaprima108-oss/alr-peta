@@ -27,9 +27,9 @@
 <header class="appbar"><div class="appbar-isi">
   <a class="merek" href="./"><span class="logo logo-alr"><img src="ikon/logo_alr.png" alt="Logo ALR"></span><span><b>ALR</b><small id="info">memuat data...</small></span></a>
   <div class="kanan tombol">
-    <button id="btnSuara" class="ikon-saja" type="button"></button>
     <button id="btnLokasi" title="Cari posisi saya di jalan ALR"><svg class="ik"><use href="#i-lokasi"/></svg><span class="teks-hp">Lokasi saya</span></button>
-    <button id="btnPengawas" title="Pengguna ALR"><svg class="ik"><use href="#i-orang"/></svg><span class="teks-hp">Pengguna</span></button>
+    <button id="btnProfil" class="ikon-saja profil-btn" type="button" title="Profil & pengaturan" aria-label="Profil & pengaturan"><span id="profilInisial"><svg class="ik"><use href="#i-orang"/></svg></span><i class="titik-merah" id="profilTitik" hidden></i></button>
+    <button id="btnPengawas" hidden title="Pengguna ALR"><svg class="ik"><use href="#i-orang"/></svg><span class="teks-hp">Pengguna</span></button>
     <button id="btnPanel" class="utama"><svg class="ik"><use href="#i-awas"/></svg><span class="teks-hp">Trigger</span> <span id="nTrig" class="badge">0</span></button>
   </div>
 </div></header>
@@ -101,11 +101,6 @@
     <button type="button" class="ubin u-biru" data-buka="grafik"><span class="u-gb"><svg class="ik"><use href="#i-grafik"/></svg></span><b>Nilai &amp; grafik</b><small id="subGrafik">Kerja DT per hari</small></button>
     <button type="button" class="ubin u-biru2" data-buka="laporan"><span class="u-gb"><svg class="ik"><use href="#i-kamera"/></svg><i class="u-badge" id="ubinLap" hidden>0</i></span><b>Laporan lapangan</b><small id="subLap">Foto dan video dari pengawas</small></button>
     <button type="button" class="ubin u-abu" data-buka="pengguna"><span class="u-gb"><svg class="ik"><use href="#i-orang"/></svg></span><b>Pengguna</b><small id="subPengguna">ID card per divisi</small></button>
-  </div>
-  <div class="notif-ajak" id="notifAjak" hidden>
-    <span class="u-gb"><svg class="ik"><use href="#i-lonceng"/></svg></span>
-    <div><b>Nyalakan notifikasi ALR</b><small id="notifAjakIsi">Dapat pemberitahuan kalau ada trigger atau laporan baru.</small></div>
-    <button type="button" id="btnNotif">Nyalakan</button>
   </div>
 </section>
 <section class="lyr kondisi" id="lyr-trigger" hidden aria-labelledby="lyrJ-trigger">
@@ -250,6 +245,35 @@
       <div style="background:var(--merah-muda)"><i style="background:var(--merah)"></i><div><b>Perlu perbaikan</b>Nilai di bawah 50</div></div>
     </div>
     <p class="catatan" id="catatan"></p></section>
+  </div>
+</section>
+<section class="lyr kondisi" id="lyr-profil" hidden aria-labelledby="lyrJ-profil">
+  <div class="lyr-atas"><button type="button" class="kembali" data-tutup><svg class="ik"><use href="#i-kiri"/></svg><span>Kembali</span></button>
+    <h2 id="lyrJ-profil"><span class="lyr-gb" style="--w:#E86A1A"><svg class="ik"><use href="#i-orang"/></svg></span>Profil &amp; pengaturan</h2></div>
+  <div class="lyr-badan profil">
+    <div class="pf-kepala">
+      <div class="pf-sampul"><img src="ikon/logo_alr.png" alt="ALR"></div>
+      <div id="pfKartu" class="pf-kartu"><span class="pf-foto"><svg class="ik"><use href="#i-orang"/></svg></span><b>Belum memilih nama</b><small>Pilih nama kamu di bawah supaya ID card tampil di sini.</small></div>
+      <label class="pf-pilih">Saya adalah<select id="pfSaya"><option value="">Pilih nama...</option></select></label>
+    </div>
+
+    <h3 class="pf-judul">Pemberitahuan</h3>
+    <div class="pf-grup">
+      <div class="pf-baris"><span class="pf-ik" style="--w:#E5341F"><svg class="ik"><use href="#i-lonceng"/></svg></span><div><b>Notifikasi di HP</b><small id="pfNotifKet">Pemberitahuan "ALR: ..." saat ada jalan merah atau laporan baru.</small></div>
+        <button type="button" class="pf-tombol" id="btnNotif">Nyalakan</button></div>
+      <div class="pf-baris"><span class="pf-ik" style="--w:#2a78d6"><svg class="ik"><use href="#i-suara"/></svg></span><div><b>Suara ALR</b><small>Suara cewek "ALR, ada info jalan" dan "ALR, pesan masuk".</small></div>
+        <label class="saklar"><input type="checkbox" id="swSuara"><i></i></label></div>
+      <div class="pf-baris"><span class="pf-ik" style="--w:#7A5AF8"><svg class="ik"><use href="#i-speed"/></svg></span><div><b>Getar</b><small>HP bergetar saat ada pemberitahuan (Android).</small></div>
+        <label class="saklar"><input type="checkbox" id="swGetar"><i></i></label></div>
+      <div class="pf-baris"><span class="pf-ik" style="--w:#2E7D32"><svg class="ik"><use href="#i-info"/></svg></span><div><b>Coba suara &amp; notifikasi</b><small>Dengar contoh pemberitahuan ALR.</small></div>
+        <button type="button" class="pf-tombol abu" id="btnCoba">Coba</button></div>
+    </div>
+
+    <h3 class="pf-judul">Lainnya</h3>
+    <div class="pf-grup">
+      <button type="button" class="pf-baris pf-link" data-buka="pengguna"><span class="pf-ik" style="--w:#E86A1A"><svg class="ik"><use href="#i-orang"/></svg></span><div><b>Pengguna ALR</b><small id="pfJmlPengguna">ID card semua pengguna per divisi</small></div><svg class="ik pf-panah"><use href="#i-kanan"/></svg></button>
+      <div class="pf-baris"><span class="pf-ik" style="--w:#23282A"><svg class="ik"><use href="#i-info"/></svg></span><div><b>Tentang aplikasi</b><small id="pfTentang">ALR, jalan hauling BSR ke 107.</small></div></div>
+    </div>
   </div>
 </section>
 <div id="filterSimpan" hidden>
