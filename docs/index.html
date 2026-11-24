@@ -148,6 +148,15 @@
     <div class="leg-strip"><span><i class="h"></i>Hijau: lancar / sebentar</span><span><i class="k"></i>Kuning: cukup lama</span><span><i class="m"></i>Merah: paling lama tertahan</span><span><i class="z"></i>Arsir: zona antre / parkir</span></div>
     <div id="topKm"></div>
   </div></section>
+  <section class="jalur rrsec" id="rr" aria-labelledby="rrJudul"><div class="dalam">
+    <div class="judul-bagian"><span class="gb"><svg class="ik"><use href="#i-truk"/></svg></span><div><h2 id="rrJudul">Rolling resistance &amp; traksi per KM</h2>
+    <p>Seberapa berat jalan dilawan ban DT, dan di KM mana DT bisa selip kalau jalan basah. Ini perkiraan dari kecepatan DT bermuatan dan tanjakan, bukan hasil ukur alat.</p></div></div>
+    <div id="rrTiles" class="rr-tiles"></div>
+    <div class="gulir"><svg id="rrStrip" viewBox="0 0 1000 300" role="img" aria-label="RR dan traksi per kilometer"></svg></div>
+    <div class="geser-hint">Geser pita ke kiri untuk melihat sampai 107</div>
+    <div class="leg-strip"><span><i class="h"></i>RR ringan / traksi aman</span><span><i class="k"></i>RR sedang / waspada saat basah</span><span><i class="m"></i>RR berat / rawan selip saat basah</span><span><i class="z"></i>Arsir: zona antre / parkir</span></div>
+    <details class="cara-rr"><summary>Cara menghitung dan angka yang dipakai</summary><div id="rrCara"></div></details>
+  </div></section>
   <div class="judul-bagian bagian"><span class="gb"><svg class="ik"><use href="#i-lokasi"/></svg></span><div><h2>Rincian per kilometer</h2>
     <p>Berapa jam unit tertahan, seberapa cepat DT jalan, dan kapan kejadiannya.</p></div></div>
   <div class="filter arahF"><div class="grup"><span class="lbl"><svg class="ik"><use href="#i-rit"/></svg>Arah</span>
@@ -204,6 +213,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="app.js?v=202611240419"></script>
+<script src="rr.js?v=202611240419"></script>
 <script src="grafik.js?v=202611240419"></script>
 <script src="cuaca.js?v=202611240419"></script>
 </body>
