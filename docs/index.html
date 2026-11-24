@@ -37,14 +37,22 @@
     </section>
     <section id="secPengawas">
       <h3><span class="tanda" style="background:var(--kuning)"></span>Pengawas ALR / RM</h3>
-      <p class="kecil">Yang terdaftar dapat notif tiap ada trigger merah. Tambah atau hapus diproses otomatis kalau diajukan oleh admin.</p>
+      <p class="kecil">Yang terdaftar dapat notif tiap ada trigger merah. Pengawas perlu punya akun GitHub (daftar gratis di github.com/signup).</p>
       <div id="listPengawas"><p class="kecil">memuat...</p></div>
-      <form id="formPengawas" class="form-p">
-        <label>Username GitHub<input id="pUser" required placeholder="contoh: budi-alr" autocomplete="off" pattern="[A-Za-z0-9-]+"></label>
+      <div id="adminPesan" class="kecil" aria-live="polite"></div>
+      <form id="formToken" class="form-p"><div id="adminMasuk">
+        <p class="kecil"><b>Admin:</b> masuk sekali untuk bisa menambah atau menghapus pengawas dari sini.
+          <a target="_blank" href="https://github.com/settings/personal-access-tokens/new?name=Peta%20ALR&amp;description=Kelola%20pengawas%20dari%20peta%20ALR&amp;target_name=ciptaprima108-oss&amp;expires_in=365&amp;issues=write&amp;contents=read">Buat kode akses di GitHub</a>
+          (pilih repo <b>alr-peta</b>, izin <b>Issues: Read and write</b>), lalu tempel di bawah.</p>
+        <label>Kode akses GitHub<input id="isiToken" type="password" required placeholder="github_pat_..." autocomplete="off"></label>
+        <button type="submit" class="kirim">Masuk sebagai admin</button>
+      </div></form>
+      <div id="adminAktif" class="kecil" hidden>Masuk sebagai <b id="adminNama"></b>. <button type="button" id="btnKeluar" class="link">Keluar</button></div>
+      <form id="formPengawas" class="form-p" hidden>
+        <label>Username GitHub pengawas<input id="pUser" required placeholder="contoh: budi-alr" autocomplete="off" pattern="@?[A-Za-z0-9-]+"></label>
         <label>Nama<input id="pNama" placeholder="contoh: Budi Santoso"></label>
         <label>Jabatan<select id="pJab"><option>Pengawas ALR</option><option>RM</option><option>Lainnya</option></select></label>
         <button type="submit" class="kirim">Tambah pengawas</button>
-        <p class="kecil">Setelah ini GitHub terbuka dengan isian sudah lengkap. Tinggal tekan <b>Create</b>. Daftar di atas diperbarui sekitar 1 menit kemudian.</p>
       </form>
     </section>
     <section>

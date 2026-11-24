@@ -203,24 +203,83 @@
   // ---------- pengawas (dibaca langsung dari config.json di repo, jadi langsung update tanpa deploy ulang) ----------
   const linkPengawas = (aksi, user = "", nama = "", jabatan = "") => `https://github.com/${REPO}/issues/new?` + new URLSearchParams({ template: "kelola_pengawas.yml",
     title: `[PENGAWAS] ${aksi} ${user}`.trim(), aksi, username: user, nama, jabatan, labels: "kelola-pengawas" });
+  // Admin masuk sekali pakai token GitHub (disimpan hanya di browser ini), lalu tambah/hapus pengawas langsung dari app.
+  const KUNCI = "alr_token";
+  const ambilToken = () => { try { return localStorage.getItem(KUNCI) || ""; } catch { return ""; } };
+  let ADMIN = null;
+  async function gh(path, opsi = {}) {
+    const r = await fetch(`https://api.github.com${path}`, { ...opsi, headers: { Accept: "application/vnd.github+json", Authorization: `Bearer ${ambilToken()}`, ...(opsi.headers || {}) } });
+    if (!r.ok) throw new Error(r.status === 401 ? "Token salah atau sudah kedaluwarsa" : r.status === 403 || r.status === 404 ? "Token tidak punya izin ke repo ini" : `GitHub menolak (${r.status})`);
+    return r.status === 204 ? null : r.json();
+  }
+  function tampilAdmin(pesan = "") {
+    $("adminMasuk").hidden = !!ADMIN; $("adminAktif").hidden = !ADMIN; $("formPengawas").hidden = !ADMIN;
+    if (ADMIN) $("adminNama").textContent = "@" + ADMIN;
+    $("adminPesan").innerHTML = pesan;
+  }
+  async function cekAdmin() {
+    if (!ambilToken()) { ADMIN = null; return tampilAdmin(); }
+    try {
+      const u = await gh("/user");
+      const izin = await gh(`/repos/${REPO}/collaborators/${u.login}/permission`);
+      if (!["admin", "maintain", "write"].includes(izin.permission)) throw new Error(`@${u.login} bukan admin repo ini`);
+      ADMIN = u.login; tampilAdmin();
+    } catch (e) { ADMIN = null; tampilAdmin(`<span class="salah">${esc(e.message)}.</span>`); }
+  }
+  $("formToken").onsubmit = async (e) => {
+    e.preventDefault();
+    try { localStorage.setItem(KUNCI, $("isiToken").value.trim()); } catch {}
+    $("isiToken").value = "";
+    await cekAdmin();
+    if (!ADMIN) try { localStorage.removeItem(KUNCI); } catch {}
+  };
+  $("btnKeluar").onclick = () => { try { localStorage.removeItem(KUNCI); } catch {} ADMIN = null; tampilAdmin("Sudah keluar."); };
+
+  async function kirimPengawas(aksi, user, nama = "", jabatan = "") {
+    const isi = (j, v) => `### ${j}\n\n${v || "_No response_"}\n\n`;
+    tampilAdmin(`Memproses ${aksi.toLowerCase()} @${esc(user)}...`);
+    try {
+      const i = await gh(`/repos/${REPO}/issues`, { method: "POST", body: JSON.stringify({ title: `[PENGAWAS] ${aksi} ${user}`, labels: ["kelola-pengawas"],
+        body: isi("Aksi", aksi) + isi("Username GitHub pengawas", user) + isi("Nama", nama) + isi("Jabatan", jabatan) }) });
+      // tunggu bot membalas (biasanya < 1 menit)
+      for (let n = 0; n < 30; n++) {
+        await new Promise((r) => setTimeout(r, 5000));
+        const k = await gh(`/repos/${REPO}/issues/${i.number}/comments`);
+        if (k.length) {
+          const t = k[k.length - 1].body.replace(/^[✅❌ℹ️]+\s*/u, "");
+          tampilAdmin(`<span class="${k[k.length - 1].body.startsWith("❌") ? "salah" : "oke"}">${esc(t)}</span>`);
+          return muatPengawas();
+        }
+      }
+      tampilAdmin(`Masih diproses. Cek lagi sebentar lagi.`);
+    } catch (e) { tampilAdmin(`<span class="salah">${esc(e.message)}.</span>`); }
+  }
   $("formPengawas").onsubmit = (e) => {
     e.preventDefault();
     const u = $("pUser").value.trim().replace(/^@/, "");
     if (!u) return;
-    window.open(linkPengawas("Tambah", u, $("pNama").value.trim(), $("pJab").value), "_blank");
+    kirimPengawas("Tambah", u, $("pNama").value.trim(), $("pJab").value);
+    $("formPengawas").reset();
+  };
+  $("listPengawas").onclick = (e) => {
+    const b = e.target.closest("[data-hapus]"); if (!b) return;
+    if (b.dataset.yakin) return kirimPengawas("Hapus", b.dataset.hapus);
+    b.dataset.yakin = "1"; b.textContent = "Yakin hapus?";
+    setTimeout(() => { if (b.isConnected) { delete b.dataset.yakin; b.textContent = "Hapus"; } }, 4000);
   };
   async function muatPengawas() {
     try {
-      const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/config.json?t=${Date.now()}`);
-      if (!r.ok) throw new Error(r.status);
-      const daftar = ((await r.json()).pengawas_github || []).map((p) => (typeof p === "string" ? { username: p } : p));
+      let cfg;
+      if (ADMIN) try { cfg = JSON.parse(decodeURIComponent(escape(atob((await gh(`/repos/${REPO}/contents/config.json?ref=main`)).content.replace(/\n/g, ""))))); } catch {}
+      if (!cfg) { const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/config.json?t=${Date.now()}`); if (!r.ok) throw new Error(r.status); cfg = await r.json(); }
+      const daftar = (cfg.pengawas_github || []).map((p) => (typeof p === "string" ? { username: p } : p));
       $("listPengawas").innerHTML = daftar.length ? daftar.map((p) => `<div class="pengawas"><span><b>${esc(p.nama || p.username)}</b>
           <span class="kecil">@${esc(p.username)}${p.jabatan ? ", " + esc(p.jabatan) : ""}</span></span>
-          <a class="hapus" target="_blank" href="${linkPengawas("Hapus", p.username)}">Hapus</a></div>`).join("")
-        : `<p class="kecil">Belum ada pengawas. Klik tombol di bawah untuk menambah.</p>`;
+          ${ADMIN ? `<button type="button" class="hapus" data-hapus="${esc(p.username)}">Hapus</button>` : ""}</div>`).join("")
+        : `<p class="kecil">Belum ada pengawas.</p>`;
     } catch (e) { $("listPengawas").innerHTML = `<p class="kecil">Daftar pengawas belum bisa dimuat.</p>`; }
   }
-  muatPengawas();
+  cekAdmin().then(muatPengawas);
   $("btnPengawas").onclick = () => { $("panel").classList.add("buka"); $("secPengawas").scrollIntoView({ behavior: "smooth" }); };
   $("btnPanel").onclick = () => $("panel").classList.toggle("buka");
   $("legend").onclick = () => $("legend").classList.toggle("buka");

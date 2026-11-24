@@ -89,3 +89,8 @@ a.btn.hijau { background: var(--aspal); color: #fff; margin-top: 8px; }
 .form-p input, .form-p select { font: 15px var(--isi); color: var(--tinta); padding: 8px 9px; border: 1px solid var(--garis); border-radius: 4px; background: #fff; }
 .form-p input:focus, .form-p select:focus { outline: 2px solid var(--kuning); border-color: var(--aspal); }
 .form-p .kirim { background: var(--aspal); color: #fff; font: 600 14.5px var(--isi); padding: 9px 12px; border-radius: 4px; }
+.pengawas button.hapus { background: none; color: var(--merah); font: 600 13px var(--isi); padding: 4px 6px; }
+button.link { background: none; padding: 0; color: var(--tinta); text-decoration: underline; font: inherit; }
+#adminPesan:not(:empty) { margin: 8px 0; padding: 7px 9px; background: var(--debu); border-radius: 3px; }
+.salah { color: var(--merah); } .oke { color: var(--hijau); }
+[hidden] { display: none !important; }
