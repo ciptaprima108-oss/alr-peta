@@ -106,8 +106,11 @@
     .filter { padding: 12px; gap: 10px; }
     .hero { grid-template-columns: 1fr; padding: 18px; text-align: left; }
     .meter svg { margin: 0 auto; width: 180px; }
-    .tiles { grid-template-columns: 1fr; gap: 10px; }
-    .tile .v { font-size: 38px; }
+    .tiles { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .tile { grid-template-columns: 1fr; padding: 14px; gap: 4px; }
+    .tile .gb { grid-row: auto; width: 44px; height: 44px; font-size: 24px; border-radius: 12px; }
+    .tile .v { font-size: 30px; }
+    .tile .b:has(.netral:only-child) { display: none; }
     .grid { grid-template-columns: 1fr; }
     .lampu3 { grid-template-columns: 1fr; }
     .judul-bagian h2 { font-size: 28px; }
@@ -149,4 +152,18 @@
 .cara-rr summary { cursor: pointer; font: 700 18px var(--judul); color: var(--kuning); }
 .cara-rr ol { padding-left: 22px; margin: 10px 0 6px; } .cara-rr li { margin-bottom: 6px; } .cara-rr p { margin: 6px 0 0; color: #B9C0B9; }
 @media (max-width: 640px) { #rrStrip { min-width: 900px; } .rr-tiles .rt b { font-size: 32px; } }
-.ket-strip { margin: 10px 0 0; font-size: 15.5px; color: #C3C9C3; max-width: 80ch; }
+.ket-strip { margin: 12px 0 0; font-size: 15.5px; line-height: 1.5; color: #C3C9C3; max-width: 80ch; background: #30373A; border-radius: 12px; padding: 10px 14px; }
+.ket-strip p { margin: 4px 0; } .ket-strip b { color: #fff; }
+/* bagian lipat "lihat grafik" */
+details.lebih { padding: 0; overflow: hidden; }
+details.lebih > summary { list-style: none; display: flex; align-items: center; gap: 14px; padding: 16px 20px; font: 700 22px/1.15 var(--judul); }
+details.lebih > summary::-webkit-details-marker { display: none; }
+details.lebih > summary .ik { width: 30px; height: 30px; flex-shrink: 0; color: var(--biru); }
+details.lebih > summary span { flex: 1; }
+details.lebih > summary small { display: block; font: 500 15px/1.4 var(--isi); color: var(--pudar); margin-top: 2px; }
+details.lebih > summary::after { content: "Buka"; font: 700 15px var(--isi); color: var(--aspal); background: var(--kuning); border-radius: 999px; padding: 8px 14px; flex-shrink: 0; }
+details.lebih[open] > summary::after { content: "Tutup"; background: #E3E6E1; }
+details.lebih[open] { padding-bottom: 16px; background: var(--debu, #EDEFEA); box-shadow: none; }
+details.lebih > .grid, details.lebih > .filter, details.lebih > .tbl { margin-left: 12px; margin-right: 12px; }
+#heat th:first-child, #heat td:first-child { position: sticky; left: 0; background: var(--kertas); z-index: 1; }
+.sub-jalur { margin: 22px 0 0; font: 700 22px var(--judul); color: #fff; }

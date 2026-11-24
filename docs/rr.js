@@ -62,7 +62,7 @@
     $("rrTiles").innerHTML = `
       <div class="rt"><span class="rt-l">RR rata-rata jalan ALR</span><b style="color:${WK[kls]}">${koma(D.rr_rata)}%</b><span>${NAMA_R[kls]}. Jalan hauling yang terawat biasanya 2 sampai 4%.</span></div>
       <div class="rt"><span class="rt-l">KM paling berat</span><b>${berat.map((k) => k.label.replace("KM ", "")).join(", ")}</b><span>${berat.map((k) => `KM ${k.km}-${k.km + 1}: ${koma(k.rr)}%`).join("<br>")}</span></div>
-      <div class="rt"><span class="rt-l">Waspada selip saat hujan</span><b>${rawan.length} KM</b><span>${rawan.length ? rawan.slice(0, 6).map((k) => `${k.label} (${NAMA_T[k.traksi]})`).join("<br>") : "Tidak ada KM yang menonjol."}</span></div>`;
+      <div class="rt"><span class="rt-l">Waspada selip saat hujan</span><b>${rawan.length} KM</b><span>${rawan.length ? "KM " + rawan.map((k) => k.label.replace("KM ", "")).join(", ") + (rawan.some((k) => k.traksi === "rawan") ? ". Yang merah paling rawan." : ". Hati-hati saat hujan.") : "Tidak ada KM yang menonjol."}</span></div>`;
 
     const A = D.asumsi;
     $("rrCara").innerHTML = `<ol>
@@ -77,6 +77,6 @@
 
   fetch("data/rr_traksi.json", { cache: "no-cache" }).then((r) => r.ok ? r.json() : null).then((d) => {
     if (!d) { const s = $("rr"); if (s) s.hidden = true; return; }
-    D = d; gambar();
+    D = d; window.ALR_RR = d; gambar(); window.dispatchEvent(new CustomEvent("alr:rr", { detail: d }));
   }).catch(() => { const s = $("rr"); if (s) s.hidden = true; });
 })();

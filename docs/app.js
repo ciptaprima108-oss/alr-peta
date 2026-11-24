@@ -23,7 +23,8 @@
   const lapisSTAkecil = L.layerGroup();               // label tiap 1 km, muncul kalau di-zoom
   map.on("zoomend", () => { if (map.getZoom() >= 14 && map.hasLayer(lapisSTA)) lapisSTAkecil.addTo(map); else lapisSTAkecil.remove(); });
   const lapisTiket = L.layerGroup().addTo(map);
-  L.control.layers({ "Satelit": satelit, "Peta jalan": jalanOSM }, { "Label STA": lapisSTA, "Tiket & laporan": lapisTiket }, { position: "topright" }).addTo(map);
+  const kontrolLapis = L.control.layers({ "Satelit": satelit, "Peta jalan": jalanOSM }, { "Label STA": lapisSTA, "Tiket & laporan": lapisTiket }, { position: "topright" }).addTo(map);
+  window.ALR_PETA = { map, kontrolLapis };   // dipakai cuaca.js (lapis hujan per KM)
   L.control.scale({ imperial: false }).addTo(map);
 
   let segmen = [], ringkasan = null;
@@ -81,11 +82,15 @@
       const [x, y] = f.geometry.coordinates, p = f.properties;
       if (p.jenis === "sta") {
         const besar = p.sta % 5 === 0;
-        L.circleMarker([y, x], { radius: besar ? 6 : 4, color: "#111", weight: 2, fillColor: besar ? "#111" : "#fff", fillOpacity: 1 })
-          .bindTooltip(besar ? `STA ${p.sta}` : String(p.sta), { permanent: true, direction: "right", className: "sta-label", offset: [6, 0] })
-          .addTo(besar ? lapisSTA : lapisSTAkecil);
+        const ujung = p.sta === 0 || gj.features.every((g) => g.properties.jenis !== "sta" || g.properties.sta <= p.sta);
+        const m = L.circleMarker([y, x], { radius: besar ? 6 : 4, color: "#111", weight: 2, fillColor: besar ? "#111" : "#fff", fillOpacity: 1 });
+        if (!ujung) m.bindTooltip(besar ? `STA ${p.sta}` : String(p.sta), { permanent: true, direction: "right", className: "sta-label", offset: [6, 0] });
+        m.addTo(besar ? lapisSTA : lapisSTAkecil);
       } else if (p.jenis === "pos") {
-        L.marker([y, x], { icon: L.divIcon({ className: "", html: `<div class="pos-label leaflet-tooltip">${esc(p.nama)}</div>`, iconSize: null }) }).addTo(map);
+        // arah label supaya tidak saling tumpuk: BSR ke kanan-bawah, Stockpile ke kanan, 107 ke kiri-atas
+        const arah = /^BSR/i.test(p.nama) ? "kanan-bawah" : /stockpile/i.test(p.nama) ? "kanan" : p.nama === "107" ? "kiri-atas" : "kanan";
+        L.marker([y, x], { zIndexOffset: 500, icon: L.divIcon({ className: "", iconSize: [0, 0], iconAnchor: [0, 0],
+          html: `<div class="pos-titik"></div><div class="pos-label pos-${arah}">${esc(p.nama)}</div>` }) }).addTo(map);
       } else {
         L.marker([y, x], { icon: L.divIcon({ className: "", iconSize: [30, 27], iconAnchor: [15, 14],
           html: `<svg viewBox="0 0 38 34" width="30" height="27" style="filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))"><path d="M19 2 36 32H2z" fill="#F2B705" stroke="#23282A" stroke-width="2.5" stroke-linejoin="round"/><path d="M19 12v9M19 25v1" stroke="#23282A" stroke-width="3.5" stroke-linecap="round"/></svg>` }) })
@@ -124,6 +129,7 @@
         i._lok = lokasiTiket(i._teks);
       }));
       tampilTiket(trig, lap);
+      window.dispatchEvent(new CustomEvent("alr:tiket", { detail: { trig, lap } }));
     } catch (e) {
       $("listTrig").innerHTML = `<p class="kecil">Tiket belum bisa dimuat (${esc(e.message)}). Daftar di bawah dari hasil hitung GPS.</p>` + kartuDariRingkasan();
     }
@@ -183,10 +189,13 @@
       if (e.target.closest("a")) return;
       const ll = k.dataset.ll; if (!ll) return;
       map.setView(ll.split(",").map(Number), 16);
-      if (innerWidth < 760) $("panel").classList.remove("buka");
     }));
   }
 
+  // dipakai layar aplikasi (aplikasi.js): geser peta ke STA tertentu
+  window.ALR_keSta = (sta, zoom = 15) => { const ll = posisiSta(sta); if (ll) map.setView(ll, zoom); return ll; };
+  window.ALR_linkLapor = linkLapor; window.ALR_linkNav = linkNav; window.ALR_posisiSta = (sta) => posisiSta(sta);
+  window.ALR_peta = map;
   // ---------- klik peta = lapor di titik itu ----------
   map.on("click", (e) => {
     const t = staTerdekat(e.latlng.lat, e.latlng.lng);
@@ -332,6 +341,8 @@
       for (const p of cfg.pengawas_github || []) { const q = typeof p === "string" ? { username: p } : p;
         PENGGUNA.push({ id: "", nama: q.nama || q.username, divisi: "Road Maintenance", jabatan: q.jabatan || "", username: q.username, akses: ["lihat", "lapor"] }); }
       tampilPengguna();
+      window.ALR_PENGGUNA = PENGGUNA; window.ALR_idCard = idCard;
+      window.dispatchEvent(new CustomEvent("alr:pengguna", { detail: PENGGUNA }));
     } catch (e) { $("listPengawas").innerHTML = `<p class="kecil">Daftar pengguna belum bisa dimuat.</p>`; }
   }
   cekAdmin().then(muatPengawas);
@@ -342,7 +353,6 @@
   $("tutupPengawas").onclick = tutupPengawas;
   layarP.addEventListener("click", (e) => { if (e.target === layarP) tutupPengawas(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !layarP.hidden) tutupPengawas(); });
-  $("btnPanel").onclick = () => $("panel").classList.toggle("buka");
   $("legend").onclick = () => $("legend").classList.toggle("buka");
 
   // ---------- muat data ----------
@@ -361,6 +371,7 @@
     $("listTrig").innerHTML = kartuDariRingkasan() || `<p class="kecil">Tidak ada trigger.</p>`;
     $("nTrig").textContent = (ring.trigger || []).length;
     benderaRingkasan();
+    window.dispatchEvent(new CustomEvent("alr:ringkasan", { detail: ring }));
     pasangKlikKartu();
     ambilTiket();
   }).catch((e) => { console.error(e.stack); $("info").textContent = "Gagal memuat data: " + e.message; });
