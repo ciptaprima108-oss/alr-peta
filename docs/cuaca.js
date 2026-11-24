@@ -107,7 +107,8 @@
       for (let i = 0; i < d.length; i += 4) nilai.push(tingkatPiksel(d[i], d[i + 1], d[i + 2]));
       const tengah = nilai[4] ?? nilai[0];
       const rata = nilai.reduce((a, b) => a + b, 0) / nilai.length;
-      hasil.push(Math.round(Math.max(tengah, rata)));
+      // satelit hanya lihat dinginnya puncak awan, tidak bisa ukur deras/tidaknya: paling tinggi "Hujan"
+      hasil.push(Math.min(3, Math.round(Math.max(tengah, rata))));
     }
     return { waktu: w.waktu, iso: w.iso, tingkat: hasil };
   }
