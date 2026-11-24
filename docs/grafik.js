@@ -37,30 +37,38 @@
 
   // ---------- rentang ----------
   function rentang() { return [tgl($("dari").value), tgl($("sampai").value)]; }
-  function setRentang(dari, sampai) {
-    $("dari").value = iso(dari < awalData ? awalData : dari); $("sampai").value = iso(sampai);
-    gambar();
+  // satu titik grafik otomatis mengikuti panjang rentang; bisa diganti lewat tombol di kartu grafik
+  function modeOtomatis(dari, sampai) { const n = Math.round((sampai - dari) / 864e5) + 1; return n <= 45 ? "hari" : n <= 150 ? "minggu" : "bulan"; }
+  function aturMode(m) { mode = m; document.querySelectorAll("[data-m]").forEach((x) => x.classList.toggle("aktif", x.dataset.m === m)); }
+  function teksPeriode(label) {
+    const [d, s] = rentang(), n = Math.round((s - d) / 864e5) + 1;
+    $("periodeTeks").innerHTML = `<b>${label}</b>: ${n === 1 ? fmtPanjang(d) : `${fmtPanjang(d)} sampai ${fmtPanjang(s)}`}`;
+  }
+  function setRentang(dari, sampai, label) {
+    if (dari < awalData) dari = awalData;
+    $("dari").value = iso(dari); $("sampai").value = iso(sampai);
+    aturMode(modeOtomatis(dari, sampai)); teksPeriode(label); gambar();
   }
   document.querySelectorAll("[data-p]").forEach((b) => b.onclick = () => {
     document.querySelectorAll("[data-p]").forEach((x) => x.classList.toggle("aktif", x === b));
     const p = b.dataset.p;
-    setRentang(p === "semua" ? awalData : tambah(akhirData, -(+p - 1)), akhirData);
+    setRentang(p === "semua" ? awalData : tambah(akhirData, -(+p - 1)), akhirData, b.textContent);
   });
+  $("btnUbahTgl").onclick = () => {
+    const t = $("tglSendiri"), buka = t.hidden; t.hidden = !buka;
+    $("btnUbahTgl").setAttribute("aria-expanded", buka); $("btnUbahTgl").textContent = buka ? "Tutup" : "Pilih tanggal";
+  };
   // tanggal "dari" tidak boleh sesudah "sampai" (dan sebaliknya); juga dijaga di dalam rentang data
   ["dari", "sampai"].forEach((id) => $(id).onchange = () => {
-    document.querySelectorAll("[data-p]").forEach((x) => x.classList.remove("aktif"));
     const jepit = (d) => d < awalData ? awalData : d > akhirData ? akhirData : d;
     let d = tgl($("dari").value), s = tgl($("sampai").value);
     if (isNaN(d) || isNaN(s)) return;
     d = jepit(d); s = jepit(s);
     if (d > s) { if (id === "dari") s = d; else d = s; }
-    $("dari").value = iso(d); $("sampai").value = iso(s);
-    gambar();
+    document.querySelectorAll("[data-p]").forEach((x) => x.classList.remove("aktif"));
+    setRentang(d, s, "Tanggal pilihan");
   });
-  document.querySelectorAll("[data-m]").forEach((b) => b.onclick = () => {
-    document.querySelectorAll("[data-m]").forEach((x) => x.classList.toggle("aktif", x === b));
-    mode = b.dataset.m; gambar();
-  });
+  document.querySelectorAll("[data-m]").forEach((b) => b.onclick = () => { aturMode(b.dataset.m); gambar(); });
 
   // ---------- periode (hari/minggu/bulan), tanggal tanpa data tetap ditampilkan ----------
   function periode(dari, sampai) {
@@ -364,7 +372,9 @@
     $("dari").min = $("sampai").min = iso(awalData); $("dari").max = $("sampai").max = iso(akhirData);
     $("catatan").innerHTML = `Tiap hari diberi nilai 0 sampai 100 dari kerja DT: makin cepat 1 rit, makin sedikit rit telat,
       makin kencang DT jalan, dan makin jarang DT berhenti di jalan, nilainya makin tinggi.
-      Data tersedia ${fmtPanjang(awalData)} - ${fmtPanjang(akhirData)}. Pilihan "7 hari / 30 hari / 3 bulan" dihitung mundur dari tanggal data terakhir.`;
+      Data tersedia ${fmtPanjang(awalData)} - ${fmtPanjang(akhirData)}. Pilihan "7 hari / 30 hari" dihitung mundur dari tanggal data terakhir.`;
+    const hariIni = iso(new Date()) === iso(akhirData);
+    if (!hariIni) $("pHariIni").textContent = "Hari terakhir";
     document.querySelector('[data-p="semua"]').click();
   }).catch((e) => { $("status").innerHTML = `<div><h2>Gagal memuat data</h2><p>${e.message}. Coba muat ulang halaman.</p></div>`; });
 })();

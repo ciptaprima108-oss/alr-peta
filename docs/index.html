@@ -199,6 +199,7 @@
   <div class="grid">
     <div class="kg lebar"><h3><svg class="ik"><use href="#i-grafik"/></svg>Nilai jalan</h3>
       <div class="ket">Hijau kondisi baik, kuning perlu perhatian, merah perlu perbaikan, abu-abu tidak ada data</div>
+      <div class="titik-per"><span>Satu titik grafik =</span><button class="chip kecil aktif" data-m="hari">1 hari</button><button class="chip kecil" data-m="minggu">1 minggu</button><button class="chip kecil" data-m="bulan">1 bulan</button></div>
       <div class="kanvas"><canvas id="cNilai"></canvas></div><div class="kosong-info" id="infoKosong" hidden></div></div>
   </div>
   <details class="lebih"><summary><svg class="ik"><use href="#i-lokasi"/></svg><span>Grafik per KM<small>Jam berhenti, kecepatan, dan tanggal kejadian per KM</small></span></summary>
@@ -277,13 +278,12 @@
   </div>
 </section>
 <div id="filterSimpan" hidden>
-  <div class="filter">
-    <div class="grup"><span class="lbl"><svg class="ik"><use href="#i-kalender"/></svg>Rentang</span>
-      <button class="chip" data-p="7">7 hari</button><button class="chip" data-p="30">30 hari</button>
-      <button class="chip" data-p="90">3 bulan</button><button class="chip" data-p="semua">Semua</button></div>
-    <div class="grup"><span class="lbl">Dari</span><input type="date" id="dari"><span class="lbl">sampai</span><input type="date" id="sampai"></div>
-    <div class="grup"><span class="lbl"><svg class="ik"><use href="#i-grafik"/></svg>Lihat per</span>
-      <button class="chip aktif" data-m="hari">Hari</button><button class="chip" data-m="minggu">Minggu</button><button class="chip" data-m="bulan">Bulan</button></div>
+  <div class="filter periodeF">
+    <div class="pilih-periode" role="group" aria-label="Tampilkan data">
+      <button class="chip" data-p="1" id="pHariIni">Hari ini</button><button class="chip" data-p="7">7 hari</button><button class="chip" data-p="30">30 hari</button><button class="chip" data-p="semua">Semua</button></div>
+    <div class="periode-ket"><svg class="ik"><use href="#i-kalender"/></svg><span id="periodeTeks">Semua data</span>
+      <button type="button" class="ubah-tgl" id="btnUbahTgl" aria-expanded="false">Pilih tanggal</button></div>
+    <div class="tgl-sendiri" id="tglSendiri" hidden><label><span>Dari</span><input type="date" id="dari"></label><label><span>Sampai</span><input type="date" id="sampai"></label></div>
   </div>
 
 </div>
