@@ -60,5 +60,18 @@
       "sta": 14.5,
       "jenis": "rawan"
     }
-  ]
+  ],
+  "kelayakan": {
+    "catatan": "Nilai 0-100 per hari = rata-rata skor yang datanya ada. >=75 Layak, 50-74 Perlu perhatian, <50 Tidak layak",
+    "rit_lambat_menit": 195,
+    "durasi_bagus_menit": 120,
+    "durasi_jelek_menit": 300,
+    "pct_lambat_jelek": 40,
+    "speed_bagus_kmh": 20,
+    "speed_jelek_kmh": 8,
+    "pct_berhenti_jelek": 40,
+    "batas_layak": 75,
+    "batas_perhatian": 50,
+    "min_titik_gps_harian": 30
+  }
 }

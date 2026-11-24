@@ -3,6 +3,7 @@ name: Hitung trigger & tayangkan peta
 on:
   push:
     branches: [main]
+    paths-ignore: ["docs/data/**"]
   workflow_dispatch:
   # schedule:            # aktifkan kalau nanti data GPS ditarik otomatis
   #   - cron: "0 * * * *"
@@ -32,6 +33,9 @@ jobs:
 
       - name: Hitung status jalan per segmen
         run: python scripts/hitung_trigger.py
+
+      - name: Hitung performa harian (grafik kelayakan)
+        run: cd scripts && python hitung_performa.py
 
       - name: Simpan hasil ke repo
         run: |

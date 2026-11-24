@@ -1,0 +1,658 @@
+{
+ "rit_lambat_menit": 195,
+ "kelayakan": {
+  "catatan": "Nilai 0-100 per hari = rata-rata skor yang datanya ada. >=75 Layak, 50-74 Perlu perhatian, <50 Tidak layak",
+  "rit_lambat_menit": 195,
+  "durasi_bagus_menit": 120,
+  "durasi_jelek_menit": 300,
+  "pct_lambat_jelek": 40,
+  "speed_bagus_kmh": 20,
+  "speed_jelek_kmh": 8,
+  "pct_berhenti_jelek": 40,
+  "batas_layak": 75,
+  "batas_perhatian": 50,
+  "min_titik_gps_harian": 30
+ },
+ "hari": [
+  {
+   "tanggal": "2026-09-24",
+   "n_trip": 4,
+   "median_menit": 95.0,
+   "p90_menit": 102.0,
+   "median_km": 24.4,
+   "n_lambat": 0,
+   "pct_lambat": 0.0,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 100.0,
+    "rit_lambat": 100.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 100,
+   "status": "Layak"
+  },
+  {
+   "tanggal": "2026-09-25",
+   "n_trip": 19,
+   "median_menit": 105.0,
+   "p90_menit": 116.0,
+   "median_km": 31.1,
+   "n_lambat": 0,
+   "pct_lambat": 0.0,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 100.0,
+    "rit_lambat": 100.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 100,
+   "status": "Layak"
+  },
+  {
+   "tanggal": "2026-09-26",
+   "n_trip": 27,
+   "median_menit": 115.0,
+   "p90_menit": 164.4,
+   "median_km": 29.4,
+   "n_lambat": 2,
+   "pct_lambat": 7.4,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 100.0,
+    "rit_lambat": 81.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 91,
+   "status": "Layak"
+  },
+  {
+   "tanggal": "2026-09-27",
+   "n_trip": 37,
+   "median_menit": 100.0,
+   "p90_menit": 409.0,
+   "median_km": 32.3,
+   "n_lambat": 7,
+   "pct_lambat": 18.9,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 100.0,
+    "rit_lambat": 53.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 76,
+   "status": "Layak"
+  },
+  {
+   "tanggal": "2026-09-28",
+   "n_trip": 14,
+   "median_menit": 100.0,
+   "p90_menit": 149.0,
+   "median_km": 31.5,
+   "n_lambat": 1,
+   "pct_lambat": 7.1,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 100.0,
+    "rit_lambat": 82.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 91,
+   "status": "Layak"
+  },
+  {
+   "tanggal": "2026-09-29",
+   "n_trip": 57,
+   "median_menit": 105.0,
+   "p90_menit": 358.0,
+   "median_km": 31.8,
+   "n_lambat": 11,
+   "pct_lambat": 19.3,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 100.0,
+    "rit_lambat": 52.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 76,
+   "status": "Layak"
+  },
+  {
+   "tanggal": "2026-09-30",
+   "n_trip": 57,
+   "median_menit": 135.0,
+   "p90_menit": 487.0,
+   "median_km": 29.3,
+   "n_lambat": 18,
+   "pct_lambat": 31.6,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 92.0,
+    "rit_lambat": 21.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 56,
+   "status": "Perlu perhatian"
+  },
+  {
+   "tanggal": "2026-10-01",
+   "n_trip": 47,
+   "median_menit": 110.0,
+   "p90_menit": 582.0,
+   "median_km": 28.8,
+   "n_lambat": 15,
+   "pct_lambat": 31.9,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 100.0,
+    "rit_lambat": 20.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 60,
+   "status": "Perlu perhatian"
+  },
+  {
+   "tanggal": "2026-10-02",
+   "n_trip": 44,
+   "median_menit": 107.5,
+   "p90_menit": 905.5,
+   "median_km": 29.7,
+   "n_lambat": 14,
+   "pct_lambat": 31.8,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 100.0,
+    "rit_lambat": 20.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 60,
+   "status": "Perlu perhatian"
+  },
+  {
+   "tanggal": "2026-10-03",
+   "n_trip": 52,
+   "median_menit": 112.5,
+   "p90_menit": 408.5,
+   "median_km": 27.7,
+   "n_lambat": 14,
+   "pct_lambat": 26.9,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 100.0,
+    "rit_lambat": 33.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 66,
+   "status": "Perlu perhatian"
+  },
+  {
+   "tanggal": "2026-10-04",
+   "n_trip": 56,
+   "median_menit": 120.0,
+   "p90_menit": 442.5,
+   "median_km": 26.7,
+   "n_lambat": 13,
+   "pct_lambat": 23.2,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 100.0,
+    "rit_lambat": 42.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 71,
+   "status": "Perlu perhatian"
+  },
+  {
+   "tanggal": "2026-10-05",
+   "n_trip": 79,
+   "median_menit": 120.0,
+   "p90_menit": 267.0,
+   "median_km": 25.0,
+   "n_lambat": 13,
+   "pct_lambat": 16.5,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 100.0,
+    "rit_lambat": 59.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 79,
+   "status": "Layak"
+  },
+  {
+   "tanggal": "2026-10-06",
+   "n_trip": 62,
+   "median_menit": 150.0,
+   "p90_menit": 552.0,
+   "median_km": 24.1,
+   "n_lambat": 22,
+   "pct_lambat": 35.5,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 83.0,
+    "rit_lambat": 11.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 47,
+   "status": "Tidak layak"
+  },
+  {
+   "tanggal": "2026-10-07",
+   "n_trip": 82,
+   "median_menit": 150.0,
+   "p90_menit": 495.0,
+   "median_km": 22.6,
+   "n_lambat": 27,
+   "pct_lambat": 32.9,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 83.0,
+    "rit_lambat": 18.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 51,
+   "status": "Perlu perhatian"
+  },
+  {
+   "tanggal": "2026-10-08",
+   "n_trip": 85,
+   "median_menit": 140.0,
+   "p90_menit": 515.0,
+   "median_km": 23.6,
+   "n_lambat": 23,
+   "pct_lambat": 27.1,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 89.0,
+    "rit_lambat": 32.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 61,
+   "status": "Perlu perhatian"
+  },
+  {
+   "tanggal": "2026-10-09",
+   "n_trip": 58,
+   "median_menit": 165.0,
+   "p90_menit": 505.0,
+   "median_km": 23.1,
+   "n_lambat": 21,
+   "pct_lambat": 36.2,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 75.0,
+    "rit_lambat": 9.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 42,
+   "status": "Tidak layak"
+  },
+  {
+   "tanggal": "2026-10-10",
+   "n_trip": 44,
+   "median_menit": 147.5,
+   "p90_menit": 435.5,
+   "median_km": 23.6,
+   "n_lambat": 18,
+   "pct_lambat": 40.9,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 85.0,
+    "rit_lambat": 0.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 42,
+   "status": "Tidak layak"
+  },
+  {
+   "tanggal": "2026-10-11",
+   "n_trip": 32,
+   "median_menit": 179.0,
+   "p90_menit": 647.5,
+   "median_km": 23.5,
+   "n_lambat": 13,
+   "pct_lambat": 40.6,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 67.0,
+    "rit_lambat": 0.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 34,
+   "status": "Tidak layak"
+  },
+  {
+   "tanggal": "2026-10-12",
+   "n_trip": 27,
+   "median_menit": 140.0,
+   "p90_menit": 418.0,
+   "median_km": 24.3,
+   "n_lambat": 8,
+   "pct_lambat": 29.6,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 89.0,
+    "rit_lambat": 26.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 57,
+   "status": "Perlu perhatian"
+  },
+  {
+   "tanggal": "2026-10-13",
+   "n_trip": 39,
+   "median_menit": 165.0,
+   "p90_menit": 274.0,
+   "median_km": 23.0,
+   "n_lambat": 12,
+   "pct_lambat": 30.8,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 75.0,
+    "rit_lambat": 23.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 49,
+   "status": "Tidak layak"
+  },
+  {
+   "tanggal": "2026-10-14",
+   "n_trip": 18,
+   "median_menit": 457.5,
+   "p90_menit": 746.5,
+   "median_km": 23.4,
+   "n_lambat": 10,
+   "pct_lambat": 55.6,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 0.0,
+    "rit_lambat": 0.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 0,
+   "status": "Tidak layak"
+  },
+  {
+   "tanggal": "2026-10-15",
+   "n_trip": 6,
+   "median_menit": 620.0,
+   "p90_menit": 1072.5,
+   "median_km": 25.0,
+   "n_lambat": 3,
+   "pct_lambat": 50.0,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 0.0,
+    "rit_lambat": 0.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 0,
+   "status": "Tidak layak"
+  },
+  {
+   "tanggal": "2026-10-16",
+   "n_trip": 10,
+   "median_menit": 250.0,
+   "p90_menit": 377.5,
+   "median_km": 30.5,
+   "n_lambat": 5,
+   "pct_lambat": 50.0,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 28.0,
+    "rit_lambat": 0.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 14,
+   "status": "Tidak layak"
+  },
+  {
+   "tanggal": "2026-10-17",
+   "n_trip": 55,
+   "median_menit": 125.0,
+   "p90_menit": 478.0,
+   "median_km": 30.7,
+   "n_lambat": 11,
+   "pct_lambat": 20.0,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 97.0,
+    "rit_lambat": 50.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 74,
+   "status": "Perlu perhatian"
+  },
+  {
+   "tanggal": "2026-10-18",
+   "n_trip": 77,
+   "median_menit": 110.0,
+   "p90_menit": 364.0,
+   "median_km": 29.3,
+   "n_lambat": 14,
+   "pct_lambat": 18.2,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 100.0,
+    "rit_lambat": 55.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 77,
+   "status": "Layak"
+  },
+  {
+   "tanggal": "2026-10-19",
+   "n_trip": 58,
+   "median_menit": 130.0,
+   "p90_menit": 418.0,
+   "median_km": 29.6,
+   "n_lambat": 14,
+   "pct_lambat": 24.1,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 94.0,
+    "rit_lambat": 40.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 67,
+   "status": "Perlu perhatian"
+  },
+  {
+   "tanggal": "2026-10-20",
+   "n_trip": 63,
+   "median_menit": 140.0,
+   "p90_menit": 507.0,
+   "median_km": 30.9,
+   "n_lambat": 17,
+   "pct_lambat": 27.0,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 89.0,
+    "rit_lambat": 33.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 61,
+   "status": "Perlu perhatian"
+  },
+  {
+   "tanggal": "2026-10-21",
+   "n_trip": 68,
+   "median_menit": 117.5,
+   "p90_menit": 593.0,
+   "median_km": 30.7,
+   "n_lambat": 15,
+   "pct_lambat": 22.1,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 100.0,
+    "rit_lambat": 45.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 72,
+   "status": "Perlu perhatian"
+  },
+  {
+   "tanggal": "2026-10-22",
+   "n_trip": 57,
+   "median_menit": 140.0,
+   "p90_menit": 420.0,
+   "median_km": 30.4,
+   "n_lambat": 16,
+   "pct_lambat": 28.1,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 89.0,
+    "rit_lambat": 30.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 59,
+   "status": "Perlu perhatian"
+  },
+  {
+   "tanggal": "2026-10-23",
+   "n_trip": 46,
+   "median_menit": 137.5,
+   "p90_menit": 340.0,
+   "median_km": 30.4,
+   "n_lambat": 11,
+   "pct_lambat": 23.9,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 90.0,
+    "rit_lambat": 40.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 65,
+   "status": "Perlu perhatian"
+  },
+  {
+   "tanggal": "2026-10-24",
+   "n_trip": 42,
+   "median_menit": 152.5,
+   "p90_menit": 400.0,
+   "median_km": 30.3,
+   "n_lambat": 13,
+   "pct_lambat": 31.0,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": null,
+   "skor": {
+    "durasi": 82.0,
+    "rit_lambat": 23.0,
+    "speed": null,
+    "berhenti": null
+   },
+   "indeks": 52,
+   "status": "Perlu perhatian"
+  },
+  {
+   "tanggal": "2026-11-22",
+   "n_trip": 22,
+   "median_menit": 137.5,
+   "p90_menit": 1213.0,
+   "median_km": 20.4,
+   "n_lambat": 7,
+   "pct_lambat": 31.8,
+   "gps_speed": 21.0,
+   "gps_pct_berhenti": 8.5,
+   "gps_unit": 14,
+   "skor": {
+    "durasi": 90.0,
+    "rit_lambat": 20.0,
+    "speed": 100.0,
+    "berhenti": 79.0
+   },
+   "indeks": 72,
+   "status": "Perlu perhatian"
+  }
+ ]
+}
