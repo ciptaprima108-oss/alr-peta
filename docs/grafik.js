@@ -217,14 +217,19 @@
     const WK = { h: "#3FA34D", k: "#F2B705", m: "#E5341F" }, TK = { h: "#fff", k: "#23282A", m: "#fff" };
     const judul = (k, l, j) => `${k.label}, jalur ${l.nama}${k.zona ? ", " + k.zona + " (tidak dihitung)" : ": " + j + " jam unit tertahan"}`;
     // --- laptop: pita mendatar dua lajur ---
-    const n = urut.length, x0 = 50, x1 = 950, w = (x1 - x0) / n, hgt = 34, yA = 58, yB = yA + hgt + 6;
+    const n = urut.length, x0 = 50, x1 = 950, w = (x1 - x0) / n, hgt = 58, yA = 58, yB = yA + hgt + 6;
+    const laju = (t, k) => t[k.km][4] ? t[k.km][3] / t[k.km][4] : null;      // kecepatan rata-rata saat jalan
     let g = `<defs><pattern id="arsir" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#454B4D"/><line x1="0" y1="0" x2="0" y2="7" stroke="#7A8183" stroke-width="2.5"/></pattern>
       <marker id="panah" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#F2B705"/></marker></defs>`;
     const lajurY = L2.length > 1 ? [yA, yB] : [yA];
     L2.forEach((l, li) => urut.forEach((k, i) => {
       const x = x0 + i * w, j = jamOf(l.tot, k), c = kelas(k, j), y = lajurY[li];
       g += `<rect x="${x + 1.5}" y="${y}" width="${w - 3}" height="${hgt}" rx="3" fill="${c === "z" ? "url(#arsir)" : WK[c]}"><title>${judul(k, l, j)}</title></rect>`;
-      if (c !== "z" && j > 0) g += `<text x="${x + w / 2}" y="${y + hgt / 2 + 5}" text-anchor="middle" font-size="${j >= 100 ? 13 : 15}" font-weight="700" fill="${TK[c]}" pointer-events="none">${j}</text>`;
+      if (c === "z") return;
+      const v = laju(l.tot, k), cx = x + w / 2;
+      g += `<text x="${cx}" y="${y + 20}" text-anchor="middle" font-size="${j >= 100 ? 14 : 16}" font-weight="700" fill="${TK[c]}" pointer-events="none">${j > 0 ? j : "0"}</text>`;
+      g += `<line x1="${x + 6}" y1="${y + 27}" x2="${x + w - 6}" y2="${y + 27}" stroke="${TK[c]}" stroke-opacity=".35" stroke-width="1"/>`;
+      if (v) g += `<text x="${cx}" y="${y + 39}" text-anchor="middle" font-size="10" fill="${TK[c]}" pointer-events="none">${Math.round(v)}km/j</text><text x="${cx}" y="${y + 52}" text-anchor="middle" font-size="10" fill="${TK[c]}" pointer-events="none">${Math.max(1, Math.round(60 / v))} mnt</text>`;
     }));
     const yb = lajurY[lajurY.length - 1] + hgt;
     if (L2.length > 1) g += `<line x1="${x0}" y1="${yA + hgt + 3}" x2="${x1}" y2="${yA + hgt + 3}" stroke="#F2B705" stroke-width="2.5" stroke-dasharray="12 8"/>`;
