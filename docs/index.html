@@ -19,6 +19,7 @@
 <link rel="stylesheet" href="tema.css?v=202611240419">
 <link rel="stylesheet" href="style.css?v=202611240419">
 <link rel="stylesheet" href="kondisi.css?v=202611240419">
+<link rel="stylesheet" href="cuaca.css?v=202611240419">
 </head>
 <body>
 <header class="appbar"><div class="appbar-isi">
@@ -57,6 +58,32 @@
 </div>
 </main>
 
+
+<div class="wrap kondisi cuaca" id="cuaca">
+  <div class="judul-bagian pembuka"><span class="gb gb-biru"><svg class="ik" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.4 1.5A3.3 3.3 0 0 0 7 14z"/><path d="M8 17l-1 3M12 17l-1 3M16 17l-1 3"/></svg></span><div><h2>Hujan di jalan ALR</h2>
+    <p id="cuacaWaktu">memuat cuaca...</p></div></div>
+  <section class="cuaca-banner" id="cuacaBanner"><div><b>Memuat cuaca...</b></div></section>
+  <div class="cuaca-pita-kotak">
+    <div class="cuaca-ujung"><span>BSR · KM 29</span><span>107 · KM 0</span></div>
+    <div class="gulir"><div class="cuaca-pita" id="cuacaPita"></div></div>
+    <div class="leg-cuaca"><span><i style="background:#F2B705"></i>Cerah</span><span><i style="background:#B8BFB7"></i>Berawan</span><span><i style="background:#8EC5EE"></i>Gerimis / mendung</span><span><i style="background:#2A78D6"></i>Hujan</span><span><i style="background:#1B2F8F"></i>Hujan lebat</span></div>
+  </div>
+  <h3 class="cuaca-sub">6 jam ke depan: peluang hujan per zona</h3>
+  <div class="cuaca-zona" id="cuacaZona"></div>
+  <div class="cuaca-bawah">
+    <div class="kg"><h3>Laporan hujan dari lapangan (2 jam terakhir)</h3>
+      <div id="cuacaLapor"><p class="kecil">memuat...</p></div>
+      <a class="kirim tombol-lapor" id="btnLaporHujan" target="_blank" rel="noopener" href="#">Lapor hujan di KM saya</a>
+      <p class="kecil">Laporan sopir dan pengawas paling akurat. Kalau ada laporan, warna KM itu (dan 1 KM di kiri-kanannya) ikut laporan.</p></div>
+    <div class="kg"><h3>Dari mana datanya?</h3>
+      <ol class="sumber">
+        <li><b>Laporan lapangan</b>: paling tepat per KM, berlaku 2 jam.</li>
+        <li><b>Foto awan satelit Himawari</b> (NASA/JMA): diperbarui tiap 10 menit, telat sekitar 40 menit, ketelitian sekitar 2 km. Awan berwarna di satelit = awan hujan.</li>
+        <li><b>Model cuaca Open-Meteo</b>: untuk ramalan 6 jam ke depan, ketelitian sekitar 10 km, jadi KM yang berdekatan biasanya sama.</li>
+      </ol>
+      <p class="kecil">Radar hujan gratis (RainViewer) tidak menjangkau ALR. Supaya benar-benar tepat per KM, paling bagus pasang 3 sampai 5 alat penakar hujan kecil di sepanjang jalan.</p></div>
+  </div>
+</div>
 
 <div class="layar" id="layarPengawas" hidden role="dialog" aria-modal="true" aria-labelledby="lpJudul">
   <div class="layar-isi">
@@ -178,5 +205,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="app.js?v=202611240419"></script>
 <script src="grafik.js?v=202611240419"></script>
+<script src="cuaca.js?v=202611240419"></script>
 </body>
 </html>

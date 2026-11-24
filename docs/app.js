@@ -23,7 +23,8 @@
   const lapisSTAkecil = L.layerGroup();               // label tiap 1 km, muncul kalau di-zoom
   map.on("zoomend", () => { if (map.getZoom() >= 14 && map.hasLayer(lapisSTA)) lapisSTAkecil.addTo(map); else lapisSTAkecil.remove(); });
   const lapisTiket = L.layerGroup().addTo(map);
-  L.control.layers({ "Satelit": satelit, "Peta jalan": jalanOSM }, { "Label STA": lapisSTA, "Tiket & laporan": lapisTiket }, { position: "topright" }).addTo(map);
+  const kontrolLapis = L.control.layers({ "Satelit": satelit, "Peta jalan": jalanOSM }, { "Label STA": lapisSTA, "Tiket & laporan": lapisTiket }, { position: "topright" }).addTo(map);
+  window.ALR_PETA = { map, kontrolLapis };   // dipakai cuaca.js (lapis hujan per KM)
   L.control.scale({ imperial: false }).addTo(map);
 
   let segmen = [], ringkasan = null;

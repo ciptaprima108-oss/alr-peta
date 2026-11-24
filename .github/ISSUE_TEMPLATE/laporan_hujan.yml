@@ -1,0 +1,29 @@
+name: Lapor hujan di jalan ALR
+description: Sopir / pengawas lapor hujan di KM tertentu. Tampil di peta ALR selama 2 jam.
+title: "[HUJAN] KM "
+labels: ["hujan"]
+body:
+  - type: input
+    id: km
+    attributes:
+      label: KM berapa?
+      description: Tulis juga di judul, contoh "[HUJAN] KM 14". KM 0 dekat 107, KM 29 BSR.
+      placeholder: "contoh: 14"
+    validations:
+      required: true
+  - type: dropdown
+    id: hujan
+    attributes:
+      label: Hujannya seperti apa?
+      options:
+        - Gerimis / rintik
+        - Hujan
+        - Hujan deras / petir
+        - Sudah reda
+    validations:
+      required: true
+  - type: textarea
+    id: ket
+    attributes:
+      label: Keterangan (boleh kosong)
+      placeholder: "contoh: jalan mulai licin, unit pelan-pelan"
