@@ -28,6 +28,16 @@
       "nama": "Area parkir / menginap",
       "sta_awal": 22.0,
       "sta_akhir": 23.1
+    },
+    {
+      "nama": "Parkir unit dekat 107 (STA 3+000 - 3+200)",
+      "sta_awal": 3.0,
+      "sta_akhir": 3.2
+    },
+    {
+      "nama": "Parkir unit dekat 107 (STA 3+600 - 3+900)",
+      "sta_awal": 3.6,
+      "sta_akhir": 3.9
     }
   ],
   "titik_penting": [

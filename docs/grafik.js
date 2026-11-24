@@ -163,6 +163,7 @@
     const urut = semuaUrut.filter((k) => !k.zona);                // zona antre/parkir tidak digambar di grafik (bukan masalah jalan)
     const zonaJam = {};
     semuaUrut.filter((k) => k.zona).forEach((k) => { const t = totSemua[k.km]; zonaJam[k.zona] = (zonaJam[k.zona] || 0) + t[1] + t[2]; });
+    for (let d = new Date(dari); d <= sampai; d = tambah(d, 1)) { const z = KM.zona_hari?.[iso(d)]; if (z) for (const n in z) { const nm = n.replace(/ \(STA.*\)$/, ""); zonaJam[nm] = (zonaJam[nm] || 0) + z[n]; } }
     const L = urut.map((k) => k.label + (k.zona ? "*" : "")), T = urut.map((k) => tot[k.km]);
     const speed = T.map((t) => t[4] ? s1(t[3] / t[4]) : null);
     const oA = opsi("jam"); oA.scales.x.stacked = oA.scales.y.stacked = true; oA.scales.x.ticks.autoSkip = false; oA.scales.x.ticks.maxRotation = 60;

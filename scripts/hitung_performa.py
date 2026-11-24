@@ -119,6 +119,14 @@ def per_km():
     g = arah_gps(g)
     g["km"] = g.sta.astype(int).clip(upper=nkm - 1)
     g["tg"] = g.waktu.dt.strftime("%Y-%m-%d")
+    g["zp"] = [ht.zona_bukan_jalan(x) for x in g.sta]                     # zona antre/parkir per titik
+    km_zona = {k for k in range(nkm) if ht.zona_bukan_jalan(k + 0.5)}
+    # KM biasa: buang titik yang jatuh di zona parkir kecil (mis. parkir dekat 107), simpan jamnya untuk info
+    lepas = g[g.zp.notna() & ~g.km.isin(km_zona)]
+    zona_hari = {}
+    for (tg, z), x in lepas[lepas.speed == 0].groupby(["tg", "zp"]):
+        zona_hari.setdefault(tg, {})[z] = int(len(x))
+    g = g.drop(lepas.index)
 
     def kumpul(x0):
         hari = {}
@@ -132,7 +140,7 @@ def per_km():
     arah = {"muatan": kumpul(g[g.arah == "m"]), "kosongan": kumpul(g[g.arah == "k"])}
     json.dump(dict(keterangan="hari[tanggal][km] = [titik GPS, jam berhenti mesin hidup, jam berhenti mesin mati, jumlah speed jalan, titik jalan, unit]; "
                               "arah.muatan = BSR->107, arah.kosongan = 107->BSR (ditebak dari gerak unit)",
-                   km=km, hari=hari, arah=arah), open(P("docs", "data", "per_km.json"), "w"), separators=(",", ":"))
+                   km=km, hari=hari, arah=arah, zona_hari=zona_hari), open(P("docs", "data", "per_km.json"), "w"), separators=(",", ":"))
     print(f"Per KM: {len(hari)} hari x {nkm} KM; arah: muatan {int((g.arah == 'm').sum())}, kosongan {int((g.arah == 'k').sum())}, tidak tahu {int(g.arah.isna().sum())} titik")
 
 
