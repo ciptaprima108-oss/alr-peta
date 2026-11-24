@@ -37,16 +37,23 @@
 
   // ---------- rentang ----------
   function rentang() { return [tgl($("dari").value), tgl($("sampai").value)]; }
+  // 1 pilihan saja: rentang menentukan sendiri titik grafiknya (<= 31 hari: per hari, <= 6 bulan: per minggu, lebih: per bulan)
+  function modeOtomatis() {
+    const n = Math.round((tgl($("sampai").value) - tgl($("dari").value)) / 864e5) + 1;
+    mode = n <= 31 ? "hari" : n <= 190 ? "minggu" : "bulan";
+    const ket = $("ketRentang");
+    if (ket) ket.textContent = `${fmtPanjang(tgl($("dari").value))} - ${fmtPanjang(tgl($("sampai").value))} · grafik per ${mode}`;
+  }
   function setRentang(dari, sampai) {
     $("dari").value = iso(dari < awalData ? awalData : dari); $("sampai").value = iso(sampai);
-    gambar();
+    modeOtomatis(); gambar();
   }
   document.querySelectorAll("[data-p]").forEach((b) => b.onclick = () => {
     document.querySelectorAll("[data-p]").forEach((x) => x.classList.toggle("aktif", x === b));
     const p = b.dataset.p;
     setRentang(p === "semua" ? awalData : tambah(akhirData, -(+p - 1)), akhirData);
   });
-  ["dari", "sampai"].forEach((id) => $(id).onchange = () => { document.querySelectorAll("[data-p]").forEach((x) => x.classList.remove("aktif")); gambar(); });
+  ["dari", "sampai"].forEach((id) => $(id).onchange = () => { document.querySelectorAll("[data-p]").forEach((x) => x.classList.remove("aktif")); modeOtomatis(); gambar(); });
   document.querySelectorAll("[data-m]").forEach((b) => b.onclick = () => {
     document.querySelectorAll("[data-m]").forEach((x) => x.classList.toggle("aktif", x === b));
     mode = b.dataset.m; gambar();
@@ -351,7 +358,7 @@
     $("dari").min = $("sampai").min = iso(awalData); $("dari").max = $("sampai").max = iso(akhirData);
     $("catatan").innerHTML = `Tiap hari diberi nilai 0 sampai 100 dari kerja DT: makin cepat 1 rit, makin sedikit rit telat,
       makin kencang DT jalan, dan makin jarang DT berhenti di jalan, nilainya makin tinggi.
-      Data tersedia ${fmtPanjang(awalData)} - ${fmtPanjang(akhirData)}. Pilihan "7 hari / 30 hari / 3 bulan" dihitung mundur dari tanggal data terakhir.`;
+      Data tersedia ${fmtPanjang(awalData)} - ${fmtPanjang(akhirData)}. Pilihan "7 hari / 30 hari / 3 bulan" dihitung mundur dari tanggal data terakhir. Grafik otomatis per hari (sampai 1 bulan), per minggu (sampai 6 bulan), atau per bulan.`;
     document.querySelector('[data-p="semua"]').click();
   }).catch((e) => { $("status").innerHTML = `<div><h2>Gagal memuat data</h2><p>${e.message}. Coba muat ulang halaman.</p></div>`; });
 })();

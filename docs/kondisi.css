@@ -167,3 +167,9 @@ details.lebih[open] { padding-bottom: 16px; background: var(--debu, #EDEFEA); bo
 details.lebih > .grid, details.lebih > .filter, details.lebih > .tbl { margin-left: 12px; margin-right: 12px; }
 #heat th:first-child, #heat td:first-child { position: sticky; left: 0; background: var(--kertas); z-index: 1; }
 .sub-jalur { margin: 22px 0 0; font: 700 22px var(--judul); color: #fff; }
+
+/* rentang: 1 baris pilihan + keterangan + tanggal sendiri (dilipat) */
+.filter .ket-rentang { flex-basis: 100%; margin: 0; font: 600 15px var(--isi); color: var(--pudar); }
+.filter details.tgl-sendiri { flex-basis: 100%; margin: 0; padding: 0; background: none; box-shadow: none; }
+.filter details.tgl-sendiri > summary { cursor: pointer; font: 600 15px var(--isi); color: var(--biru, #1f6fb2); padding: 4px 0; }
+.filter details.tgl-sendiri .grup { margin-top: 8px; }
