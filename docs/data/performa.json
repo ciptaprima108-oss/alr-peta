@@ -1370,6 +1370,29 @@
    },
    "indeks": 0,
    "status": "Perlu perbaikan"
+  },
+  {
+   "tanggal": "2026-11-24",
+   "n_trip": null,
+   "median_menit": null,
+   "p90_menit": null,
+   "median_km": null,
+   "n_lambat": null,
+   "pct_lambat": null,
+   "gps_speed": 19.9,
+   "gps_pct_berhenti": 4.5,
+   "gps_unit": 11,
+   "kosong_menit": null,
+   "muat_bsr_menit": null,
+   "bongkar_107_menit": null,
+   "skor": {
+    "durasi": null,
+    "rit_lambat": null,
+    "speed": 99.0,
+    "berhenti": 89.0
+   },
+   "indeks": 94,
+   "status": "Kondisi baik"
   }
  ]
 }
