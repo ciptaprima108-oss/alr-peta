@@ -1,0 +1,14 @@
+{
+  "name": "ALR",
+  "short_name": "ALR",
+  "description": "Pantauan jalan hauling ALR BSR - 107",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#23282A",
+  "icons": [
+    { "src": "ikon/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "ikon/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

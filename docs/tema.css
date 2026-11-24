@@ -32,3 +32,6 @@
   .tab a .ik { font-size: 26px; }
   body.ada-tab { padding-bottom: 78px; }
 }
+.merek .logo-alr { width: auto; height: 46px; padding: 4px 8px; background: #fff; border-radius: 10px; }
+.merek .logo-alr img { height: 38px; width: auto; display: block; }
+@media (max-width: 760px) { .merek .logo-alr { height: 40px; padding: 3px 6px; } .merek .logo-alr img { height: 34px; } }

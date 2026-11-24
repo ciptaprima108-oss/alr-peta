@@ -3,7 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ALR Monitor</title>
+<title>ALR</title>
+<meta name="apple-mobile-web-app-title" content="ALR">
+<meta name="application-name" content="ALR">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#23282A">
+<link rel="apple-touch-icon" href="ikon/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="ikon/favicon-32.png">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
@@ -13,7 +20,7 @@
 </head>
 <body>
 <header class="appbar"><div class="appbar-isi">
-  <a class="merek" href="./"><span class="logo"><svg class="ik"><use href="#i-truk"/></svg></span><span><b>ALR Monitor</b><small id="info">memuat data...</small></span></a>
+  <a class="merek" href="./"><span class="logo logo-alr"><img src="ikon/logo_alr.png" alt="Logo ALR"></span><span><b>ALR</b><small id="info">memuat data...</small></span></a>
   <div class="kanan tombol">
     <button id="btnLokasi" title="Cari posisi saya di jalan ALR"><svg class="ik"><use href="#i-lokasi"/></svg><span class="teks-hp">Lokasi saya</span></button>
     <button id="btnPengawas" title="Pengawas ALR / RM"><svg class="ik"><use href="#i-helm"/></svg><span class="teks-hp">Pengawas</span></button>
