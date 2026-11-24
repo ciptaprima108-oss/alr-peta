@@ -132,7 +132,7 @@
 .sh-ujung { margin: 8px 0 2px; font: 700 18px var(--judul); color: var(--kuning); }
 .geser-hint { display: none; margin-top: 8px; font: 600 15px var(--isi); color: var(--kuning); }
 @media (max-width: 640px) {
-  #strip { min-width: 900px; }
+  #strip { min-width: 1250px; }
   .geser-hint { display: block; }
   .leg-strip { font-size: 15px; gap: 8px 16px; }
 }
@@ -149,3 +149,4 @@
 .cara-rr summary { cursor: pointer; font: 700 18px var(--judul); color: var(--kuning); }
 .cara-rr ol { padding-left: 22px; margin: 10px 0 6px; } .cara-rr li { margin-bottom: 6px; } .cara-rr p { margin: 6px 0 0; color: #B9C0B9; }
 @media (max-width: 640px) { #rrStrip { min-width: 900px; } .rr-tiles .rt b { font-size: 32px; } }
+.ket-strip { margin: 10px 0 0; font-size: 15.5px; color: #C3C9C3; max-width: 80ch; }
