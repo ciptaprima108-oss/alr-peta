@@ -5,34 +5,34 @@
  "n_unit": 19,
  "n_titik": 132,
  "jumlah_segmen": {
-  "kosong": 106,
-  "abu": 25,
-  "merah": 3,
+  "kosong": 114,
+  "abu": 26,
+  "merah": 4,
   "kuning": 1
  },
  "trigger": [
   {
-   "sta_awal": 13.0,
-   "sta_akhir": 13.2,
+   "sta_awal": 14.0,
+   "sta_akhir": 14.2,
    "seg": [
-    65
+    70
    ],
    "unit": [
     "WHL 063"
    ],
    "alasan": "1 unit melambat/tertahan, kecepatan paling pelan 7.5 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
    "speed_terendah": 7.5,
-   "sta_tengah": 13.1,
-   "lat": -3.675836,
-   "lon": 103.665553,
-   "kode": "STA13000",
-   "judul": "[TRIGGER] Cek jalan STA 13+000 - 13+200"
+   "sta_tengah": 14.1,
+   "lat": -3.67601,
+   "lon": 103.665454,
+   "kode": "STA14000",
+   "judul": "[TRIGGER] Cek jalan STA 14+000 - 14+200"
   },
   {
-   "sta_awal": 13.4,
-   "sta_akhir": 13.6,
+   "sta_awal": 14.4,
+   "sta_akhir": 14.6,
    "seg": [
-    67
+    72
    ],
    "unit": [
     "WHL 017",
@@ -40,17 +40,18 @@
    ],
    "alasan": "2 unit melambat/tertahan, kecepatan paling pelan 10.5 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
    "speed_terendah": 10.5,
-   "sta_tengah": 13.5,
+   "sta_tengah": 14.5,
    "lat": -3.677314,
    "lon": 103.663033,
-   "kode": "STA13400",
-   "judul": "[TRIGGER] Cek jalan STA 13+400 - 13+600"
+   "kode": "STA14400",
+   "judul": "[TRIGGER] Cek jalan STA 14+400 - 14+600"
   },
   {
-   "sta_awal": 14.6,
-   "sta_akhir": 14.8,
+   "sta_awal": 15.6,
+   "sta_akhir": 16.0,
    "seg": [
-    73
+    78,
+    79
    ],
    "unit": [
     "WHL 024",
@@ -60,11 +61,11 @@
    ],
    "alasan": "4 unit melambat/tertahan, kecepatan paling pelan 7 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
    "speed_terendah": 7.0,
-   "sta_tengah": 14.7,
-   "lat": -3.677605,
-   "lon": 103.653639,
-   "kode": "STA14600",
-   "judul": "[TRIGGER] Cek jalan STA 14+600 - 14+800"
+   "sta_tengah": 15.8,
+   "lat": -3.677593,
+   "lon": 103.653556,
+   "kode": "STA15600",
+   "judul": "[TRIGGER] Cek jalan STA 15+600 - 16+000"
   }
  ],
  "label_trigger": "trigger",

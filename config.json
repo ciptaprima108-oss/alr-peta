@@ -19,14 +19,14 @@
       "sta_akhir": 0.5
     },
     {
-      "nama": "Antrean pintu BSR",
-      "sta_awal": 24.4,
-      "sta_akhir": 27.0
+      "nama": "Stockpile Utara & antrean pintu BSR",
+      "sta_awal": 26.2,
+      "sta_akhir": 29.0
     },
     {
       "nama": "Area parkir / menginap",
-      "sta_awal": 22.0,
-      "sta_akhir": 23.1
+      "sta_awal": 23.6,
+      "sta_akhir": 24.8
     },
     {
       "nama": "Parkir unit dekat 107 (STA 3+000 - 3+200)",
@@ -41,7 +41,12 @@
   ],
   "titik_penting": [
     {
-      "nama": "BSR",
+      "nama": "BSR (Room Merdeka)",
+      "sta": 29.0,
+      "jenis": "pos"
+    },
+    {
+      "nama": "Stockpile Utara",
       "sta": 27.0,
       "jenis": "pos"
     },

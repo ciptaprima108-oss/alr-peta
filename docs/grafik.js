@@ -159,7 +159,7 @@
     const daftar = KM.km, n = daftar.length, tot = jumlah(sumber(ARAH), dari, sampai);
     const totSemua = jumlah(KM.hari, dari, sampai);
     const totM = KM.arah ? jumlah(KM.arah.muatan, dari, sampai) : null, totK = KM.arah ? jumlah(KM.arah.kosongan, dari, sampai) : null;
-    const semuaUrut = [...daftar].reverse();                     // BSR (KM 26-27) di kiri, 107 di kanan = arah muatan
+    const semuaUrut = [...daftar].reverse();                     // BSR (KM 28-29) di kiri, 107 di kanan = arah muatan
     const urut = semuaUrut.filter((k) => !k.zona);                // zona antre/parkir tidak digambar di grafik (bukan masalah jalan)
     const zonaJam = {};
     semuaUrut.filter((k) => k.zona).forEach((k) => { const t = totSemua[k.km]; zonaJam[k.zona] = (zonaJam[k.zona] || 0) + t[1] + t[2]; });
@@ -243,7 +243,7 @@
     const sel = (k, l) => { const j = jamOf(l.tot, k), c = kelas(k, j);
       return `<span class="sel ${c}" title="${judul(k, l, j)}">${c === "z" ? "parkir" : j ? j + " jam" : "lancar"}</span>`; };
     $("stripHp").innerHTML = `<div class="sh-kepala"><span></span>${L2.map((l) => l.nama === "muatan" ? `<span>Jalur muatan<br><small>BSR ke 107 ↓</small></span>` : l.nama === "kosongan" ? `<span>Jalur kosongan<br><small>107 ke BSR ↑</small></span>` : `<span>Semua</span>`).join("")}</div>
-      <div class="sh-ujung">BSR (STA 27)</div>
+      <div class="sh-ujung">BSR (STA 29)</div>
       ${urut.map((k) => `<div class="sh-baris"><span class="sh-km">${k.label}</span>${L2.map((l) => sel(k, l)).join("")}</div>`).join("")}
       <div class="sh-ujung">107 (STA 0)</div>`;
   }
