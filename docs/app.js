@@ -200,6 +200,23 @@
       map.setView([la, lo], 16);
     }, () => alert("Lokasi tidak bisa diambil. Izinkan akses lokasi di browser."), { enableHighAccuracy: true });
   };
+  // ---------- pengawas (dibaca langsung dari config.json di repo, jadi langsung update tanpa deploy ulang) ----------
+  const linkPengawas = (aksi, user = "") => `https://github.com/${REPO}/issues/new?` + new URLSearchParams({ template: "kelola_pengawas.yml",
+    title: `[PENGAWAS] ${aksi} ${user}`.trim(), aksi, username: user, labels: "kelola-pengawas" });
+  async function muatPengawas() {
+    $("btnTambahPengawas").href = linkPengawas("Tambah");
+    try {
+      const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/config.json?t=${Date.now()}`);
+      if (!r.ok) throw new Error(r.status);
+      const daftar = ((await r.json()).pengawas_github || []).map((p) => (typeof p === "string" ? { username: p } : p));
+      $("listPengawas").innerHTML = daftar.length ? daftar.map((p) => `<div class="pengawas"><span><b>${esc(p.nama || p.username)}</b>
+          <span class="kecil">@${esc(p.username)}${p.jabatan ? " · " + esc(p.jabatan) : ""}</span></span>
+          <a class="hapus" target="_blank" href="${linkPengawas("Hapus", p.username)}">Hapus</a></div>`).join("")
+        : `<p class="kecil">Belum ada pengawas. Klik tombol di bawah untuk menambah.</p>`;
+    } catch (e) { $("listPengawas").innerHTML = `<p class="kecil">Daftar pengawas belum bisa dimuat.</p>`; }
+  }
+  muatPengawas();
+  $("btnPengawas").onclick = () => { $("panel").classList.add("buka"); $("secPengawas").scrollIntoView({ behavior: "smooth" }); };
   $("btnPanel").onclick = () => $("panel").classList.toggle("buka");
 
   // ---------- muat data ----------

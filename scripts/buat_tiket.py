@@ -36,7 +36,8 @@ def telegram(teks):
 
 
 def pastikan_label():
-    for nama, warna, ket in ((CFG["label_trigger"], "d73a4a", "Trigger otomatis: unit melambat/tertahan"),
+    for nama, warna, ket in (("kelola-pengawas", "5319e7", "Tambah/hapus pengawas"),
+                             (CFG["label_trigger"], "d73a4a", "Trigger otomatis: unit melambat/tertahan"),
                              (CFG["label_laporan"], "0e8a16", "Laporan lapangan jalan ALR")):
         try:
             api("POST", "/labels", dict(name=nama, color=warna, description=ket))
@@ -54,7 +55,8 @@ def main():
         m = re.search(r"<!-- sta:([\d.]+)-([\d.]+) -->", i.get("body") or "")
         if m:
             ada.append((float(m.group(1)), float(m.group(2)), i))
-    mention = " ".join("@" + u for u in CFG["pengawas_github"])
+    pengawas = [p["username"] if isinstance(p, dict) else p for p in CFG.get("pengawas_github", [])]
+    mention = " ".join("@" + u for u in pengawas)   # @mention = notif ke pengawas walau belum collaborator
     for t in TRIG:
         lama = [i for a, b, i in ada if a <= t["sta_akhir"] + 0.2 and b >= t["sta_awal"] - 0.2]
         gmaps = f"https://www.google.com/maps?q={t['lat']},{t['lon']}"
@@ -79,7 +81,7 @@ def main():
                 f"2. Ambil **foto dan video** kondisi jalan (lubang, licin, amblas, genangan, antrean, dll).\n"
                 f"3. Balas tiket ini: tarik/tempel foto & video ke kolom komentar, lalu tulis kondisi + tindakan.\n"
                 f"4. Kalau sudah ditangani, tutup tiket (Close issue).\n")
-        isi = dict(title=t["judul"], body=body, labels=[CFG["label_trigger"]], assignees=CFG["pengawas_github"])
+        isi = dict(title=t["judul"], body=body, labels=[CFG["label_trigger"]], assignees=pengawas)
         try:
             i = api("POST", "/issues", isi)
         except urllib.error.HTTPError:          # pengawas belum jadi collaborator -> tanpa assignee

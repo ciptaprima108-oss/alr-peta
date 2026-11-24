@@ -1,0 +1,33 @@
+name: Kelola pengawas
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  pengawas:
+    if: contains(github.event.issue.labels.*.name, 'kelola-pengawas') || startsWith(github.event.issue.title, '[PENGAWAS]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: proses
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/kelola_pengawas.py
+      - name: Simpan & balas
+        if: steps.proses.outputs.pesan != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PESAN: ${{ steps.proses.outputs.pesan }}
+        run: |
+          git config user.name "alr-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add config.json
+          git commit -m "Update daftar pengawas (#${{ github.event.issue.number }})"
+          git push
+          gh issue comment ${{ github.event.issue.number }} --body "$PESAN"
+          gh issue close ${{ github.event.issue.number }}

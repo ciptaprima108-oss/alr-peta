@@ -35,6 +35,10 @@ main { position: absolute; top: 56px; bottom: 0; left: 0; right: 0; display: fle
 .leaflet-popup-content .aksi { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
 .leaflet-popup-content a.btn { display: inline-block; padding: 6px 10px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; }
 a.btn.merah { background: var(--merah); color: #fff; }
+a.btn { display: inline-block; padding: 7px 12px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; }
+a.btn.hijau { background: var(--hijau); color: #fff; margin-top: 6px; }
+.pengawas { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px dashed var(--garis); font-size: 13.5px; }
+.pengawas a.hapus { color: var(--merah); font-size: 12px; text-decoration: none; }
 a.btn.abu { background: #e5e7eb; color: #111; }
 @keyframes kedip { 0%,100% { opacity: 1 } 50% { opacity: .55 } }
 .kedip { animation: kedip 1.4s infinite; }

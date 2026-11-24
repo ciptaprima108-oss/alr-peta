@@ -15,6 +15,7 @@
   </div>
   <div class="tombol">
     <button id="btnLokasi" title="Cari posisi saya di jalan ALR">📍 Lokasi saya</button>
+    <button id="btnPengawas" title="Kelola pengawas">👷</button>
     <button id="btnPanel">☰ Trigger <span id="nTrig" class="badge">0</span></button>
   </div>
 </header>
@@ -30,6 +31,12 @@
     <section>
       <h3>📷 Laporan lapangan</h3>
       <div id="listLap"><p class="kecil">Belum ada laporan.</p></div>
+    </section>
+    <section id="secPengawas">
+      <h3>👷 Pengawas ALR / RM</h3>
+      <p class="kecil">Yang terdaftar dapat notif tiap ada trigger merah. Tambah/hapus diproses otomatis kalau dibuat oleh admin repo.</p>
+      <div id="listPengawas"><p class="kecil">memuat...</p></div>
+      <a id="btnTambahPengawas" class="btn hijau" target="_blank">+ Tambah pengawas</a>
     </section>
     <section>
       <h3>Ringkasan segmen</h3>

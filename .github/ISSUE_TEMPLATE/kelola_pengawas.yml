@@ -1,0 +1,35 @@
+name: Kelola pengawas (tambah / hapus)
+description: Tambah atau hapus pengawas ALR / RM yang menerima notif trigger. Hanya bisa diproses kalau dibuat oleh admin repo.
+title: "[PENGAWAS] "
+labels: ["kelola-pengawas"]
+body:
+  - type: dropdown
+    id: aksi
+    attributes:
+      label: Aksi
+      options:
+        - Tambah
+        - Hapus
+    validations:
+      required: true
+  - type: input
+    id: username
+    attributes:
+      label: Username GitHub pengawas
+      description: Pengawas daftar dulu gratis di github.com/signup, lalu kirim username-nya
+      placeholder: "contoh: budi-alr"
+    validations:
+      required: true
+  - type: input
+    id: nama
+    attributes:
+      label: Nama
+      placeholder: "contoh: Budi Santoso"
+  - type: dropdown
+    id: jabatan
+    attributes:
+      label: Jabatan
+      options:
+        - Pengawas ALR
+        - RM
+        - Lainnya

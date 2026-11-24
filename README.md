@@ -32,8 +32,8 @@ python scripts/hitung_trigger.py
 python -m http.server -d docs 8000   # buka http://localhost:8000
 ```
 
-## Tambah pengawas (untuk tim development)
+## Tambah / hapus pengawas
 
-1. Repo > *Settings > Collaborators* > *Add people*: undang akun GitHub pengawas ALR / RM (supaya bisa di-assign tiket).
-2. Edit `config.json`, isi daftar username, contoh: `"pengawas_github": ["budi-alr", "rm-andi"]`, lalu *Commit*.
-3. Tiket trigger berikutnya otomatis di-assign dan dikirimi notif ke mereka. Tiket yang sudah terlanjur dibuat bisa di-assign manual dari halaman tiket.
+Di web peta klik tombol 👷 > **+ Tambah pengawas** (atau *Hapus* di samping nama). Form terbuka di GitHub, isi username, nama, jabatan, lalu *Submit*.
+GitHub Action otomatis memasukkan/menghapus pengawas di `config.json` dan membalas tiket. Hanya diproses kalau pembuatnya admin/collaborator repo.
+Pengawas cukup punya akun GitHub gratis (github.com/signup). Notif dikirim lewat @mention di tiket trigger, jadi tidak wajib jadi collaborator.
