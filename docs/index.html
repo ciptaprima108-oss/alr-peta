@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Peta Jalan ALR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="stylesheet" href="style.css?v=202611240419">
 </head>
@@ -13,31 +15,31 @@
     <b>Peta Jalan ALR</b>
     <span id="info">memuat data...</span>
   </div>
-  <div class="tombol">
-    <button id="btnLokasi" title="Cari posisi saya di jalan ALR">📍 <span class="teks-hp">Lokasi saya</span></button>
-    <a href="grafik.html"><button title="Grafik performa jalan">📊 <span class="teks-hp">Performa</span></button></a>
-    <button id="btnPengawas" title="Kelola pengawas">👷</button>
-    <button id="btnPanel">☰ Trigger <span id="nTrig" class="badge">0</span></button>
-  </div>
+  <nav class="tombol">
+    <button id="btnLokasi" title="Cari posisi saya di jalan ALR"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2" fill="currentColor"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/></svg><span class="teks-hp">Lokasi saya</span></button>
+    <a class="tbl" href="grafik.html" title="Kondisi jalan per hari, minggu, bulan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="teks-hp">Kondisi jalan</span></a>
+    <button id="btnPengawas" title="Pengawas ALR / RM"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span class="teks-hp">Pengawas</span></button>
+    <button id="btnPanel">Trigger <span id="nTrig" class="badge">0</span></button>
+  </nav>
 </header>
 
 <main>
   <div id="map"></div>
   <aside id="panel">
     <section>
-      <h3>🔴 Trigger jalan merah</h3>
+      <h3><span class="tanda" style="background:var(--merah)"></span>Trigger jalan merah</h3>
       <p class="kecil">Muncul otomatis kalau beberapa unit melambat atau tertahan di segmen yang sama. Pengawas ALR/RM cek ke lokasi lalu upload foto/video di tiketnya.</p>
       <div id="listTrig"><p class="kecil">Tidak ada trigger.</p></div>
     </section>
     <section>
-      <h3>📷 Laporan lapangan</h3>
+      <h3><span class="tanda" style="background:var(--hijau)"></span>Laporan lapangan</h3>
       <div id="listLap"><p class="kecil">Belum ada laporan.</p></div>
     </section>
     <section id="secPengawas">
-      <h3>👷 Pengawas ALR / RM</h3>
-      <p class="kecil">Yang terdaftar dapat notif tiap ada trigger merah. Tambah/hapus diproses otomatis kalau dibuat oleh admin repo.</p>
+      <h3><span class="tanda" style="background:var(--kuning)"></span>Pengawas ALR / RM</h3>
+      <p class="kecil">Yang terdaftar dapat notif tiap ada trigger merah. Tambah atau hapus diproses otomatis kalau diajukan oleh admin.</p>
       <div id="listPengawas"><p class="kecil">memuat...</p></div>
-      <a id="btnTambahPengawas" class="btn hijau" target="_blank">+ Tambah pengawas</a>
+      <a id="btnTambahPengawas" class="btn hijau" target="_blank">Tambah pengawas</a>
     </section>
     <section>
       <h3>Ringkasan segmen</h3>
@@ -46,12 +48,13 @@
   </aside>
 </main>
 
-<div class="legend">
-  <div><i style="background:#dc2626"></i>Merah: melambat / tertahan</div>
-  <div><i style="background:#f59e0b"></i>Kuning: agak pelan</div>
-  <div><i style="background:#16a34a"></i>Hijau: lancar</div>
-  <div><i style="background:#9ca3af"></i>Abu muda: antrean / parkir</div>
-  <div><i style="background:#6b7280"></i>Abu gelap: belum ada data GPS</div>
+<div class="legend" id="legend" title="Ketuk untuk lihat semua warna">
+  <b>Warna jalan</b>
+  <div><i style="background:#E5341F"></i>Merah: melambat / tertahan</div>
+  <div><i style="background:#F2B705"></i>Kuning: agak pelan</div>
+  <div class="lengkap"><i style="background:#3FA34D"></i>Hijau: lancar</div>
+  <div class="lengkap"><i style="background:#B8BFB7"></i>Abu muda: antrean / parkir</div>
+  <div class="lengkap"><i style="background:#5E665F"></i>Abu gelap: belum ada data GPS</div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>

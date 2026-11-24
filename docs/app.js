@@ -6,7 +6,7 @@
     ? location.hostname.split(".")[0] + "/" + location.pathname.split("/").filter(Boolean)[0]
     : REPO_DEFAULT;
   const REPO = h;
-  const WARNA = { merah: "#dc2626", kuning: "#f59e0b", hijau: "#16a34a", abu: "#9ca3af", kosong: "#6b7280" };
+  const WARNA = { merah: "#E5341F", kuning: "#F2B705", hijau: "#3FA34D", abu: "#B8BFB7", kosong: "#5E665F" };
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
@@ -47,20 +47,20 @@
 
   // ---------- segmen jalan ----------
   function popupSegmen(p) {
-    const st = { merah: "🔴 MERAH", kuning: "🟡 Agak pelan", hijau: "🟢 Lancar", abu: "⚪ Zona antre/parkir", kosong: "Belum ada data" }[p.status];
+    const st = { merah: "Merah: melambat / tertahan", kuning: "Kuning: agak pelan", hijau: "Hijau: lancar", abu: "Zona antre / parkir", kosong: "Belum ada data" }[p.status];
     const unit = [...new Set([...(p.unit_lambat || []), ...(p.unit_tertahan || [])])];
     return `<b>${esc(p.label)}</b><br>${st}<br>${esc(p.alasan)}<br>
-      <span class="kecil">${p.n_titik} titik GPS, ${p.n_unit} unit${p.speed_median != null ? `, median ${p.speed_median} km/jam` : ""}</span>
+      <span class="kecil">${p.n_titik} titik GPS, ${p.n_unit} unit${p.speed_median != null ? `, kecepatan umumnya ${p.speed_median} km/jam` : ""}</span>
       ${unit.length ? `<br><span class="kecil">Unit: ${esc(unit.join(", "))}</span>` : ""}
-      <div class="aksi"><a class="btn merah" target="_blank" href="${linkLapor(fmtSta(p.sta_awal), p.lat, p.lon)}">📷 Lapor + foto</a>
-      <a class="btn abu" target="_blank" href="${linkNav(p.lat, p.lon)}">🧭 Navigasi</a></div>`;
+      <div class="aksi"><a class="btn merah" target="_blank" href="${linkLapor(fmtSta(p.sta_awal), p.lat, p.lon)}">Lapor + foto</a>
+      <a class="btn abu" target="_blank" href="${linkNav(p.lat, p.lon)}">Navigasi</a></div>`;
   }
   function gambarSegmen() {
     lapisSegmen.clearLayers();
     // badan jalan utuh dulu (supaya tidak putus-putus), lalu warna status di atasnya; merah paling atas
     const semua = [];
     for (const f of segmen) for (const [x, y] of f.geometry.coordinates) semua.push([y, x]);
-    L.polyline(semua, { color: "#111827", weight: 13, opacity: 0.9, interactive: false }).addTo(lapisSegmen);
+    L.polyline(semua, { color: "#1E2320", weight: 13, opacity: 0.9, interactive: false }).addTo(lapisSegmen);
     L.polyline(semua, { color: WARNA.kosong, weight: 6, opacity: 1, interactive: false }).addTo(lapisSegmen);
     const urut = { kosong: 0, abu: 1, hijau: 2, kuning: 3, merah: 4 };
     for (const f of [...segmen].sort((a, b) => urut[a.properties.status] - urut[b.properties.status])) {
@@ -84,8 +84,8 @@
       } else if (p.jenis === "pos") {
         L.marker([y, x], { icon: L.divIcon({ className: "", html: `<div class="pos-label leaflet-tooltip">${esc(p.nama)}</div>`, iconSize: null }) }).addTo(map);
       } else {
-        L.circleMarker([y, x], { radius: 9, color: "#b45309", weight: 3, fillColor: "#fde68a", fillOpacity: 0.9 })
-          .bindPopup(`<b>⚠️ Titik rawan</b><br>${esc(p.nama)}${p.catatan ? `<br><span class="kecil">${esc(p.catatan)}</span>` : ""}`).addTo(map);
+        L.circleMarker([y, x], { radius: 9, color: "#2A2F2B", weight: 3, fillColor: "#F2B705", fillOpacity: 1 })
+          .bindPopup(`<b>Titik rawan</b><br>${esc(p.nama)}${p.catatan ? `<br><span class="kecil">${esc(p.catatan)}</span>` : ""}`).addTo(map);
       }
     }
   }
@@ -133,9 +133,9 @@
     const thumbs = i._gambar.slice(0, 4).map((u) => `<img src="${esc(u)}" loading="lazy" onerror="this.remove()">`).join("");
     return `<div class="kartu ${jenis} ${i.state === "closed" ? "tutup" : ""}" data-ll="${ll ? ll.join(",") : ""}">
       <b>${esc(lok?.label || i.title)}</b>${statusTiket(i)}
-      <div class="baris">#${i.number} · ${new Date(i.created_at).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" })} · ${i._gambar.length} lampiran</div>
+      <div class="baris">Tiket #${i.number}, ${new Date(i.created_at).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" })}, ${i._gambar.length} lampiran</div>
       ${thumbs ? `<div class="thumbs">${thumbs}</div>` : ""}
-      <div class="baris"><a target="_blank" href="${i.html_url}">${jenis === "lap" ? "Buka laporan" : "Buka tiket / upload foto"} →</a></div></div>`;
+      <div class="baris"><a target="_blank" href="${i.html_url}">${jenis === "lap" ? "Buka laporan" : "Buka tiket / upload foto"}</a></div></div>`;
   }
   function tampilTiket(trig, lap) {
     if (!trig.length && !lap.length) return;           // belum ada tiket: pakai bendera dari hasil hitung GPS
@@ -152,8 +152,8 @@
       L.marker(i._lok.ll, { icon: ikon, zIndexOffset: 1000 }).bindPopup(
         `<b>${esc(i.title)}</b><br>${statusTiket(i)}<br><span class="kecil">${i._gambar.length} lampiran</span>
          <div class="thumbs">${i._gambar.slice(0, 6).map((u) => `<a target="_blank" href="${esc(u)}"><img src="${esc(u)}" onerror="this.remove()"></a>`).join("")}</div>
-         <div class="aksi"><a class="btn merah" target="_blank" href="${i.html_url}">${isTrig ? "📷 Upload foto/video" : "Buka laporan"}</a>
-         <a class="btn abu" target="_blank" href="${linkNav(...i._lok.ll)}">🧭 Navigasi</a></div>`).addTo(lapisTiket);
+         <div class="aksi"><a class="btn merah" target="_blank" href="${i.html_url}">${isTrig ? "Upload foto/video" : "Buka laporan"}</a>
+         <a class="btn abu" target="_blank" href="${linkNav(...i._lok.ll)}">Navigasi</a></div>`).addTo(lapisTiket);
     }
     pasangKlikKartu();
   }
@@ -165,9 +165,9 @@
     for (const t of ringkasan?.trigger || [])
       L.marker([t.lat, t.lon], { zIndexOffset: 1000, icon: L.divIcon({ className: "", iconSize: [30, 30], iconAnchor: [6, 30],
         html: `<div class="kedip" style="font-size:26px;line-height:30px">🚩</div>` }) })
-        .bindPopup(`<b>🔴 STA ${fmtSta(t.sta_awal)} - ${fmtSta(t.sta_akhir)}</b><br>${esc(t.alasan)}<br><span class="kecil">Unit: ${esc(t.unit.join(", "))}</span>
-          <div class="aksi"><a class="btn merah" target="_blank" href="${linkLapor(fmtSta(t.sta_awal), t.lat, t.lon)}">📷 Lapor + foto</a>
-          <a class="btn abu" target="_blank" href="${linkNav(t.lat, t.lon)}">🧭 Navigasi</a></div>`).addTo(lapisTiket);
+        .bindPopup(`<b>STA ${fmtSta(t.sta_awal)} - ${fmtSta(t.sta_akhir)}</b><br>${esc(t.alasan)}<br><span class="kecil">Unit: ${esc(t.unit.join(", "))}</span>
+          <div class="aksi"><a class="btn merah" target="_blank" href="${linkLapor(fmtSta(t.sta_awal), t.lat, t.lon)}">Lapor + foto</a>
+          <a class="btn abu" target="_blank" href="${linkNav(t.lat, t.lon)}">Navigasi</a></div>`).addTo(lapisTiket);
   }
   function pasangKlikKartu() {
     document.querySelectorAll(".kartu").forEach((k) => k.addEventListener("click", (e) => {
@@ -194,9 +194,9 @@
       const { latitude: la, longitude: lo } = pos.coords, t = staTerdekat(la, lo);
       penandaSaya && penandaSaya.remove();
       const sta = t ? fmtSta((t.seg.properties.sta_awal + t.seg.properties.sta_akhir) / 2) : "?";
-      penandaSaya = L.circleMarker([la, lo], { radius: 9, color: "#fff", weight: 3, fillColor: "#2563eb", fillOpacity: 1 }).addTo(map)
+      penandaSaya = L.circleMarker([la, lo], { radius: 9, color: "#fff", weight: 3, fillColor: "#2a78d6", fillOpacity: 1 }).addTo(map)
         .bindPopup(`<b>Posisi saya</b><br>${t ? `Dekat STA ${sta} (${Math.round(t.jarak_m)} m dari as jalan)` : "Di luar jalur ALR"}
-          <div class="aksi"><a class="btn merah" target="_blank" href="${linkLapor(sta, la, lo)}">📷 Lapor di sini</a></div>`).openPopup();
+          <div class="aksi"><a class="btn merah" target="_blank" href="${linkLapor(sta, la, lo)}">Lapor di sini</a></div>`).openPopup();
       map.setView([la, lo], 16);
     }, () => alert("Lokasi tidak bisa diambil. Izinkan akses lokasi di browser."), { enableHighAccuracy: true });
   };
@@ -210,7 +210,7 @@
       if (!r.ok) throw new Error(r.status);
       const daftar = ((await r.json()).pengawas_github || []).map((p) => (typeof p === "string" ? { username: p } : p));
       $("listPengawas").innerHTML = daftar.length ? daftar.map((p) => `<div class="pengawas"><span><b>${esc(p.nama || p.username)}</b>
-          <span class="kecil">@${esc(p.username)}${p.jabatan ? " · " + esc(p.jabatan) : ""}</span></span>
+          <span class="kecil">@${esc(p.username)}${p.jabatan ? ", " + esc(p.jabatan) : ""}</span></span>
           <a class="hapus" target="_blank" href="${linkPengawas("Hapus", p.username)}">Hapus</a></div>`).join("")
         : `<p class="kecil">Belum ada pengawas. Klik tombol di bawah untuk menambah.</p>`;
     } catch (e) { $("listPengawas").innerHTML = `<p class="kecil">Daftar pengawas belum bisa dimuat.</p>`; }
@@ -218,6 +218,7 @@
   muatPengawas();
   $("btnPengawas").onclick = () => { $("panel").classList.add("buka"); $("secPengawas").scrollIntoView({ behavior: "smooth" }); };
   $("btnPanel").onclick = () => $("panel").classList.toggle("buka");
+  $("legend").onclick = () => $("legend").classList.toggle("buka");
 
   // ---------- muat data ----------
   Promise.all([

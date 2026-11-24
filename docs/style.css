@@ -1,51 +1,85 @@
-:root { --merah:#dc2626; --kuning:#f59e0b; --hijau:#16a34a; --abu:#9ca3af; --teks:#111827; --pudar:#6b7280; --garis:#e5e7eb; --bg:#ffffff; }
+/* Peta Jalan ALR: bahasa visual rambu jalan hauling (sama dengan halaman Kondisi Jalan) */
+:root {
+  --debu: #E6E8E3; --kertas: #FBFBF9; --aspal: #2A2F2B; --tinta: #1E2320; --pudar: #5E665F; --garis: #D3D7D0;
+  --kuning: #F2B705; --merah: #C8321F; --amber: #D98200; --hijau: #2E7D32;
+  --judul: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif; --isi: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--teks); background: var(--bg); }
-header { height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 12px; background: #111827; color: #fff; }
-header .judul { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
-header .judul b { font-size: 17px; }
-header .judul span { font-size: 12px; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-header .tombol { display: flex; gap: 6px; flex-shrink: 0; }
-button { font: inherit; font-size: 14px; border: 0; border-radius: 8px; padding: 8px 10px; cursor: pointer; background: #fff; color: var(--teks); }
-button.utama { background: var(--merah); color: #fff; font-weight: 600; }
-button.hijau { background: var(--hijau); color: #fff; font-weight: 600; }
-.badge { display: inline-block; min-width: 20px; padding: 1px 6px; border-radius: 10px; background: var(--merah); color: #fff; font-size: 12px; text-align: center; }
-main { position: absolute; top: 56px; bottom: 0; left: 0; right: 0; display: flex; }
-#map { flex: 1; }
-#panel { width: 360px; overflow-y: auto; border-left: 1px solid var(--garis); background: #fff; }
-#panel section { padding: 12px 14px; border-bottom: 1px solid var(--garis); }
-#panel h3 { margin: 0 0 6px; font-size: 15px; }
-.kecil { font-size: 12.5px; color: var(--pudar); margin: 4px 0; }
-.kartu { border: 1px solid var(--garis); border-left: 5px solid var(--merah); border-radius: 8px; padding: 8px 10px; margin: 8px 0; cursor: pointer; }
+html, body { margin: 0; height: 100%; font-family: var(--isi); color: var(--tinta); background: var(--debu); }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--aspal); outline-offset: 2px; }
+
+header { height: 60px; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 14px; background: var(--kuning); color: var(--aspal); border-bottom: 4px solid var(--aspal); }
+header .judul { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; }
+header .judul b { font: 700 24px/1 var(--judul); letter-spacing: .2px; }
+header .judul span { font-size: 12.5px; color: #3E3A1E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+header .tombol { display: flex; gap: 6px; flex-shrink: 0; align-items: center; }
+header .tombol button, header .tombol a.tbl { font: 600 14px var(--isi); background: transparent; color: var(--aspal); border: 2px solid var(--aspal); border-radius: 6px; padding: 6px 11px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+header .tombol button:hover, header .tombol a.tbl:hover { background: rgba(42,47,43,.1); }
+header .tombol #btnPanel { background: var(--aspal); color: #fff; }
+header .tombol svg { width: 16px; height: 16px; flex-shrink: 0; }
+button { font: inherit; font-size: 14px; border: 0; border-radius: 6px; padding: 8px 10px; cursor: pointer; background: var(--kertas); color: var(--tinta); }
+.badge { display: inline-block; min-width: 20px; padding: 0 6px; border-radius: 10px; background: var(--merah); color: #fff; font: 700 13px/19px var(--isi); text-align: center; }
+
+main { position: absolute; top: 60px; bottom: 0; left: 0; right: 0; display: flex; }
+#map { flex: 1; background: #3B413C; }
+#panel { width: 370px; overflow-y: auto; background: var(--kertas); border-left: 4px solid var(--aspal); }
+#panel section { padding: 14px 16px; border-bottom: 1px solid var(--garis); }
+#panel h3 { margin: 0 0 4px; font: 700 21px/1.1 var(--judul); display: flex; align-items: center; gap: 8px; }
+#panel h3 .tanda { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+.kecil { font-size: 13px; color: var(--pudar); margin: 4px 0; line-height: 1.45; }
+
+.kartu { background: #fff; border: 1px solid var(--garis); border-left: 6px solid var(--merah); border-radius: 3px; padding: 9px 11px; margin: 8px 0; cursor: pointer; }
+.kartu:hover { border-color: var(--aspal); border-left-color: var(--merah); }
 .kartu.lap { border-left-color: var(--hijau); }
+.kartu.lap:hover { border-left-color: var(--hijau); }
 .kartu.tutup { opacity: .6; }
-.kartu b { font-size: 14px; }
-.kartu .baris { font-size: 12.5px; color: var(--pudar); margin-top: 2px; }
+.kartu b { font: 700 18px/1.15 var(--judul); }
+.kartu .baris { font-size: 13px; color: var(--pudar); margin-top: 3px; line-height: 1.4; }
 .thumbs { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
-.thumbs img { width: 64px; height: 64px; object-fit: cover; border-radius: 6px; background: #eee; }
-.status { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-left: 4px; }
-.status.belum { background: #fee2e2; color: #991b1b; }
-.status.ada { background: #dcfce7; color: #166534; }
-.status.selesai { background: #e5e7eb; color: #374151; }
-.legend { position: absolute; left: 10px; bottom: 22px; z-index: 500; background: #fff; border-radius: 8px; padding: 8px 10px; font-size: 12px; box-shadow: 0 1px 6px rgba(0,0,0,.25); }
-.legend i { display: inline-block; width: 22px; height: 6px; border-radius: 3px; margin-right: 6px; vertical-align: middle; }
-.sta-label { background: none; border: 0; box-shadow: none; font-weight: 700; font-size: 12px; color: #111; text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff; }
-.pos-label { background: #111827; color: #fff; border: 0; font-weight: 700; font-size: 13px; padding: 2px 6px; }
-.leaflet-popup-content { font-size: 13px; line-height: 1.4; min-width: 220px; }
-.leaflet-popup-content .aksi { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
-.leaflet-popup-content a.btn { display: inline-block; padding: 6px 10px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; }
+.thumbs img { width: 64px; height: 64px; object-fit: cover; border-radius: 3px; background: var(--debu); }
+.status { display: inline-block; font: 700 12px/1.6 var(--isi); padding: 0 6px; border-radius: 3px; margin-left: 4px; }
+.status.belum { background: #F6DCD7; color: #8E2416; }
+.status.ada { background: #DCEBDD; color: #1F5A23; }
+.status.selesai { background: var(--debu); color: var(--pudar); }
+
+.legend { position: absolute; left: 10px; bottom: 24px; z-index: 500; background: var(--aspal); color: #E3E6E1; border-radius: 4px; padding: 9px 12px 8px; font-size: 13px; line-height: 1.6; box-shadow: 0 2px 10px rgba(0,0,0,.35); }
+.legend b { display: block; font: 700 16px/1.2 var(--judul); color: var(--kuning); margin-bottom: 3px; }
+.legend i { display: inline-block; width: 24px; height: 7px; border-radius: 1px; margin-right: 8px; vertical-align: middle; }
+.legend .tutup-l { display: none; }
+
+.sta-label { background: none; border: 0; box-shadow: none; font: 700 13px var(--judul); color: #fff; text-shadow: 0 0 3px #000, 0 0 3px #000, 0 0 2px #000; }
+.sta-label::before { display: none; }
+.pos-label { background: var(--kuning); color: var(--aspal); border: 2px solid var(--aspal); font: 700 15px var(--judul); padding: 1px 7px; border-radius: 3px; box-shadow: none; }
+.pos-label::before { display: none; }
+
+.leaflet-container { font-family: var(--isi); }
+.leaflet-popup-content-wrapper { border-radius: 4px; border-top: 5px solid var(--kuning); }
+.leaflet-popup-content { font-size: 13.5px; line-height: 1.45; min-width: 220px; }
+.leaflet-popup-content b:first-child { font: 700 18px/1.2 var(--judul); }
+.leaflet-popup-content .aksi { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+a.btn { display: inline-block; padding: 7px 12px; border-radius: 4px; text-decoration: none; font: 600 13.5px var(--isi); }
 a.btn.merah { background: var(--merah); color: #fff; }
-a.btn { display: inline-block; padding: 7px 12px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; }
-a.btn.hijau { background: var(--hijau); color: #fff; margin-top: 6px; }
-.pengawas { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px dashed var(--garis); font-size: 13.5px; }
-.pengawas a.hapus { color: var(--merah); font-size: 12px; text-decoration: none; }
-a.btn.abu { background: #e5e7eb; color: #111; }
-@keyframes kedip { 0%,100% { opacity: 1 } 50% { opacity: .55 } }
+a.btn.abu { background: var(--debu); color: var(--tinta); }
+a.btn.hijau { background: var(--aspal); color: #fff; margin-top: 8px; }
+.leaflet-popup-content a.btn.merah, .leaflet-popup-content a.btn.merah:hover { color: #fff; }
+
+.pengawas { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 0; border-bottom: 1px dashed var(--garis); font-size: 14px; }
+.pengawas a.hapus { color: var(--merah); font-size: 13px; text-decoration: none; }
+@keyframes kedip { 0%,100% { opacity: 1 } 50% { opacity: .5 } }
 .kedip { animation: kedip 1.4s infinite; }
+@media (prefers-reduced-motion: reduce) { .kedip { animation: none; } }
+
 @media (max-width: 760px) {
-  #panel { position: absolute; left: 0; right: 0; bottom: 0; width: auto; max-height: 55%; z-index: 900; border-left: 0; border-top: 1px solid var(--garis); border-radius: 14px 14px 0 0; box-shadow: 0 -2px 12px rgba(0,0,0,.2); display: none; }
-  #panel.buka { display: block; }
-  .legend { bottom: 18px; font-size: 11px; }
-  header .judul b { font-size: 15px; white-space: nowrap; }
+  header { height: 56px; padding: 0 10px; }
+  main { top: 56px; }
+  header .judul b { font-size: 21px; white-space: nowrap; }
+  header .tombol { gap: 5px; }
+  header .tombol button, header .tombol a.tbl { padding: 6px 8px; }
   .teks-hp { display: none; }
+  #panel { position: absolute; left: 0; right: 0; bottom: 0; width: auto; max-height: 58%; z-index: 900; border-left: 0; border-top: 4px solid var(--aspal); border-radius: 0; box-shadow: 0 -4px 16px rgba(0,0,0,.3); display: none; }
+  #panel.buka { display: block; }
+  .legend { bottom: 20px; font-size: 12px; padding: 7px 10px; }
+  .legend .lengkap { display: none; }
+  .legend.buka .lengkap { display: block; }
 }

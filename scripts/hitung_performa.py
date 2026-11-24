@@ -97,24 +97,43 @@ def baca_gps_harian():
     return out
 
 
+def arah_gps(g):
+    """Tebak arah tiap titik GPS dari gerak unit berikutnya: STA turun = muatan (BSR -> 107), STA naik = kosongan (107 -> BSR).
+    Titik berhenti ikut arah gerak unit sesudahnya (ke mana dia akan jalan), kalau tidak ada pakai arah sebelumnya."""
+    g = g.sort_values(["unit", "waktu"]).copy()
+    u = g.groupby("unit")
+    dn = u.sta.shift(-1) - g.sta
+    jam = (u.waktu.shift(-1) - g.waktu).dt.total_seconds() / 3600
+    gerak = pd.Series(np.where(jam <= 3, np.where(dn <= -0.3, "m", np.where(dn >= 0.3, "k", None)), None), index=g.index)
+    g["arah"] = gerak.groupby(g.unit).bfill(limit=24).groupby(g.unit).ffill(limit=24)
+    return g
+
+
 def per_km():
-    """Per KM (STA n s/d n+1) per hari: titik GPS, jam berhenti mesin hidup/mati, speed DT jalan, unit."""
+    """Per KM (STA n s/d n+1) per hari: titik GPS, jam berhenti mesin hidup/mati, speed DT jalan, unit. Juga dipisah per arah."""
     try:
         jalur = ht.baca_jalur(); g = ht.proyeksi(ht.baca_gps(), jalur)
     except SystemExit:
         return
     nkm = int(jalur.sta.max())
+    g = arah_gps(g)
     g["km"] = g.sta.astype(int).clip(upper=nkm - 1)
     g["tg"] = g.waktu.dt.strftime("%Y-%m-%d")
-    hari = {}
-    for (tg, km), x in g.groupby(["tg", "km"]):
-        jalan = x[x.speed > 0]
-        hari.setdefault(tg, {})[int(km)] = [int(len(x)), int(((x.speed == 0) & x.acc).sum()), int(((x.speed == 0) & ~x.acc).sum()),
-                                            round(float(jalan.speed.sum()), 1), int(len(jalan)), sorted(x.unit.unique().tolist())]
+
+    def kumpul(x0):
+        hari = {}
+        for (tg, km), x in x0.groupby(["tg", "km"]):
+            jalan = x[x.speed > 0]
+            hari.setdefault(tg, {})[int(km)] = [int(len(x)), int(((x.speed == 0) & x.acc).sum()), int(((x.speed == 0) & ~x.acc).sum()),
+                                                round(float(jalan.speed.sum()), 1), int(len(jalan)), sorted(x.unit.unique().tolist())]
+        return hari
     km = [dict(km=k, label=f"KM {k}-{k + 1}", zona=ht.zona_bukan_jalan(k + 0.5)) for k in range(nkm)]
-    json.dump(dict(keterangan="hari[tanggal][km] = [titik GPS, jam berhenti mesin hidup, jam berhenti mesin mati, jumlah speed jalan, titik jalan, unit]",
-                   km=km, hari=hari), open(P("docs", "data", "per_km.json"), "w"), separators=(",", ":"))
-    print(f"Per KM: {len(hari)} hari x {nkm} KM")
+    hari = kumpul(g)
+    arah = {"muatan": kumpul(g[g.arah == "m"]), "kosongan": kumpul(g[g.arah == "k"])}
+    json.dump(dict(keterangan="hari[tanggal][km] = [titik GPS, jam berhenti mesin hidup, jam berhenti mesin mati, jumlah speed jalan, titik jalan, unit]; "
+                              "arah.muatan = BSR->107, arah.kosongan = 107->BSR (ditebak dari gerak unit)",
+                   km=km, hari=hari, arah=arah), open(P("docs", "data", "per_km.json"), "w"), separators=(",", ":"))
+    print(f"Per KM: {len(hari)} hari x {nkm} KM; arah: muatan {int((g.arah == 'm').sum())}, kosongan {int((g.arah == 'k').sum())}, tidak tahu {int(g.arah.isna().sum())} titik")
 
 
 def main():

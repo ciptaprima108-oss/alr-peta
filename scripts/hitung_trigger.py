@@ -146,12 +146,12 @@ def hitung(g, jalur):
                 alasan = []
                 if p["unit_tertahan"]: alasan.append(f"{len(p['unit_tertahan'])} unit berhenti/tertahan")
                 if p["unit_lambat"]: alasan.append(f"{len(p['unit_lambat'])} unit jalan <= {B['lambat_kmh']} km/jam")
-                if med <= B["merah_speed_median_kmh"]: alasan.append(f"speed median {med:g} km/jam")
+                if med <= B["merah_speed_median_kmh"]: alasan.append(f"kecepatan umumnya {med:g} km/jam")
                 p.update(status="merah", alasan="; ".join(alasan) + " - kemungkinan jalan jelek/licin/macet")
             elif med <= B["kuning_speed_median_kmh"]:
-                p.update(status="kuning", alasan=f"Agak pelan, speed median {med:g} km/jam")
+                p.update(status="kuning", alasan=f"Agak pelan, kecepatan umumnya {med:g} km/jam")
             else:
-                p.update(status="hijau", alasan=f"Lancar, speed median {med:g} km/jam")
+                p.update(status="hijau", alasan=f"Lancar, kecepatan umumnya {med:g} km/jam")
         lo = jalur[(jalur.sta >= a - 1e-9) & (jalur.sta <= b + 1e-9)]
         lat, lon = titik_di_sta(jalur, (a + b) / 2)
         p.update(lat=round(lat, 6), lon=round(lon, 6))
@@ -174,7 +174,7 @@ def hitung(g, jalur):
         t["speed_terendah"] = min(meds) if meds else None
         nu = max(p["n_unit"] for p in merah if p["seg"] in t["seg"])
         t["alasan"] = ((f"{len(t['unit'])} unit melambat/tertahan" if t["unit"] else f"{nu} unit lewat pelan") +
-                       (f", speed median terendah {t['speed_terendah']:g} km/jam" if meds else "") +
+                       (f", kecepatan paling pelan {t['speed_terendah']:g} km/jam" if meds else "") +
                        ". Kemungkinan jalan jelek, licin, atau macet.")
         t["sta_tengah"] = round((t["sta_awal"] + t["sta_akhir"]) / 2, 2)
         t["lat"], t["lon"] = [round(v, 6) for v in titik_di_sta(jalur, t["sta_tengah"])]

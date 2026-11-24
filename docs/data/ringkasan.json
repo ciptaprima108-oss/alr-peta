@@ -20,7 +20,7 @@
    "unit": [
     "WHL 063"
    ],
-   "alasan": "1 unit melambat/tertahan, speed median terendah 7.5 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
+   "alasan": "1 unit melambat/tertahan, kecepatan paling pelan 7.5 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
    "speed_terendah": 7.5,
    "sta_tengah": 13.1,
    "lat": -3.675836,
@@ -38,7 +38,7 @@
     "WHL 017",
     "WHL 038"
    ],
-   "alasan": "2 unit melambat/tertahan, speed median terendah 10.5 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
+   "alasan": "2 unit melambat/tertahan, kecepatan paling pelan 10.5 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
    "speed_terendah": 10.5,
    "sta_tengah": 13.5,
    "lat": -3.677314,
@@ -58,7 +58,7 @@
     "WHL 035",
     "WHL 038"
    ],
-   "alasan": "4 unit melambat/tertahan, speed median terendah 7 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
+   "alasan": "4 unit melambat/tertahan, kecepatan paling pelan 7 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
    "speed_terendah": 7.0,
    "sta_tengah": 14.7,
    "lat": -3.677605,
@@ -69,5 +69,5 @@
  ],
  "label_trigger": "trigger",
  "label_laporan": "laporan-jalan",
- "dibuat": "2026-11-24 11:25 WIB"
+ "dibuat": "2026-11-24 11:34 WIB"
 }
