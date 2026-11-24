@@ -1,0 +1,32 @@
+{
+  "nama_jalan": "ALR (BSR - 107)",
+  "panjang_segmen_m": 200,
+  "jendela_jam": 24,
+  "jarak_maks_ke_jalan_m": 150,
+
+  "batas": {
+    "merah_speed_median_kmh": 13,
+    "kuning_speed_median_kmh": 17,
+    "lambat_kmh": 8,
+    "min_unit_lambat_merah": 2,
+    "min_titik_segmen": 2
+  },
+
+  "pengawas_github": [],
+  "label_trigger": "trigger",
+  "label_laporan": "laporan-jalan",
+
+  "zona_bukan_jalan": [
+    {"nama": "Antrean pintu BSR", "sta_awal": 24.3, "sta_akhir": 27.0},
+    {"nama": "Area parkir / menginap", "sta_awal": 22.4, "sta_akhir": 22.8}
+  ],
+
+  "titik_penting": [
+    {"nama": "BSR", "sta": 27.0, "jenis": "pos"},
+    {"nama": "107", "lat": -3.6185, "lon": 103.7275, "jenis": "pos"},
+    {"nama": "Tanjakan / tebing IJAP", "sta": null, "lat": null, "lon": null, "jenis": "rawan", "catatan": "isi STA atau koordinat"},
+    {"nama": "KM 8 (sering jelek)", "sta": 8.0, "jenis": "rawan"},
+    {"nama": "KM 9-10 dekat pipa", "sta": 9.5, "jenis": "rawan"},
+    {"nama": "KM 14-15 gorong-gorong", "sta": 14.5, "jenis": "rawan"}
+  ]
+}

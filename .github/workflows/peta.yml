@@ -1,0 +1,56 @@
+name: Hitung trigger & tayangkan peta
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  # schedule:            # aktifkan kalau nanti data GPS ditarik otomatis
+  #   - cron: "0 * * * *"
+
+permissions:
+  contents: write
+  issues: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: peta
+  cancel-in-progress: false
+
+jobs:
+  peta:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pandas numpy openpyxl
+
+      - name: Hitung status jalan per segmen
+        run: python scripts/hitung_trigger.py
+
+      - name: Simpan hasil ke repo
+        run: |
+          git config user.name "alr-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data
+          git diff --cached --quiet || git commit -m "Update status jalan ALR [skip ci]"
+          git push
+
+      - name: Bikin tiket trigger + notif pengawas
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python scripts/buat_tiket.py
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - id: deploy
+        uses: actions/deploy-pages@v4

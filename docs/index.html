@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peta Jalan ALR</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="judul">
+    <b>Peta Jalan ALR</b>
+    <span id="info">memuat data...</span>
+  </div>
+  <div class="tombol">
+    <button id="btnLokasi" title="Cari posisi saya di jalan ALR">📍 Lokasi saya</button>
+    <button id="btnPanel">☰ Trigger <span id="nTrig" class="badge">0</span></button>
+  </div>
+</header>
+
+<main>
+  <div id="map"></div>
+  <aside id="panel">
+    <section>
+      <h3>🔴 Trigger jalan merah</h3>
+      <p class="kecil">Muncul otomatis kalau beberapa unit melambat atau tertahan di segmen yang sama. Pengawas ALR/RM cek ke lokasi lalu upload foto/video di tiketnya.</p>
+      <div id="listTrig"><p class="kecil">Tidak ada trigger.</p></div>
+    </section>
+    <section>
+      <h3>📷 Laporan lapangan</h3>
+      <div id="listLap"><p class="kecil">Belum ada laporan.</p></div>
+    </section>
+    <section>
+      <h3>Ringkasan segmen</h3>
+      <div id="ringkas"></div>
+    </section>
+  </aside>
+</main>
+
+<div class="legend">
+  <div><i style="background:#dc2626"></i>Merah: melambat / tertahan</div>
+  <div><i style="background:#f59e0b"></i>Kuning: agak pelan</div>
+  <div><i style="background:#16a34a"></i>Hijau: lancar</div>
+  <div><i style="background:#9ca3af"></i>Abu muda: antrean / parkir</div>
+  <div><i style="background:#6b7280"></i>Abu gelap: belum ada data GPS</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

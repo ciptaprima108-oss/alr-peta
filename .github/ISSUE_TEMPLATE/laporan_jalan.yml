@@ -1,0 +1,46 @@
+name: Laporan kondisi jalan ALR
+description: Pengawas ALR / RM melaporkan kondisi jalan + foto & video dari lapangan
+title: "[LAPORAN] Jalan STA "
+labels: ["laporan-jalan"]
+body:
+  - type: input
+    id: sta
+    attributes:
+      label: STA / lokasi
+      placeholder: "contoh: STA 14+400"
+    validations:
+      required: true
+  - type: input
+    id: koordinat
+    attributes:
+      label: Koordinat (lat, lon)
+      description: Otomatis terisi kalau lapor dari tombol di peta
+      placeholder: "-3.6521, 103.6672"
+  - type: dropdown
+    id: kondisi
+    attributes:
+      label: Kondisi jalan
+      multiple: true
+      options:
+        - Licin / becek
+        - Lubang / bergelombang
+        - Amblas / longsor
+        - Genangan air
+        - Tanjakan berat / unit slip
+        - Antrean / macet (bukan jalan jelek)
+        - Unit rusak di jalan
+        - Jalan normal (trigger palsu)
+    validations:
+      required: true
+  - type: textarea
+    id: foto
+    attributes:
+      label: Foto & video
+      description: Tarik / tempel foto dan video ke sini (dari HP bisa pilih file). Bisa lebih dari satu.
+    validations:
+      required: true
+  - type: textarea
+    id: ket
+    attributes:
+      label: Keterangan & tindakan
+      placeholder: "contoh: jalan licin sepanjang 50 m habis hujan, sudah minta grader & material"
