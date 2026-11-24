@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta name="versi" content="v202611240419">
 <title>ALR</title>
 <meta name="apple-mobile-web-app-title" content="ALR">
 <meta name="application-name" content="ALR">
@@ -23,7 +25,7 @@
   <a class="merek" href="./"><span class="logo logo-alr"><img src="ikon/logo_alr.png" alt="Logo ALR"></span><span><b>ALR</b><small id="info">memuat data...</small></span></a>
   <div class="kanan tombol">
     <button id="btnLokasi" title="Cari posisi saya di jalan ALR"><svg class="ik"><use href="#i-lokasi"/></svg><span class="teks-hp">Lokasi saya</span></button>
-    <button id="btnPengawas" title="Pengawas ALR / RM"><svg class="ik"><use href="#i-orang"/></svg><span class="teks-hp">Pengawas</span></button>
+    <button id="btnPengawas" title="Pengguna ALR"><svg class="ik"><use href="#i-orang"/></svg><span class="teks-hp">Pengguna</span></button>
     <button id="btnPanel" class="utama"><svg class="ik"><use href="#i-awas"/></svg><span class="teks-hp">Trigger</span> <span id="nTrig" class="badge">0</span></button>
   </div>
 </div></header>
@@ -62,29 +64,35 @@
       <button type="button" class="kembali" id="tutupPengawas"><svg class="ik"><use href="#i-kiri"/></svg><span>Kembali</span></button>
     </div>
     <div class="layar-badan">
-      <div class="lp-kepala"><span class="lp-gb"><svg class="ik"><use href="#i-orang"/></svg></span><div><h2 id="lpJudul">Pengawas ALR / RM</h2>
-        <p>Orang-orang ini dapat notif setiap ada jalan merah, lalu cek ke lokasi dan upload foto.</p></div></div>
-      
-      
+      <div class="lp-kepala"><span class="lp-gb"><svg class="ik"><use href="#i-orang"/></svg></span><div><h2 id="lpJudul">Pengguna ALR</h2>
+        <p>Kartu identitas semua pengguna aplikasi ALR, per divisi.</p></div></div>
+      <div class="divisi-pilih" id="divisiPilih" role="tablist"></div>
       <div id="listPengawas"><p class="kecil">memuat...</p></div>
       <div id="adminPesan" class="kecil" aria-live="polite"></div>
-      <div class="kotak-admin"><h3><svg class="ik"><use href="#i-info"/></svg>Untuk admin</h3>
+      <div class="kotak-admin" id="kotakAdmin"><h3><svg class="ik"><use href="#i-info"/></svg>Kelola pengguna (khusus pimpinan)</h3>
       <form id="formToken" class="form-p"><div id="adminMasuk">
-        <p class="kecil">Masuk sekali untuk bisa menambah atau menghapus pengawas dari sini.
-          <a target="_blank" href="https://github.com/settings/personal-access-tokens/new?name=Peta%20ALR&amp;description=Kelola%20pengawas%20dari%20peta%20ALR&amp;target_name=ciptaprima108-oss&amp;expires_in=365&amp;issues=write&amp;contents=read">Buat kode akses di GitHub</a>
+        <p class="kecil">Pimpinan masuk sekali untuk bisa menambah, mengubah, atau menghapus pengguna.
+          <a target="_blank" href="https://github.com/settings/personal-access-tokens/new?name=Peta%20ALR&amp;description=Kelola%20pengguna%20ALR&amp;target_name=ciptaprima108-oss&amp;expires_in=365&amp;issues=write&amp;contents=read">Buat kode akses di GitHub</a>
           (pilih repo <b>alr-peta</b>, izin <b>Issues: Read and write</b>), lalu tempel di bawah.</p>
         <label>Kode akses GitHub<input id="isiToken" type="password" required placeholder="github_pat_..." autocomplete="off"></label>
-        <button type="submit" class="kirim">Masuk sebagai admin</button>
+        <button type="submit" class="kirim">Masuk sebagai pimpinan</button>
       </div></form>
       <div id="adminAktif" class="kecil" hidden>Masuk sebagai <b id="adminNama"></b>. <button type="button" id="btnKeluar" class="link">Keluar</button></div>
       <form id="formPengawas" class="form-p" hidden>
-        <label>Username GitHub pengawas<input id="pUser" required placeholder="contoh: budi-alr" autocomplete="off" pattern="@?[A-Za-z0-9-]+"></label>
-        <label>Nama<input id="pNama" placeholder="contoh: Budi Santoso"></label>
-        <label>Jabatan<select id="pJab"><option>Pengawas ALR</option><option>RM</option><option>Lainnya</option></select></label>
-        <button type="submit" class="kirim">Tambah pengawas</button>
+        <h4 id="formJudul">Tambah pengguna baru</h4>
+        <input type="hidden" id="pId">
+        <label>Nama<input id="pNama" required placeholder="contoh: Budi Santoso"></label>
+        <label>Divisi<select id="pDiv"><option>Pimpinan</option><option>Road Maintenance</option><option>Logistik</option></select></label>
+        <label>Jabatan<input id="pJab" placeholder="contoh: Pimpinan ALR, Pengawas jalan, Admin logistik"></label>
+        <label>Username GitHub (kalau ada, untuk dapat notif)<input id="pUser" placeholder="contoh: budi-alr" autocomplete="off" pattern="@?[A-Za-z0-9-]*"></label>
+        <fieldset class="akses-pilih"><legend>Hak akses</legend>
+          <label><input type="checkbox" value="lihat" checked> Lihat peta & grafik</label>
+          <label><input type="checkbox" value="lapor"> Lapor & dapat notif jalan merah</label>
+          <label><input type="checkbox" value="kelola"> Kelola pengguna</label>
+        </fieldset>
+        <div class="tombol-form"><button type="submit" class="kirim" id="btnSimpan">Tambah pengguna</button><button type="button" class="batal" id="btnBatal" hidden>Batal</button></div>
       </form>
       </div>
-
     </div>
   </div>
 </div>

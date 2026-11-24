@@ -222,7 +222,7 @@
     return r.status === 204 ? null : r.json();
   }
   function tampilAdmin(pesan = "") {
-    $("adminMasuk").hidden = !!ADMIN; $("adminAktif").hidden = !ADMIN; $("formPengawas").hidden = !ADMIN;
+    $("adminMasuk").hidden = !!ADMIN; $("adminAktif").hidden = !ADMIN; $("formPengawas").hidden = !ADMIN; if (PENGGUNA.length) tampilPengguna();
     if (ADMIN) $("adminNama").textContent = "@" + ADMIN;
     $("adminPesan").innerHTML = pesan;
   }
@@ -244,50 +244,95 @@
   };
   $("btnKeluar").onclick = () => { try { localStorage.removeItem(KUNCI); } catch {} ADMIN = null; tampilAdmin("Sudah keluar."); };
 
-  async function kirimPengawas(aksi, user, nama = "", jabatan = "") {
+  // ---------- pengguna (ID card) ----------
+  const DIVISI = { "Pimpinan": "pim", "Road Maintenance": "rm", "Logistik": "log" };
+  const AKSES_NAMA = { lihat: ["Lihat", "peta"], lapor: ["Lapor", "kamera"], kelola: ["Kelola", "orang"] };
+  const AKSES_BAWAAN = { "Pimpinan": ["lihat", "lapor", "kelola"], "Road Maintenance": ["lihat", "lapor"], "Logistik": ["lihat"] };
+  let PENGGUNA = [], FILTER = "Semua";
+  async function kirimPengguna(aksi, d) {
     const isi = (j, v) => `### ${j}\n\n${v || "_No response_"}\n\n`;
-    tampilAdmin(`Memproses ${aksi.toLowerCase()} @${esc(user)}...`);
+    tampilAdmin(`Memproses ${aksi.toLowerCase()} ${esc(d.nama || d.id || "")}...`);
     try {
-      const i = await gh(`/repos/${REPO}/issues`, { method: "POST", body: JSON.stringify({ title: `[PENGAWAS] ${aksi} ${user}`, labels: ["kelola-pengawas"],
-        body: isi("Aksi", aksi) + isi("Username GitHub pengawas", user) + isi("Nama", nama) + isi("Jabatan", jabatan) }) });
-      // tunggu bot membalas (biasanya < 1 menit)
-      for (let n = 0; n < 30; n++) {
+      const i = await gh(`/repos/${REPO}/issues`, { method: "POST", body: JSON.stringify({ title: `[PENGAWAS] ${aksi} ${d.nama || d.id}`, labels: ["kelola-pengawas"],
+        body: isi("Aksi", aksi) + isi("ID", d.id) + isi("Nama", d.nama) + isi("Divisi", d.divisi) + isi("Jabatan", d.jabatan) + isi("Username GitHub", d.username) + isi("Akses", (d.akses || []).join(", ")) }) });
+      for (let n = 0; n < 30; n++) {                    // tunggu bot membalas (biasanya < 1 menit)
         await new Promise((r) => setTimeout(r, 5000));
         const k = await gh(`/repos/${REPO}/issues/${i.number}/comments`);
         if (k.length) {
-          const t = k[k.length - 1].body.replace(/^[✅❌ℹ️]+\s*/u, "");
-          tampilAdmin(`<span class="${k[k.length - 1].body.startsWith("❌") ? "salah" : "oke"}">${esc(t)}</span>`);
+          const b = k[k.length - 1].body;
+          tampilAdmin(`<span class="${b.startsWith("❌") ? "salah" : "oke"}">${esc(b.replace(/^[✅❌ℹ️]+\s*/u, ""))}</span>`);
           return muatPengawas();
         }
       }
       tampilAdmin(`Masih diproses. Cek lagi sebentar lagi.`);
     } catch (e) { tampilAdmin(`<span class="salah">${esc(e.message)}.</span>`); }
   }
+  const aksesForm = () => [...document.querySelectorAll(".akses-pilih input:checked")].map((x) => x.value);
+  const setAksesForm = (a) => document.querySelectorAll(".akses-pilih input").forEach((x) => x.checked = a.includes(x.value));
+  function resetForm() {
+    $("formPengawas").reset(); $("pId").value = ""; setAksesForm(AKSES_BAWAAN[$("pDiv").value]);
+    $("formJudul").textContent = "Tambah pengguna baru"; $("btnSimpan").textContent = "Tambah pengguna"; $("btnBatal").hidden = true;
+  }
+  $("pDiv").onchange = () => { if (!$("pId").value) setAksesForm(AKSES_BAWAAN[$("pDiv").value]); };
+  $("btnBatal").onclick = resetForm;
+  setAksesForm(AKSES_BAWAAN[$("pDiv").value]);
   $("formPengawas").onsubmit = (e) => {
     e.preventDefault();
-    const u = $("pUser").value.trim().replace(/^@/, "");
-    if (!u) return;
-    kirimPengawas("Tambah", u, $("pNama").value.trim(), $("pJab").value);
-    $("formPengawas").reset();
+    const d = { id: $("pId").value, nama: $("pNama").value.trim(), divisi: $("pDiv").value, jabatan: $("pJab").value.trim(),
+      username: $("pUser").value.trim().replace(/^@/, ""), akses: aksesForm() };
+    if (!d.nama) return;
+    kirimPengguna(d.id ? "Ubah" : "Tambah", d);
+    resetForm();
   };
   $("listPengawas").onclick = (e) => {
+    const u = e.target.closest("[data-ubah]");
+    if (u) {
+      const p = PENGGUNA.find((x) => x.id === u.dataset.ubah); if (!p) return;
+      $("pId").value = p.id; $("pNama").value = p.nama || ""; $("pDiv").value = p.divisi; $("pJab").value = p.jabatan || ""; $("pUser").value = p.username || "";
+      setAksesForm(p.akses || []);
+      $("formJudul").textContent = `Ubah data ${p.nama} (${p.id})`; $("btnSimpan").textContent = "Simpan perubahan"; $("btnBatal").hidden = false;
+      $("formPengawas").scrollIntoView({ behavior: "smooth", block: "start" }); $("pNama").focus({ preventScroll: true });
+      return;
+    }
     const b = e.target.closest("[data-hapus]"); if (!b) return;
-    if (b.dataset.yakin) return kirimPengawas("Hapus", b.dataset.hapus);
+    if (b.dataset.yakin) { const p = PENGGUNA.find((x) => x.id === b.dataset.hapus); return kirimPengguna("Hapus", { id: b.dataset.hapus, nama: p?.nama }); }
     b.dataset.yakin = "1"; b.textContent = "Yakin hapus?";
     setTimeout(() => { if (b.isConnected) { delete b.dataset.yakin; b.textContent = "Hapus"; } }, 4000);
   };
+  $("divisiPilih").onclick = (e) => { const b = e.target.closest("[data-div]"); if (!b) return; FILTER = b.dataset.div; tampilPengguna(); };
+  const LOGO = "ikon/logo_alr.png";
+  function idCard(p) {
+    const kode = DIVISI[p.divisi] || "pim", inisial = esc((p.nama || "?").trim().split(/\s+/).map((x) => x[0]).slice(0, 2).join("").toUpperCase());
+    const foto = p.username ? `<img class="foto" src="https://github.com/${encodeURIComponent(p.username)}.png?size=200" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'foto inisial',textContent:'${inisial}'}))">`
+      : `<span class="foto inisial">${inisial}</span>`;
+    return `<article class="idc idc-${kode}">
+      <div class="idc-atas"><img src="${LOGO}" alt="ALR"><span>KARTU PENGGUNA</span></div>
+      ${foto}
+      <div class="idc-nama">${esc(p.nama)}</div>
+      <div class="idc-jab">${esc(p.jabatan || "-")}</div>
+      <div class="idc-div">${esc(p.divisi)}</div>
+      <div class="idc-akses">${(p.akses || []).map((a) => AKSES_NAMA[a] ? `<span>${ik(AKSES_NAMA[a][1])}${AKSES_NAMA[a][0]}</span>` : "").join("")}</div>
+      <div class="idc-bawah"><span class="idc-no">${esc(p.id || "")}</span><span class="idc-kode" aria-hidden="true"></span></div>
+      ${ADMIN ? `<div class="idc-aksi"><button type="button" class="ubah" data-ubah="${esc(p.id)}">Ubah</button><button type="button" class="hapus" data-hapus="${esc(p.id)}">Hapus</button></div>` : ""}
+    </article>`;
+  }
+  function tampilPengguna() {
+    const jumlah = (d) => d === "Semua" ? PENGGUNA.length : PENGGUNA.filter((p) => p.divisi === d).length;
+    $("divisiPilih").innerHTML = ["Semua", ...Object.keys(DIVISI)].map((d) => `<button type="button" role="tab" class="chip-d${FILTER === d ? " aktif" : ""}" data-div="${d}" aria-selected="${FILTER === d}">${d} <b>${jumlah(d)}</b></button>`).join("");
+    const urut = Object.keys(DIVISI).filter((d) => FILTER === "Semua" || FILTER === d);
+    $("listPengawas").innerHTML = urut.map((d) => { const x = PENGGUNA.filter((p) => p.divisi === d); return x.length ? `<h3 class="div-judul div-${DIVISI[d]}">${d}</h3><div class="idc-grid">${x.map(idCard).join("")}</div>` : (FILTER === d ? `<p class="kecil">Belum ada pengguna di divisi ${d}.</p>` : ""); }).join("")
+      || `<p class="kecil">Belum ada pengguna.</p>`;
+  }
   async function muatPengawas() {
     try {
       let cfg;
       if (ADMIN) try { cfg = JSON.parse(decodeURIComponent(escape(atob((await gh(`/repos/${REPO}/contents/config.json?ref=main`)).content.replace(/\n/g, ""))))); } catch {}
       if (!cfg) { const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/config.json?t=${Date.now()}`); if (!r.ok) throw new Error(r.status); cfg = await r.json(); }
-      const daftar = (cfg.pengawas_github || []).map((p) => (typeof p === "string" ? { username: p } : p));
-      $("listPengawas").innerHTML = daftar.length ? `<div class="kartu-p-daftar">${daftar.map((p) => `<div class="kartu-p">
-          <img class="foto" src="https://github.com/${encodeURIComponent(p.username)}.png?size=120" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'foto inisial',textContent:'${esc((p.nama || p.username).slice(0, 1).toUpperCase())}'}))">
-          <div class="info"><b>${esc(p.nama || p.username)}</b><span class="jab">${esc(p.jabatan || "Pengawas")}</span><span class="akun">@${esc(p.username)}</span></div>
-          ${ADMIN ? `<button type="button" class="hapus" data-hapus="${esc(p.username)}">Hapus</button>` : ""}</div>`).join("")}</div>`
-        : `<p class="kecil">Belum ada pengawas. Admin bisa menambah di bawah.</p>`;
-    } catch (e) { $("listPengawas").innerHTML = `<p class="kecil">Daftar pengawas belum bisa dimuat.</p>`; }
+      PENGGUNA = (cfg.pengguna || []).slice();
+      for (const p of cfg.pengawas_github || []) { const q = typeof p === "string" ? { username: p } : p;
+        PENGGUNA.push({ id: "", nama: q.nama || q.username, divisi: "Road Maintenance", jabatan: q.jabatan || "", username: q.username, akses: ["lihat", "lapor"] }); }
+      tampilPengguna();
+    } catch (e) { $("listPengawas").innerHTML = `<p class="kecil">Daftar pengguna belum bisa dimuat.</p>`; }
   }
   cekAdmin().then(muatPengawas);
   const layarP = $("layarPengawas");
@@ -319,4 +364,15 @@
     pasangKlikKartu();
     ambilTiket();
   }).catch((e) => { console.error(e.stack); $("info").textContent = "Gagal memuat data: " + e.message; });
+
+  // ---------- versi baru: muat ulang otomatis (penting untuk ikon di layar utama HP yang suka menyimpan versi lama) ----------
+  const VERSI = document.querySelector('meta[name="versi"]')?.content || "";
+  async function cekVersi() {
+    try {
+      const v = (await (await fetch(`versi.txt?t=${Date.now()}`, { cache: "no-store" })).text()).trim();
+      if (v && VERSI && v !== VERSI && sessionStorage.getItem("alr_muat_ulang") !== v) { sessionStorage.setItem("alr_muat_ulang", v); location.reload(); }
+    } catch {}
+  }
+  cekVersi();
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") cekVersi(); });
 })();

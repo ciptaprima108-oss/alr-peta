@@ -57,6 +57,8 @@ jobs:
         run: |
           v=$(date +%Y%m%d%H%M)
           sed -i -E "s#([a-z_]+)\.(js|css)\?v=[0-9]+\"#\1.\2?v=$v\"#g" docs/*.html
+          sed -i -E "s#<meta name=\"versi\" content=\"v[0-9]+\">#<meta name=\"versi\" content=\"v$v\">#" docs/index.html
+          echo "v$v" > docs/versi.txt
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:

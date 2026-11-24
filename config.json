@@ -10,13 +10,6 @@
     "min_unit_lambat_merah": 2,
     "min_titik_segmen": 2
   },
-  "pengawas_github": [
-    {
-      "username": "Wicak",
-      "nama": "wicak",
-      "jabatan": "Pengawas ALR"
-    }
-  ],
   "label_trigger": "trigger",
   "label_laporan": "laporan-jalan",
   "zona_bukan_jalan": [
@@ -94,5 +87,115 @@
     "batas_layak": 75,
     "batas_perhatian": 50,
     "min_titik_gps_harian": 30
-  }
+  },
+  "pengguna": [
+    {
+      "id": "ALR-001",
+      "nama": "Fanza",
+      "divisi": "Pimpinan",
+      "jabatan": "Pimpinan WHL",
+      "username": "",
+      "akses": [
+        "lihat",
+        "lapor",
+        "kelola"
+      ]
+    },
+    {
+      "id": "ALR-002",
+      "nama": "Reza",
+      "divisi": "Pimpinan",
+      "jabatan": "Pimpinan WHL",
+      "username": "",
+      "akses": [
+        "lihat",
+        "lapor",
+        "kelola"
+      ]
+    },
+    {
+      "id": "ALR-003",
+      "nama": "Sunggu",
+      "divisi": "Pimpinan",
+      "jabatan": "Pimpinan GPE",
+      "username": "",
+      "akses": [
+        "lihat",
+        "lapor",
+        "kelola"
+      ]
+    },
+    {
+      "id": "ALR-004",
+      "nama": "Zaki D",
+      "divisi": "Pimpinan",
+      "jabatan": "Direksi",
+      "username": "",
+      "akses": [
+        "lihat",
+        "lapor",
+        "kelola"
+      ]
+    },
+    {
+      "id": "ALR-005",
+      "nama": "Irham",
+      "divisi": "Pimpinan",
+      "jabatan": "Pimpinan ALR",
+      "username": "",
+      "akses": [
+        "lihat",
+        "lapor",
+        "kelola"
+      ]
+    },
+    {
+      "id": "ALR-006",
+      "nama": "Bambang S",
+      "divisi": "Pimpinan",
+      "jabatan": "Pimpinan ALR",
+      "username": "",
+      "akses": [
+        "lihat",
+        "lapor",
+        "kelola"
+      ]
+    },
+    {
+      "id": "ALR-007",
+      "nama": "Roby",
+      "divisi": "Pimpinan",
+      "jabatan": "Pimpinan BSR",
+      "username": "",
+      "akses": [
+        "lihat",
+        "lapor",
+        "kelola"
+      ]
+    },
+    {
+      "id": "ALR-008",
+      "nama": "Wicak",
+      "divisi": "Pimpinan",
+      "jabatan": "GPE",
+      "username": "Wicak",
+      "akses": [
+        "lihat",
+        "lapor",
+        "kelola"
+      ]
+    },
+    {
+      "id": "ALR-009",
+      "nama": "Andri S",
+      "divisi": "Pimpinan",
+      "jabatan": "Pimpinan WHL",
+      "username": "",
+      "akses": [
+        "lihat",
+        "lapor",
+        "kelola"
+      ]
+    }
+  ]
 }

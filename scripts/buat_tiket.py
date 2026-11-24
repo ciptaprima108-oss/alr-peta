@@ -55,7 +55,10 @@ def main():
         m = re.search(r"<!-- sta:([\d.]+)-([\d.]+) -->", i.get("body") or "")
         if m:
             ada.append((float(m.group(1)), float(m.group(2)), i))
-    pengawas = [p["username"] if isinstance(p, dict) else p for p in CFG.get("pengawas_github", [])]
+    # notif ke pengguna yang punya akun GitHub dan akses "lapor" (plus daftar lama pengawas_github kalau masih ada)
+    pengawas = [p["username"] for p in CFG.get("pengguna", []) if p.get("username") and "lapor" in p.get("akses", [])]
+    pengawas += [p["username"] if isinstance(p, dict) else p for p in CFG.get("pengawas_github", [])]
+    pengawas = list(dict.fromkeys(pengawas))
     mention = " ".join("@" + u for u in pengawas)   # @mention = notif ke pengawas walau belum collaborator
     for t in TRIG:
         lama = [i for a, b, i in ada if a <= t["sta_akhir"] + 0.2 and b >= t["sta_awal"] - 0.2]

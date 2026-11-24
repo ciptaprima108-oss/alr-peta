@@ -125,3 +125,47 @@ body.terkunci { overflow: hidden; }
   .layar-atas { position: sticky; top: 0; z-index: 2; }
   .layar-badan { padding: 16px 14px 40px; }
 }
+
+/* ---------- ID card pengguna ---------- */
+.divisi-pilih { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0 8px; }
+.chip-d { border: 2px solid var(--garis); background: var(--kertas); border-radius: 999px; padding: 8px 14px; font: 600 16px var(--isi); color: var(--tinta); min-height: 44px; }
+.chip-d b { display: inline-block; min-width: 24px; margin-left: 4px; padding: 0 6px; border-radius: 999px; background: var(--debu); font-size: 14px; }
+.chip-d.aktif { background: var(--aspal); color: #fff; border-color: var(--aspal); }
+.chip-d.aktif b { background: var(--kuning); color: var(--aspal); }
+.div-judul { margin: 18px 0 10px; font: 700 24px var(--judul); display: flex; align-items: center; gap: 10px; }
+.div-judul::before { content: ""; width: 8px; height: 26px; border-radius: 3px; background: var(--c); }
+.div-pim { --c: #23282A; } .div-rm { --c: #C2531F; } .div-log { --c: #2a78d6; }
+.idc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; }
+.idc { --c: #23282A; --c2: #F2B705; position: relative; background: #fff; border-radius: 16px; overflow: hidden; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,.06), 0 8px 22px rgba(0,0,0,.08); padding-bottom: 12px; }
+.idc-pim { --c: #23282A; --c2: #F2B705; } .idc-rm { --c: #C2531F; --c2: #FFD7BF; } .idc-log { --c: #2a78d6; --c2: #CFE3FA; }
+.idc-atas { background: var(--c); height: 86px; display: flex; align-items: flex-start; justify-content: space-between; padding: 10px 12px; border-bottom: 5px solid var(--c2); }
+.idc-atas img { height: 30px; background: #fff; border-radius: 6px; padding: 2px 5px; }
+.idc-atas span { color: #fff; font: 700 13px/30px var(--isi); letter-spacing: .06em; opacity: .9; white-space: nowrap; }
+.idc .foto { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; display: block; margin: -48px auto 0; border: 5px solid #fff; background: var(--c2); position: relative; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+.idc .inisial { display: grid; place-items: center; font: 700 36px var(--judul); color: var(--c); }
+.idc-pim .inisial { color: #23282A; }
+.idc-nama { font: 700 26px/1.1 var(--judul); margin: 10px 12px 0; }
+.idc-jab { font-size: 16px; color: var(--pudar); margin: 3px 12px 0; }
+.idc-div { display: inline-block; margin-top: 8px; background: var(--c); color: #fff; font: 700 14px var(--isi); padding: 4px 12px; border-radius: 999px; }
+.idc-pim .idc-div { color: var(--kuning); }
+.idc-akses { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; margin: 10px 10px 0; }
+.idc-akses span { display: inline-flex; align-items: center; gap: 5px; background: var(--debu); border-radius: 8px; padding: 5px 9px; font: 600 14px var(--isi); }
+.idc-akses .ik { font-size: 17px; color: var(--c); }
+.idc-bawah { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 12px 14px 0; padding-top: 10px; border-top: 1px dashed var(--garis); }
+.idc-no { font: 700 18px var(--judul); letter-spacing: .04em; }
+.idc-kode { flex: 1; max-width: 110px; height: 26px; background: repeating-linear-gradient(90deg, #23282A 0 2px, transparent 2px 4px, #23282A 4px 5px, transparent 5px 8px, #23282A 8px 11px, transparent 11px 13px); opacity: .85; }
+.idc-aksi { display: flex; gap: 8px; margin: 12px 12px 0; }
+.idc-aksi button { flex: 1; font: 700 15px var(--isi); padding: 10px; border-radius: 10px; }
+.idc-aksi .ubah { background: var(--debu); color: var(--tinta); }
+.idc-aksi .hapus { background: var(--merah-muda); color: #8E2416; }
+.kotak-admin h4 { margin: 4px 0 0; font: 700 21px var(--judul); }
+.akses-pilih { border: 2px solid var(--garis); border-radius: 10px; padding: 8px 12px 10px; margin: 0; }
+.akses-pilih legend { font: 600 15px var(--isi); color: var(--pudar); padding: 0 4px; }
+.akses-pilih label { display: flex; align-items: center; gap: 10px; font: 500 16px var(--isi); color: var(--tinta); padding: 6px 0; }
+.akses-pilih input { width: 22px; height: 22px; accent-color: var(--aspal); min-height: 0; }
+.tombol-form { display: flex; gap: 8px; }
+.tombol-form .kirim { flex: 1; }
+.tombol-form .batal { background: var(--debu); font: 700 16px var(--isi); padding: 0 18px; border-radius: 10px; }
+.layar-isi { max-width: 760px; }
+@media (max-width: 760px) { .idc-grid { grid-template-columns: 1fr 1fr; gap: 10px; } .idc-nama { font-size: 22px; } .idc .foto { width: 80px; height: 80px; margin-top: -40px; } .idc-atas { height: 74px; } .idc-atas { padding: 8px; } .idc-atas img { height: 24px; } .idc-atas span { font-size: 10px; line-height: 24px; letter-spacing: .02em; } }
+@media (max-width: 360px) { .idc-grid { grid-template-columns: 1fr; } }
