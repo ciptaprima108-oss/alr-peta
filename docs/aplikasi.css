@@ -189,3 +189,17 @@ body.peta-penuh .tombol-penuh { background: var(--kuning); }
   .legend.buka b { margin-bottom: 4px; } .legend.buka b::after { content: "–"; }
 }
 .pf-kepala:has(.idc) .pf-sampul { display: none; } .pf-kartu:has(.idc) { margin-top: 16px; }
+
+/* rincian per 200 m di pop-up KM */
+.m200 { border-top: 1px solid var(--garis); padding-top: 12px; margin-top: 4px; }
+.m200 h4 { margin: 0; font: 700 21px var(--judul); }
+.m200 .kecil { margin: 2px 0 8px; font-size: 14px; }
+.m200-lajur { margin-top: 10px; } .m200-lajur > b { display: block; font: 700 16px var(--judul); color: var(--pudar); margin-bottom: 6px; }
+.m200-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.m200-kotak { border-radius: 12px; padding: 7px 2px 6px; display: flex; flex-direction: column; align-items: center; line-height: 1.1; color: #fff; transition: transform .12s; box-shadow: inset 0 -3px 0 rgba(0,0,0,.15); }
+.m200-kotak:active { transform: scale(.94); }
+.m200-kotak small { font: 600 12px var(--judul); opacity: .9; }
+.m200-kotak .j { font: 700 24px var(--judul); margin-top: 2px; } .m200-kotak .s { font-size: 11px; } .m200-kotak .v { font: 600 12px var(--judul); margin-top: 3px; opacity: .9; }
+.m200-kotak.h { background: #3FA34D; } .m200-kotak.k { background: #F2B705; color: var(--aspal); } .m200-kotak.m { background: #E5341F; }
+.m200-kotak.z { background: repeating-linear-gradient(45deg, #454B4D 0 5px, #7A8183 5px 7px); color: #E3E6E1; }
+.m200-kotak.z .j { font-size: 15px; margin-top: 7px; }

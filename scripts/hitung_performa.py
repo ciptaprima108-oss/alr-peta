@@ -141,6 +141,21 @@ def per_km():
     json.dump(dict(keterangan="hari[tanggal][km] = [titik GPS, jam berhenti mesin hidup, jam berhenti mesin mati, jumlah speed jalan, titik jalan, unit]; "
                               "arah.muatan = BSR->107, arah.kosongan = 107->BSR (ditebak dari gerak unit)",
                    km=km, hari=hari, arah=arah, zona_hari=zona_hari), open(P("docs", "data", "per_km.json"), "w"), separators=(",", ":"))
+    # per 200 m (dibuka saat KM diketuk). Titik GPS per jam, jadi ini petunjuk lokasi, bukan hitungan menit yang tepat
+    g2 = pd.concat([g, lepas])
+    nseg = int(round(jalur.sta.max() / 0.2))
+    g2["seg"] = (g2.sta / 0.2).astype(int).clip(upper=nseg - 1)
+    def kumpul2(x0):
+        out = {}
+        for (tg, sg), x in x0.groupby(["tg", "seg"]):
+            jalan = x[x.speed > 0]
+            out.setdefault(tg, {})[int(sg)] = [int(len(x)), int(((x.speed == 0) & x.acc).sum()), int(((x.speed == 0) & ~x.acc).sum()),
+                                               round(float(jalan.speed.sum()), 1), int(len(jalan))]
+        return out
+    seg = [dict(i=i, sta_awal=round(i * 0.2, 1), zona=ht.zona_bukan_jalan(i * 0.2 + 0.1)) for i in range(nseg)]
+    json.dump(dict(keterangan="per 200 m: hari[tanggal][seg] = [titik GPS, jam berhenti mesin hidup, jam berhenti mesin mati, jumlah speed jalan, titik jalan]",
+                   panjang_m=200, seg=seg, hari=kumpul2(g2), arah={"muatan": kumpul2(g2[g2.arah == "m"]), "kosongan": kumpul2(g2[g2.arah == "k"])}),
+              open(P("docs", "data", "per_200m.json"), "w"), separators=(",", ":"))
     print(f"Per KM: {len(hari)} hari x {nkm} KM; arah: muatan {int((g.arah == 'm').sum())}, kosongan {int((g.arah == 'k').sum())}, tidak tahu {int(g.arah.isna().sum())} titik")
 
 

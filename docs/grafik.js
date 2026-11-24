@@ -46,7 +46,17 @@
     const p = b.dataset.p;
     setRentang(p === "semua" ? awalData : tambah(akhirData, -(+p - 1)), akhirData);
   });
-  ["dari", "sampai"].forEach((id) => $(id).onchange = () => { document.querySelectorAll("[data-p]").forEach((x) => x.classList.remove("aktif")); gambar(); });
+  // tanggal "dari" tidak boleh sesudah "sampai" (dan sebaliknya); juga dijaga di dalam rentang data
+  ["dari", "sampai"].forEach((id) => $(id).onchange = () => {
+    document.querySelectorAll("[data-p]").forEach((x) => x.classList.remove("aktif"));
+    const jepit = (d) => d < awalData ? awalData : d > akhirData ? akhirData : d;
+    let d = tgl($("dari").value), s = tgl($("sampai").value);
+    if (isNaN(d) || isNaN(s)) return;
+    d = jepit(d); s = jepit(s);
+    if (d > s) { if (id === "dari") s = d; else d = s; }
+    $("dari").value = iso(d); $("sampai").value = iso(s);
+    gambar();
+  });
   document.querySelectorAll("[data-m]").forEach((b) => b.onclick = () => {
     document.querySelectorAll("[data-m]").forEach((x) => x.classList.toggle("aktif", x === b));
     mode = b.dataset.m; gambar();
@@ -348,6 +358,9 @@
     d.hari.forEach((h) => HARI.set(h.tanggal, h));
     if (!d.hari.length) { $("status").innerHTML = `<div><h2>Belum ada data</h2><p>Upload data rit atau GPS dulu.</p></div>`; return; }
     awalData = tgl(d.hari[0].tanggal); akhirData = tgl(d.hari[d.hari.length - 1].tanggal);
+    // data GPS per KM bisa lebih baru dari data rit: pakai tanggal paling akhir
+    const kmAkhir = km && Object.keys(km.hari || {}).sort().pop();
+    if (kmAkhir && tgl(kmAkhir) > akhirData) akhirData = tgl(kmAkhir);
     $("dari").min = $("sampai").min = iso(awalData); $("dari").max = $("sampai").max = iso(akhirData);
     $("catatan").innerHTML = `Tiap hari diberi nilai 0 sampai 100 dari kerja DT: makin cepat 1 rit, makin sedikit rit telat,
       makin kencang DT jalan, dan makin jarang DT berhenti di jalan, nilainya makin tinggi.
