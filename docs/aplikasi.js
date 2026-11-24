@@ -107,7 +107,7 @@
   $("tutupPengawas").addEventListener("click", () => { if (history.state?.lyr === "pengguna") history.back(); });
   // kartu trigger/laporan diketuk: tutup layar dan tunjukkan di peta
   document.addEventListener("click", (e) => {
-    const k = e.target.closest(".lyr .kartu"); if (!k || e.target.closest("a") || !k.dataset.ll) return;
+    const k = e.target.closest(".lyr .kartu"); if (!k || e.target.closest("a,button") || !k.dataset.ll) return;
     klik(); history.state?.lyr ? history.back() : tutup(); window.scrollTo({ top: 0, behavior: "smooth" });
   });
   // buka layar langsung dari alamat, misal .../#km
@@ -118,6 +118,7 @@
   const sheet = document.createElement("div"); sheet.className = "sheet-latar"; sheet.hidden = true;
   sheet.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetJudul"><div class="sheet-pegangan"></div><div id="sheetIsi"></div></div>`;
   document.body.appendChild(sheet);
+  window.ALR_tutupSheet = () => closeSheet(true);
   function closeSheet(diam) { if (sheet.hidden) return; sheet.classList.remove("tampil"); setTimeout(() => sheet.hidden = true, 280); if (!diam) klik(); }
   sheet.addEventListener("click", (e) => { if (e.target === sheet || e.target.closest("[data-tutup-sheet]")) closeSheet(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") { if (!sheet.hidden) closeSheet(); else if (aktif) history.state?.lyr ? history.back() : tutup(); } });
@@ -136,15 +137,15 @@
     const html = `<h3 id="sheetJudul">${esc(k.label)}${k.zona ? `<small>${esc(k.zona)}, tidak dihitung sebagai jalan rusak</small>` : ""}</h3>
       ${D.totM ? baris("Jalur muatan, BSR ke 107", D.totM) + baris("Jalur kosongan, 107 ke BSR", D.totK) : baris("Semua arah", D.totSemua)}
       <div class="m200" id="m200"><h4>Per 200 meter</h4><p class="kecil">Memuat...</p></div>
-      ${rr && rr.rr != null ? `<div class="sh-rr">RR perkiraan <b>${koma(rr.rr)}%</b>, traksi saat basah <b>${{ aman: "aman", waspada: "waspada", rawan: "rawan selip" }[rr.traksi]}</b>${rr.tanjakan_muatan != null ? `, tanjakan arah muatan ${koma(rr.tanjakan_muatan)}%` : ""}.</div>` : ""}
+      ${rr && rr.rr != null ? `<div class="sh-rr">RR perkiraan <b>${koma(rr.rr)}%</b>, traksi kering <b>${window.ALR_cadangan?.(rr, "kering") ?? "-"}%</b>, basah <b>${window.ALR_cadangan?.(rr, "basah") ?? "-"}%</b> (${{ aman: "aman", waspada: "waspada", rawan: "rawan selip" }[rr.traksi]})${rr.tanjakan_muatan != null ? `, tanjakan arah muatan ${koma(rr.tanjakan_muatan)}%` : ""}.</div>` : ""}
       <div class="sh-aksi"><button type="button" class="utama" id="shPeta"><svg class="ik"><use href="#i-peta"/></svg>Lihat di peta</button>
-        <a class="abu" target="_blank" href="#" id="shLapor"><svg class="ik"><use href="#i-kamera"/></svg>Lapor KM ini</a>
+        <button type="button" class="abu" id="shLapor" data-lapor="inspeksi" data-sta="${tengah}"><svg class="ik"><use href="#i-kamera"/></svg>Lapor KM ini</button>
         <button type="button" class="abu" data-tutup-sheet>Tutup</button></div>`;
     const v = D.totSemua[km];
     bukaSheet(html, `ALR. ${k.label.replace("-", " sampai ")}. ${v[1] + v[2]} jam DT berhenti.`);
     $("shPeta").onclick = () => { closeSheet(true); history.state?.lyr ? history.back() : tutup(); setTimeout(() => { window.ALR_keSta?.(tengah, 15); window.scrollTo({ top: 0, behavior: "smooth" }); }, 340); };
     const ll = window.ALR_posisiSta?.(tengah);
-    if (ll && window.ALR_linkLapor) $("shLapor").href = window.ALR_linkLapor(fmtSta(tengah), ll[0], ll[1]); else $("shLapor").hidden = true;
+    if (ll) $("shLapor").dataset.ll = ll.join(",");
     isi200(km, D, r.dataset.lajur, r.dataset.sta);
   });
 
@@ -213,7 +214,7 @@
   function dariTiket(trig, lap) {
     nTrig = trig.filter((i) => i.state === "open").length || nTrig; nLap = lap.filter((i) => i.state === "open").length; angkaUbin();
     return [...trig.filter((i) => i.state === "open").map((i) => ({ kunci: "issue-" + i.number, layar: "trigger", judul: `ALR: Trigger baru #${i.number}`, isi: i.title.replace(/^\[TRIGGER\]\s*/i, ""), ucap: `ALR. Ada trigger baru. ${i.title.replace(/^\[TRIGGER\]\s*/i, "").replace(/STA (\d+)\+(\d)\d\d/g, "KM $1 koma $2").split(":")[0]}.` })),
-            ...lap.map((i) => ({ kunci: "issue-" + i.number, layar: "laporan", judul: `ALR: Laporan lapangan baru`, isi: i.title, ucap: "ALR. Ada laporan lapangan baru dari pengawas." }))];
+            ...lap.map((i) => ({ kunci: "issue-" + i.number, layar: "laporan", judul: i.labels.some((l) => l.name === "logistik") ? "ALR: Laporan logistik baru" : i.labels.some((l) => l.name === "pekerjaan-rm") ? "ALR: Laporan pekerjaan RM baru" : "ALR: Laporan inspeksi baru", isi: i.title.replace(/^\[[A-Z ]+\]\s*/, ""), ucap: "ALR. Ada laporan lapangan baru." }))];
   }
   window.addEventListener("alr:ringkasan", (e) => periksa(dariRingkasan(e.detail)));
   window.addEventListener("alr:tiket", (e) => periksa(dariTiket(e.detail.trig, e.detail.lap)));
@@ -224,7 +225,7 @@
     try {
       const is = (await (await fetch("https://api.github.com/repos/ciptaprima108-oss/alr-peta/issues?state=open&per_page=50")).json()).filter((i) => !i.pull_request);
       const lbl = (i, n) => i.labels.some((l) => l.name === n);
-      periksa(dariTiket(is.filter((i) => lbl(i, "trigger")), is.filter((i) => lbl(i, "laporan-jalan"))));
+      periksa(dariTiket(is.filter((i) => lbl(i, "trigger")), is.filter((i) => ["laporan-jalan", "logistik", "pekerjaan-rm"].some((n) => lbl(i, n)))));
     } catch {}
   }, 5 * 60 * 1000);
 
@@ -315,6 +316,9 @@
     m200: ["#FFD27A", "#E08A00", '<rect x="9" y="27" width="46" height="12" rx="3" fill="#2B3134"/><path d="M13 27v5M20 27v3M27 27v5M34 27v3M41 27v5M48 27v3" stroke="#FFD54F" stroke-width="2"/><rect x="11" y="42" width="8" height="8" rx="2" fill="#4ADE80"/><rect x="21" y="42" width="8" height="8" rx="2" fill="#4ADE80"/><rect x="31" y="42" width="8" height="8" rx="2" fill="#F87171"/><rect x="41" y="42" width="8" height="8" rx="2" fill="#FFE082"/><path d="M35 12a6 6 0 0 1 6 6c0 4.5-6 9-6 9s-6-4.5-6-9a6 6 0 0 1 6-6z" fill="#fff"/><circle cx="35" cy="18" r="2.4" fill="#E5341F"/>'],
     forum: ["#C3A6FF", "#6C3FE0", '<path d="M12 16h28a4 4 0 0 1 4 4v14a4 4 0 0 1-4 4H24l-8 6v-6h-4a4 4 0 0 1-4-4V20a4 4 0 0 1 4-4z" fill="#fff"/><path d="M46 24h4a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4h-2v5l-7-5h-9" fill="#FFD54F"/><circle cx="18" cy="27" r="2.4" fill="#6C3FE0"/><circle cx="26" cy="27" r="2.4" fill="#6C3FE0"/><circle cx="34" cy="27" r="2.4" fill="#6C3FE0"/>'],
     pengguna: ["#FFC48A", "#E86A1A", '<rect x="16" y="13" width="32" height="40" rx="5" fill="#fff"/><rect x="27" y="10" width="10" height="6" rx="2" fill="#5D4037"/><circle cx="32" cy="28" r="6.5" fill="#FFB074"/><path d="M21.5 44c1.6-6 5.6-8.5 10.5-8.5S41 38 42.5 44z" fill="#E86A1A"/><rect x="22" y="47" width="20" height="2.6" rx="1.3" fill="#FFD9BD"/>'],
+    inspeksi: ["#FFB199", "#E11D2E", '<circle cx="28" cy="28" r="12.5" fill="#fff"/><circle cx="28" cy="28" r="8" fill="#FFE3DC"/><path d="M37 37l11 11" stroke="#fff" stroke-width="7" stroke-linecap="round"/><path d="M24.5 28.5l3 3 5.5-6" stroke="#E11D2E" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'],
+    logistik: ["#FFD27A", "#C26A00", '<path d="M10 24h26v20H10z" fill="#fff"/><path d="M36 30h9l7 7v7H36z" fill="#FFF3D6"/><rect x="39" y="32" width="6" height="5" rx="1" fill="#C26A00"/><circle cx="19" cy="46" r="5" fill="#2B3134"/><circle cx="19" cy="46" r="2" fill="#CFD8DC"/><circle cx="44" cy="46" r="5" fill="#2B3134"/><circle cx="44" cy="46" r="2" fill="#CFD8DC"/><path d="M14 24l6-8h8l6 8" fill="#8D6E63"/><circle cx="20" cy="19" r="3" fill="#A1887F"/><circle cx="27" cy="18" r="3.4" fill="#795548"/>'],
+    rm: ["#8FD3FF", "#0B4EA2", '<path d="M14 36h22l4-10h8v16H14z" fill="#FFD54F"/><rect x="38" y="20" width="10" height="10" rx="2" fill="#fff"/><path d="M8 46h22" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M18 36l-6 10" stroke="#fff" stroke-width="3"/><circle cx="22" cy="46" r="5" fill="#2B3134"/><circle cx="44" cy="46" r="5" fill="#2B3134"/><circle cx="22" cy="46" r="2" fill="#CFD8DC"/><circle cx="44" cy="46" r="2" fill="#CFD8DC"/>'],
   };
   function ikon3d(nama) {
     const [a, b, isi] = IKON3D[nama], id = "i3d-" + nama;

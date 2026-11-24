@@ -56,7 +56,7 @@
     return `<b>${esc(p.label)}</b><br>${st}<br>${esc(p.alasan)}<br>
       <span class="kecil">${p.n_titik} titik GPS, ${p.n_unit} unit${p.speed_median != null ? `, kecepatan umumnya ${p.speed_median} km/jam` : ""}</span>
       ${unit.length ? `<br><span class="kecil">Unit: ${esc(unit.join(", "))}</span>` : ""}
-      <div class="aksi"><a class="btn merah" target="_blank" href="${linkLapor(fmtSta(p.sta_awal), p.lat, p.lon)}">Lapor + foto</a>
+      <div class="aksi"><button type="button" class="btn merah" data-lapor="inspeksi" data-sta="${(p.sta_awal + p.sta_akhir) / 2}" data-ll="${p.lat},${p.lon}">Lapor + foto</button>
       <a class="btn abu" target="_blank" href="${linkNav(p.lat, p.lon)}">Navigasi</a></div>`;
   }
   function gambarSegmen() {
@@ -100,7 +100,7 @@
   }
 
   // ---------- tiket & laporan dari GitHub Issues ----------
-  const polaGambar = /(https:\/\/(?:github\.com\/user-attachments\/assets\/[\w-]+|user-images\.githubusercontent\.com\/[^\s)"']+|private-user-images\.githubusercontent\.com\/[^\s)"']+))/g;
+  const polaGambar = /(https:\/\/(?:raw\.githubusercontent\.com\/[^\s)"']+\.jpe?g|github\.com\/user-attachments\/assets\/[\w-]+|user-images\.githubusercontent\.com\/[^\s)"']+|private-user-images\.githubusercontent\.com\/[^\s)"']+))/g;
   function lokasiTiket(body) {
     let m = body.match(/<!-- sta:([\d.]+)-([\d.]+) -->/);
     if (m) { const a = +m[1], b = +m[2]; return { sta: (a + b) / 2, ll: posisiSta((a + b) / 2), label: `STA ${fmtSta(a)} - ${fmtSta(b)}` }; }
@@ -118,7 +118,7 @@
       const issues = (await r.json()).filter((i) => !i.pull_request);
       const lbl = (i, n) => i.labels.some((l) => l.name === n);
       const trig = issues.filter((i) => lbl(i, ringkasan?.label_trigger || "trigger"));
-      const lap = issues.filter((i) => lbl(i, ringkasan?.label_laporan || "laporan-jalan"));
+      const lap = issues.filter((i) => ["laporan-jalan", "logistik", "pekerjaan-rm"].some((n) => lbl(i, n)));
       // ambil komentar (foto pengawas biasanya di komentar) untuk tiket yang punya komentar
       await Promise.all([...trig, ...lap].slice(0, 40).map(async (i) => {
         i._teks = i.body || "";
@@ -168,7 +168,7 @@
       L.marker(i._lok.ll, { icon: ikon, zIndexOffset: 1000 }).bindPopup(
         `<b>${esc(i.title)}</b><br>${statusTiket(i)}<br><span class="kecil">${i._gambar.length} lampiran</span>
          <div class="thumbs">${i._gambar.slice(0, 6).map((u) => `<a target="_blank" href="${esc(u)}"><img src="${esc(u)}" onerror="this.remove()"></a>`).join("")}</div>
-         <div class="aksi"><a class="btn merah" target="_blank" href="${i.html_url}">${isTrig ? "Upload foto/video" : "Buka laporan"}</a>
+         <div class="aksi">${isTrig ? `<button type="button" class="btn merah" data-lapor="inspeksi" data-trig="${i.number}" data-sta="${i._lok.sta ?? ""}" data-ll="${i._lok.ll.join(",")}">Lapor + foto</button>` : `<button type="button" class="btn merah" data-lihat-lap="${i.number}">Lihat laporan</button>`}
          <a class="btn abu" target="_blank" href="${linkNav(...i._lok.ll)}">Navigasi</a></div>`).addTo(lapisTiket);
     }
     pasangKlikKartu();
@@ -181,7 +181,7 @@
     for (const t of ringkasan?.trigger || [])
       L.marker([t.lat, t.lon], { zIndexOffset: 1000, icon: pin("#C8321F", "awas", true) })
         .bindPopup(`<b>STA ${fmtSta(t.sta_awal)} - ${fmtSta(t.sta_akhir)}</b><br>${esc(t.alasan)}<br><span class="kecil">Unit: ${esc(t.unit.join(", "))}</span>
-          <div class="aksi"><a class="btn merah" target="_blank" href="${linkLapor(fmtSta(t.sta_awal), t.lat, t.lon)}">Lapor + foto</a>
+          <div class="aksi"><button type="button" class="btn merah" data-lapor="inspeksi" data-sta="${(t.sta_awal + t.sta_akhir) / 2}" data-ll="${t.lat},${t.lon}">Lapor + foto</button>
           <a class="btn abu" target="_blank" href="${linkNav(t.lat, t.lon)}">Navigasi</a></div>`).addTo(lapisTiket);
   }
   function pasangKlikKartu() {
@@ -195,7 +195,8 @@
   // dipakai layar aplikasi (aplikasi.js): geser peta ke STA tertentu
   window.ALR_keSta = (sta, zoom = 15) => { const ll = posisiSta(sta); if (ll) map.setView(ll, zoom); return ll; };
   window.ALR_linkLapor = linkLapor; window.ALR_linkNav = linkNav; window.ALR_posisiSta = (sta) => posisiSta(sta);
-  window.ALR_peta = map;
+  window.ALR_peta = map; window.ALR_REPO = REPO; window.ALR_fmtSta = fmtSta; window.ALR_muatTiket = () => ambilTiket();
+  window.ALR_staTerdekat = (lat, lon) => { const t = staTerdekat(lat, lon); if (!t) return null; const p = t.seg.properties; return { sta: (p.sta_awal + p.sta_akhir) / 2, jarak_m: t.jarak_m }; };
   // ---------- klik peta = lapor di titik itu ----------
   map.on("click", (e) => {
     const t = staTerdekat(e.latlng.lat, e.latlng.lng);
@@ -214,7 +215,7 @@
       const sta = t ? fmtSta((t.seg.properties.sta_awal + t.seg.properties.sta_akhir) / 2) : "?";
       penandaSaya = L.circleMarker([la, lo], { radius: 9, color: "#fff", weight: 3, fillColor: "#2a78d6", fillOpacity: 1 }).addTo(map)
         .bindPopup(`<b>Posisi saya</b><br>${t ? `Dekat STA ${sta} (${Math.round(t.jarak_m)} m dari as jalan)` : "Di luar jalur ALR"}
-          <div class="aksi"><a class="btn merah" target="_blank" href="${linkLapor(sta, la, lo)}">Lapor di sini</a></div>`).openPopup();
+          <div class="aksi"><button type="button" class="btn merah" data-lapor="inspeksi" data-ll="${la},${lo}">Lapor di sini</button></div>`).openPopup();
       map.setView([la, lo], 16);
     }, () => alert("Lokasi tidak bisa diambil. Izinkan akses lokasi di browser."), { enableHighAccuracy: true });
   };
@@ -225,6 +226,7 @@
   const KUNCI = "alr_token";
   const ambilToken = () => { try { return localStorage.getItem(KUNCI) || ""; } catch { return ""; } };
   let ADMIN = null;
+  window.ALR_adaToken = () => !!ambilToken(); window.ALR_gh = (p, o) => gh(p, o);
   async function gh(path, opsi = {}) {
     const r = await fetch(`https://api.github.com${path}`, { ...opsi, headers: { Accept: "application/vnd.github+json", Authorization: `Bearer ${ambilToken()}`, ...(opsi.headers || {}) } });
     if (!r.ok) throw new Error(r.status === 401 ? "Token salah atau sudah kedaluwarsa" : r.status === 403 || r.status === 404 ? "Token tidak punya izin ke repo ini" : `GitHub menolak (${r.status})`);

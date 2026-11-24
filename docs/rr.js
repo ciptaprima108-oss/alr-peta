@@ -6,7 +6,12 @@
   const NAMA_T = { aman: "aman", waspada: "waspada saat basah", rawan: "rawan selip saat basah" };
   const NAMA_R = { baik: "ringan", sedang: "sedang", berat: "berat" };
   const koma = (v) => String(v).replace(".", ",");
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   let D = null;
+  // cadangan traksi: berapa persen cengkeraman ban masih tersisa. 100% = sangat aman, 0% = ban mulai selip
+  const cadangan = (k, kondisi) => { if (!D || k?.mu_perlu == null) return null; const ada = kondisi === "kering" ? D.asumsi.mu_kering : D.asumsi.mu_basah; return Math.max(0, Math.round((1 - k.mu_perlu / ada) * 100)); };
+  const kelasT = (c) => c == null ? null : c <= 0 ? "rawan" : c <= 40 ? "waspada" : "aman";
+  window.ALR_cadangan = cadangan;
 
   // dipanggil juga dari grafik.js setelah kartu KM dibuat
   window.isiRR = function () {
@@ -14,14 +19,14 @@
     document.querySelectorAll("#topKm .it[data-km]").forEach((el) => {
       const r = D.km[+el.dataset.km], s = el.querySelector(".rr-isi");
       if (!r || !s || r.rr == null) return;
-      s.innerHTML = `<br>RR perkiraan <b>${koma(r.rr)}%</b> (${NAMA_R[r.rr_kelas]}), traksi <b>${NAMA_T[r.traksi]}</b>.`;
+      s.innerHTML = `<br>RR perkiraan <b>${koma(r.rr)}%</b> (${NAMA_R[r.rr_kelas]}), traksi kering <b>${cadangan(r, "kering")}%</b>, basah <b>${cadangan(r, "basah")}%</b>.`;
     });
   };
 
   function gambar() {
     const urut = [...D.km].reverse();                       // BSR di kiri, 107 di kanan, sama dengan pita jam tertahan
     const n = urut.length, x0 = 50, x1 = 950, w = (x1 - x0) / n, h = 34;
-    const yP = 40, hP = 70, yR = yP + hP + 34, yT = yR + h + 30;
+    const yP = 40, hP = 70, yR = yP + hP + 34, yK = yR + h + 30, yT = yK + h + 30;
     let g = `<defs><pattern id="arsir2" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#454B4D"/><line x1="0" y1="0" x2="0" y2="7" stroke="#7A8183" stroke-width="2.5"/></pattern></defs>`;
     // profil ketinggian
     const ev = urut.map((k) => k.elev).filter((v) => v != null);
@@ -35,17 +40,20 @@
       g += `<text x="${x0}" y="${yP + 30}" font-size="16" fill="#C3C9C3">Data tinggi jalan belum ada, tanjakan dianggap datar.</text>`;
     }
     g += `<text x="${x0}" y="${yR - 10}" font-size="17" font-weight="700" fill="#fff">RR (%)</text><text x="${x0 + 70}" y="${yR - 10}" font-size="15" fill="#C3C9C3">makin besar makin berat</text>`;
-    g += `<text x="${x0}" y="${yT - 10}" font-size="17" font-weight="700" fill="#fff">TRAKSI SAAT BASAH</text>`;
+    g += `<text x="${x0}" y="${yK - 10}" font-size="17" font-weight="700" fill="#fff">TRAKSI KERING (%)</text><text x="${x0 + 185}" y="${yK - 10}" font-size="15" fill="#C3C9C3">sisa cengkeraman ban, makin besar makin aman</text>`;
+    g += `<text x="${x0}" y="${yT - 10}" font-size="17" font-weight="700" fill="#fff">TRAKSI BASAH (%)</text><text x="${x0 + 175}" y="${yT - 10}" font-size="15" fill="#C3C9C3">0 = ban selip</text>`;
     urut.forEach((k, i) => {
       const x = x0 + i * w;
       const tip = k.zona ? `${k.label}: ${k.zona} (tidak dihitung)` : k.rr == null ? `${k.label}: data DT muatan belum cukup` :
-        `${k.label}: RR ${koma(k.rr)}% (${NAMA_R[k.rr_kelas]}), tanjakan arah muatan ${k.tanjakan_muatan == null ? "-" : koma(k.tanjakan_muatan) + "%"}, kecepatan DT muatan ${koma(k.speed_muatan)} km/jam, traksi ${NAMA_T[k.traksi]}`;
+        `${k.label}: RR ${koma(k.rr)}% (${NAMA_R[k.rr_kelas]}), tanjakan arah muatan ${k.tanjakan_muatan == null ? "-" : koma(k.tanjakan_muatan) + "%"}, kecepatan DT muatan ${koma(k.speed_muatan)} km/jam, cadangan traksi kering ${cadangan(k, "kering")}%, basah ${cadangan(k, "basah")}%`;
       const isi = (y, kelas, teks) => {
         g += `<rect x="${x + 1.5}" y="${y}" width="${w - 3}" height="${h}" rx="3" fill="${k.zona ? "url(#arsir2)" : kelas ? WK[kelas] : "#3a4245"}"><title>${tip}</title></rect>`;
         if (teks) g += `<text x="${x + w / 2}" y="${y + h / 2 + 5}" text-anchor="middle" font-size="14" font-weight="700" fill="${TK[kelas]}" pointer-events="none">${teks}</text>`;
       };
       isi(yR, k.rr_kelas, k.rr != null ? (k.rr >= 10 ? Math.round(k.rr) : koma(k.rr)) : "");
-      isi(yT, k.traksi, k.traksi === "rawan" ? "!" : "");
+      const ck = cadangan(k, "kering"), cb = cadangan(k, "basah");
+      isi(yK, kelasT(ck), ck ?? "");
+      isi(yT, kelasT(cb), cb ?? "");
       const sta = k.km + 1;
       if (sta % 5 === 0 || i === 0) g += `<text x="${x}" y="${yT + h + 22}" text-anchor="middle" font-size="14" fill="#D7DCD5">STA ${sta}</text><line x1="${x}" y1="${yT + h + 3}" x2="${x}" y2="${yT + h + 8}" stroke="#B8BFB7" stroke-width="1.5"/>`;
     });
@@ -58,17 +66,27 @@
     const ok = D.km.filter((k) => k.rr != null);
     const berat = [...ok].sort((a, b) => b.rr - a.rr).slice(0, 3);
     const rawan = ok.filter((k) => k.traksi !== "aman").sort((a, b) => b.mu_perlu - a.mu_perlu);
+    const rata = (kd) => Math.round(ok.reduce((a, k) => a + cadangan(k, kd), 0) / Math.max(ok.length, 1));
+    const tk = rata("kering"), tb = rata("basah"), minB = [...ok].sort((a, b) => cadangan(a, "basah") - cadangan(b, "basah"))[0];
     const kls = D.rr_rata <= D.asumsi.rr_baik ? "baik" : D.rr_rata <= D.asumsi.rr_berat ? "sedang" : "berat";
     $("rrTiles").innerHTML = `
       <div class="rt"><span class="rt-l">RR rata-rata jalan ALR</span><b style="color:${WK[kls]}">${koma(D.rr_rata)}%</b><span>${NAMA_R[kls]}. Jalan hauling yang terawat biasanya 2 sampai 4%.</span></div>
       <div class="rt"><span class="rt-l">KM paling berat</span><b>${berat.map((k) => k.label.replace("KM ", "")).join(", ")}</b><span>${berat.map((k) => `KM ${k.km}-${k.km + 1}: ${koma(k.rr)}%`).join("<br>")}</span></div>
-      <div class="rt"><span class="rt-l">Waspada selip saat hujan</span><b>${rawan.length} KM</b><span>${rawan.length ? "KM " + rawan.map((k) => k.label.replace("KM ", "")).join(", ") + (rawan.some((k) => k.traksi === "rawan") ? ". Yang merah paling rawan." : ". Hati-hati saat hujan.") : "Tidak ada KM yang menonjol."}</span></div>`;
+      <div class="rt"><span class="rt-l">Waspada selip saat hujan</span><b>${rawan.length} KM</b><span>${rawan.length ? "KM " + rawan.map((k) => k.label.replace("KM ", "")).join(", ") + (rawan.some((k) => k.traksi === "rawan") ? ". Yang merah paling rawan." : ". Hati-hati saat hujan.") : "Tidak ada KM yang menonjol."}</span></div>
+      <div class="rt rt-dua"><span class="rt-l">Traksi rata-rata (sisa cengkeraman ban)</span><b><span style="color:${WK[kelasT(tk)]}">Kering ${tk}%</span> · <span style="color:${WK[kelasT(tb)]}">Basah ${tb}%</span></b><span>100% sangat aman, 0% ban mulai selip.${minB ? ` Paling tipis saat basah: KM ${minB.km}-${minB.km + 1}, sisa ${cadangan(minB, "basah")}%.` : ""}</span></div>`;
+    // tabel per KM: RR, traksi kering, traksi basah
+    const sel = (kelas, teks) => `<td><span class="rr-chip" style="background:${kelas ? WK[kelas] : "#3a4245"};color:${kelas ? TK[kelas] : "#C3C9C3"}">${teks}</span></td>`;
+    $("rrTabel").innerHTML = `<table class="rr-tabel"><thead><tr><th>KM</th><th>RR</th><th>Traksi kering</th><th>Traksi basah</th></tr></thead><tbody>${
+      [...D.km].reverse().map((k) => k.zona ? `<tr class="zona"><th>${k.km}-${k.km + 1}</th><td colspan="3">${esc(k.zona)}</td></tr>`
+        : k.rr == null ? `<tr class="zona"><th>${k.km}-${k.km + 1}</th><td colspan="3">Data DT muatan belum cukup</td></tr>`
+        : `<tr><th>${k.km}-${k.km + 1}</th>${sel(k.rr_kelas, koma(k.rr) + "%")}${sel(kelasT(cadangan(k, "kering")), cadangan(k, "kering") + "%")}${sel(kelasT(cadangan(k, "basah")), cadangan(k, "basah") + "%")}</tr>`).join("")}</tbody></table>`;
 
     const A = D.asumsi;
     $("rrCara").innerHTML = `<ol>
       <li><b>Tanjakan</b> tiap KM diambil dari peta ketinggian satelit (ketelitian kasar, kira-kira 90 m). ${D.ada_elevasi ? "" : "<b>Belum tersedia</b>, jadi jalan dianggap datar. "}Kalau ada hasil survei, angkanya bisa diganti.</li>
       <li><b>RR</b> dihitung dari kecepatan DT bermuatan saat jalan lancar di KM itu. DT dengan tenaga penuh makin pelan kalau jalan makin berat. Rumusnya: RR + tanjakan = daya efektif / (berat DT x gravitasi x kecepatan).</li>
       <li><b>Traksi</b>: cengkeraman ban yang dibutuhkan = (RR + tanjakan) / bagian berat di roda penggerak. Jalan tanah basah kira-kira hanya punya cengkeraman ${koma(A.mu_basah)}, kering ${koma(A.mu_kering)}. Kalau kebutuhan mendekati ${koma(A.mu_basah)}, DT bisa selip saat hujan.</li>
+      <li><b>Angka traksi (%)</b> = sisa cengkeraman ban = 1 - (cengkeraman yang dibutuhkan / cengkeraman jalan). Kering pakai ${koma(A.mu_kering)}, basah pakai ${koma(A.mu_basah)}. Contoh: butuh 0,15 di jalan basah 0,25, sisa 40%. Di bawah 40% kuning, 0% merah (ban selip). Diambil arah yang paling berat, muatan atau kosongan.</li>
       <li><b>Angka DT yang dipakai</b>: daya mesin ${A.daya_kw} kW (sekitar ${Math.round(A.daya_kw * 1.36)} PS), efisiensi ${Math.round(A.efisiensi * 100)}%, berat DT bermuatan ${A.berat_isi_ton} ton, roda penggerak menanggung ${Math.round(A.porsi_roda_penggerak_isi * 100)}% berat saat bermuatan dan ${Math.round(A.porsi_roda_penggerak_kosong * 100)}% saat kosong. Kalau spesifikasi DT berbeda, angka bisa disesuaikan.</li>
       <li>Batas warna RR: hijau sampai ${A.rr_baik}%, kuning sampai ${A.rr_berat}%, merah di atasnya. Data GPS ${D.periode[0]} sampai ${D.periode[1]}. Zona antre, parkir, dan stockpile tidak dihitung.</li></ol>
       <p>KM yang lambat karena batas kecepatan, rambu, atau papasan juga akan terlihat lebih berat dari aslinya. Pakai ini sebagai petunjuk KM mana yang perlu dicek di lapangan.</p>`;

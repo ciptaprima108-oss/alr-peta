@@ -81,9 +81,9 @@ def main():
                 f"## Trigger jalan merah\n\n{info}\n\n"
                 f"### Tugas pengawas ALR / RM {mention}\n"
                 f"1. Datang ke titik (klik link koordinat di atas).\n"
-                f"2. Ambil **foto dan video** kondisi jalan (lubang, licin, amblas, genangan, antrean, dll).\n"
-                f"3. Balas tiket ini: tarik/tempel foto & video ke kolom komentar, lalu tulis kondisi + tindakan.\n"
-                f"4. Kalau sudah ditangani, tutup tiket (Close issue).\n")
+                f"2. Buka aplikasi ALR, menu Trigger, pencet **Lapor cek** di kartu trigger ini. Foto diambil langsung dari kamera.\n"
+                f"3. Butuh material: pencet **Minta material**. Selesai diperbaiki: RM pencet **Lapor kerja**.\n"
+                f"4. Trigger tertutup otomatis saat RM lapor pekerjaan selesai.\n")
         isi = dict(title=t["judul"], body=body, labels=[CFG["label_trigger"]], assignees=pengawas)
         try:
             i = api("POST", "/issues", isi)

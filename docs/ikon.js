@@ -13,6 +13,8 @@
     s("orang", '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>'),
     s("helm", '<path d="M3 17h18"/><path d="M5 17v-3a7 7 0 0 1 14 0v3"/><path d="M10 7.5V11M14 7.5V11"/>'),
     s("awas", '<path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17v.5"/>'),
+    s("kirim", '<path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/>'),
+    s("cek", '<path d="M20 6 9 17l-5-5"/>'),
     s("kamera", '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>'),
     s("nav", '<path d="m3 11 18-8-8 18-2-8-8-2z"/>'),
     s("jalan", '<path d="M8 3 4 21M16 3l4 18"/><path d="M12 4v3M12 11v3M12 18v2"/>'),

@@ -24,6 +24,7 @@
 <link rel="stylesheet" href="aplikasi.css?v=202611240419">
 <link rel="stylesheet" href="beranda.css?v=202611240419">
 <link rel="stylesheet" href="warna.css?v=202611240419">
+<link rel="stylesheet" href="lapor.css?v=202611240419">
 </head>
 <body>
 <div id="splash" aria-hidden="true"><div class="sp-isi"><span class="sp-logo"><img src="ikon/logo_alr.png" alt=""></span><b>ALR</b><small>Jalan hauling BSR ke 107</small><i class="sp-bar"><i></i></i></div></div>
@@ -83,6 +84,11 @@
       <div class="bn-titik" id="bnTitik"></div>
     </section>
 
+    <section class="blok lapor-cepat" aria-label="Buat laporan">
+      <button type="button" class="lc" data-lapor="inspeksi"><span data-ikon="inspeksi"></span><b>Inspeksi jalan</b><small>CH GPE / WHL</small></button>
+      <button type="button" class="lc" data-lapor="logistik"><span data-ikon="logistik"></span><b>Logistik</b><small>Material &amp; solar</small></button>
+      <button type="button" class="lc" data-lapor="rm"><span data-ikon="rm"></span><b>Pekerjaan RM</b><small>Perbaikan jalan</small></button>
+    </section>
     <section class="blok menu-kartu">
       <div class="menu" id="menu">
         <button type="button" class="mi" data-buka="trigger"><span class="u-gb" data-ikon="trigger"></span><i class="u-badge" id="ubinTrig" hidden>0</i><b>Trigger</b></button>
@@ -169,7 +175,7 @@
   <div class="lyr-badan"><div class="lyr-filter"></div>
     <section class="kartu-lyr">
       <h3><span class="tgb" style="background:var(--merah-muda);color:var(--merah)"><svg class="ik"><use href="#i-awas"/></svg></span>Trigger jalan merah</h3>
-      <p class="kecil">Muncul otomatis kalau beberapa unit melambat atau tertahan di segmen yang sama. Pengawas ALR/RM cek ke lokasi lalu upload foto/video di tiketnya.</p>
+      <p class="kecil">Muncul otomatis kalau beberapa unit melambat atau tertahan di segmen yang sama. Alurnya: <b>dicek</b> tim inspeksi, <b>minta material</b> ke Logistik, <b>dikerjakan</b> RM, lalu <b>selesai</b>.</p>
       <div id="listTrig"><p class="kecil">Tidak ada trigger.</p></div>
     </section>
     <section class="kartu-lyr">
@@ -183,10 +189,21 @@
     <h2 id="lyrJ-laporan"><span class="lyr-gb" style="--w:#2a78d6"><svg class="ik"><use href="#i-kamera"/></svg></span>Laporan lapangan</h2></div>
   <div class="lyr-badan"><div class="lyr-filter"></div>
     <section class="kartu-lyr">
-      <h3><span class="tgb" style="background:var(--biru-muda);color:var(--biru)"><svg class="ik"><use href="#i-kamera"/></svg></span>Laporan lapangan</h3>
+      <div class="lap-buat">
+        <button type="button" class="lc" data-lapor="inspeksi"><span data-ikon="inspeksi"></span><b>Inspeksi</b></button>
+        <button type="button" class="lc" data-lapor="logistik"><span data-ikon="logistik"></span><b>Logistik</b></button>
+        <button type="button" class="lc" data-lapor="rm"><span data-ikon="rm"></span><b>Pekerjaan RM</b></button>
+      </div>
+      <div class="lap-saring" role="group" aria-label="Jenis laporan"><button type="button" class="aktif" data-saring="semua">Semua</button><button type="button" data-saring="inspeksi">Inspeksi</button><button type="button" data-saring="logistik">Logistik</button><button type="button" data-saring="rm">RM</button></div>
+      <div id="antrean" hidden></div>
       <div id="listLap"><p class="kecil">Belum ada laporan.</p></div>
     </section>
   </div>
+</section>
+<section class="lyr kondisi" id="lyr-lapor" hidden aria-labelledby="lyrJ-lapor">
+  <div class="lyr-atas"><button type="button" class="kembali" data-tutup><svg class="ik"><use href="#i-kiri"/></svg><span>Kembali</span></button>
+    <h2 id="lyrJ-lapor"><span class="lyr-gb" id="laporGb"></span><span id="laporJudul">Buat laporan</span></h2></div>
+  <div class="lyr-badan"><form id="laporForm" class="lapor-form" novalidate></form></div>
 </section>
 <section class="lyr kondisi" id="lyr-km" hidden aria-labelledby="lyrJ-km" data-filter="1">
   <div class="lyr-atas"><button type="button" class="kembali" data-tutup><svg class="ik"><use href="#i-kiri"/></svg><span>Kembali</span></button>
@@ -215,11 +232,13 @@
   <div class="lyr-badan"><div class="lyr-filter"></div>
   <section class="jalur rrsec" id="rr" aria-labelledby="rrJudul"><div class="dalam">
     <div class="judul-bagian"><span class="gb"><svg class="ik"><use href="#i-truk"/></svg></span><div><h2 id="rrJudul">Rolling resistance &amp; traksi per KM</h2>
-    <p>Seberapa berat jalan dilawan ban DT, dan di KM mana DT bisa selip kalau jalan basah. Ini perkiraan dari kecepatan DT bermuatan dan tanjakan, bukan hasil ukur alat.</p></div></div>
+    <p>RR = seberapa berat jalan dilawan ban DT. Traksi = sisa cengkeraman ban saat kering dan basah, makin kecil makin mudah selip. Ini perkiraan dari kecepatan DT bermuatan dan tanjakan, bukan hasil ukur alat.</p></div></div>
     <div id="rrTiles" class="rr-tiles"></div>
     <div class="gulir"><svg id="rrStrip" viewBox="0 0 1000 300" role="img" aria-label="RR dan traksi per kilometer"></svg></div>
     <div class="geser-hint" id="geserHint">Geser pita ke kiri untuk melihat sampai 107</div>
-    <div class="leg-strip"><span><i class="h"></i>RR ringan / traksi aman</span><span><i class="k"></i>RR sedang / waspada saat basah</span><span><i class="m"></i>RR berat / rawan selip saat basah</span><span><i class="z"></i>Arsir: zona antre / parkir</span></div>
+    <div class="leg-strip"><span><i class="h"></i>RR ringan / traksi aman (di atas 40%)</span><span><i class="k"></i>RR sedang / traksi tipis (1-40%)</span><span><i class="m"></i>RR berat / traksi 0%, ban selip</span><span><i class="z"></i>Arsir: zona antre / parkir</span></div>
+    <h3 class="sub-jalur">Angka per KM, dari BSR ke 107</h3>
+    <div id="rrTabel"></div>
     <details class="cara-rr"><summary>Cara menghitung dan angka yang dipakai</summary><div id="rrCara"></div></details>
   </div></section>
   </div>
@@ -365,5 +384,6 @@
 <script src="cuaca.js?v=202611240419"></script>
 <script src="aplikasi.js?v=202611240419"></script>
 <script src="beranda.js?v=202611240419"></script>
+<script src="lapor.js?v=202611240419"></script>
 </body>
 </html>
