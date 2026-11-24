@@ -5,41 +5,12 @@
  "n_unit": 19,
  "n_titik": 132,
  "jumlah_segmen": {
-  "kosong": 114,
-  "abu": 16,
-  "merah": 4,
+  "kosong": 112,
+  "abu": 19,
+  "merah": 3,
   "kuning": 1
  },
  "trigger": [
-  {
-   "sta_awal": 0.0,
-   "sta_akhir": 0.2,
-   "seg": [
-    0
-   ],
-   "unit": [
-    "WHL 014",
-    "WHL 015",
-    "WHL 025",
-    "WHL 031",
-    "WHL 035",
-    "WHL 036",
-    "WHL 037",
-    "WHL 041",
-    "WHL 049",
-    "WHL 053",
-    "WHL 055",
-    "WHL 056",
-    "WHL 063"
-   ],
-   "alasan": "13 unit melambat/tertahan, speed median terendah 0 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
-   "speed_terendah": 0.0,
-   "sta_tengah": 0.1,
-   "lat": -3.624226,
-   "lon": 103.728671,
-   "kode": "STA00000",
-   "judul": "[TRIGGER] Cek jalan STA 0+000 - 0+200"
-  },
   {
    "sta_awal": 13.0,
    "sta_akhir": 13.2,

@@ -15,6 +15,11 @@
   "label_laporan": "laporan-jalan",
   "zona_bukan_jalan": [
     {
+      "nama": "Area 107 / parkir unit",
+      "sta_awal": 0.0,
+      "sta_akhir": 0.5
+    },
+    {
       "nama": "Antrean pintu BSR",
       "sta_awal": 24.4,
       "sta_akhir": 27.0
