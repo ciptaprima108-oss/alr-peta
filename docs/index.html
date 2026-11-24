@@ -2,6 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="utf-8">
+<script>(function(){var p="otomatis";try{p=JSON.parse(localStorage.getItem("alr_tema"))||p}catch(e){}var g=p==="gelap"||(p==="otomatis"&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-tema",g?"gelap":"terang");})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta name="versi" content="v202611240419">
@@ -22,6 +23,7 @@
 <link rel="stylesheet" href="cuaca.css?v=202611240419">
 <link rel="stylesheet" href="aplikasi.css?v=202611240419">
 <link rel="stylesheet" href="beranda.css?v=202611240419">
+<link rel="stylesheet" href="warna.css?v=202611240419">
 </head>
 <body>
 <div id="splash" aria-hidden="true"><div class="sp-isi"><span class="sp-logo"><img src="ikon/logo_alr.png" alt=""></span><b>ALR</b><small>Jalan hauling BSR ke 107</small><i class="sp-bar"><i></i></i></div></div>
@@ -30,6 +32,7 @@
     <div class="hero-atas">
       <span class="hero-logo"><img src="ikon/logo_alr.png" alt="Logo ALR"></span>
       <div class="hero-merek"><small>Jalan Hauling ALR</small><b>Pusat ALR</b></div>
+      <button type="button" class="hero-btn" id="btnTema" aria-label="Ganti mode terang atau gelap"><svg class="ik"><use href="#i-bulan"/></svg></button>
       <button type="button" class="hero-btn" id="btnLonceng" aria-label="Kotak masuk"><svg class="ik"><use href="#i-lonceng"/></svg><i class="hero-badge" id="nKotakAtas" hidden>0</i></button>
       <button id="btnProfil" class="hero-btn profil-btn" type="button" title="Akun & pengaturan" aria-label="Akun & pengaturan"><span id="profilInisial"><svg class="ik"><use href="#i-orang"/></svg></span><i class="titik-merah" id="profilTitik" hidden></i></button>
     </div>
@@ -39,16 +42,30 @@
     <div class="cari-hasil" id="cariHasil" hidden></div>
   </header>
   <div class="isi-beranda">
+    <section class="blok kartu-peta">
+      <div class="ki-kepala"><b>Peta jalan ALR</b><button type="button" class="ki-link" data-tab="peta">Layar penuh <svg class="ik"><use href="#i-kanan"/></svg></button></div>
+      <main id="petaArea">
+        <div id="map"></div>
+        <button type="button" id="btnLokasi" class="peta-lokasi" title="Cari posisi saya di jalan ALR"><svg class="ik"><use href="#i-lokasi"/></svg><span>Lokasi saya</span></button>
+        <div class="legend" id="legend" title="Ketuk untuk lihat semua warna">
+  <b>Arti warna jalan</b>
+  <div><i style="background:#E5341F"></i>Merah: melambat / tertahan</div>
+  <div><i style="background:#F2B705"></i>Kuning: agak pelan</div>
+  <div class="lengkap"><i style="background:#3FA34D"></i>Hijau: lancar</div>
+  <div class="lengkap"><i style="background:#B8BFB7"></i>Abu muda: antrean / parkir</div>
+  <div class="lengkap"><i style="background:#5E665F"></i>Abu gelap: belum ada data GPS</div>
+</div>
+</main>
+    </section>
     <div class="segar" id="segar"><i class="putar"></i><span id="info">Memuat data jalan...</span></div>
 
-    <article class="kartu-hari skel" id="kartuHari" aria-live="polite">
+    <article class="kartu-hari skel" id="kartuHari" aria-live="polite" data-buka="grafik" role="button" tabindex="0">
       <div class="kh-atas">
         <div class="kh-cincin" id="khCincin"></div>
         <div class="kh-teks"><small id="khTgl">Nilai jalan hari ini</small><h2 id="khJudul">Memuat...</h2><div id="khBanding"></div></div>
       </div>
       <div class="kh-batang" id="khBatang"></div>
       <p class="kh-isi" id="khIsi"></p>
-      <button type="button" class="kh-lihat" data-buka="grafik">Lihat grafik <svg class="ik"><use href="#i-kanan"/></svg></button>
     </article>
 
     <section class="blok hari-ini">
@@ -81,21 +98,7 @@
 
     <section class="peringatan" id="peringatan" aria-label="Peringatan jalan"></section>
 
-    <section class="blok kartu-peta">
-      <div class="ki-kepala"><b>Peta jalan ALR</b><button type="button" class="ki-link" data-tab="peta">Layar penuh <svg class="ik"><use href="#i-kanan"/></svg></button></div>
-      <main id="petaArea">
-        <div id="map"></div>
-        <button type="button" id="btnLokasi" class="peta-lokasi" title="Cari posisi saya di jalan ALR"><svg class="ik"><use href="#i-lokasi"/></svg><span>Lokasi saya</span></button>
-        <div class="legend" id="legend" title="Ketuk untuk lihat semua warna">
-  <b>Arti warna jalan</b>
-  <div><i style="background:#E5341F"></i>Merah: melambat / tertahan</div>
-  <div><i style="background:#F2B705"></i>Kuning: agak pelan</div>
-  <div class="lengkap"><i style="background:#3FA34D"></i>Hijau: lancar</div>
-  <div class="lengkap"><i style="background:#B8BFB7"></i>Abu muda: antrean / parkir</div>
-  <div class="lengkap"><i style="background:#5E665F"></i>Abu gelap: belum ada data GPS</div>
-</div>
-</main>
-    </section>
+
   </div>
   <div hidden><button id="btnPengawas"></button><button id="btnPanel"><span id="nTrig">0</span></button></div>
 </section>
@@ -258,7 +261,7 @@
   <div class="grid">
     <div class="kg lebar"><h3><svg class="ik"><use href="#i-grafik"/></svg>Nilai jalan</h3>
       <div class="ket">Hijau kondisi baik, kuning perlu perhatian, merah perlu perbaikan, abu-abu tidak ada data</div>
-      <div class="titik-per"><span>Satu titik grafik =</span><button class="chip kecil aktif" data-m="hari">1 hari</button><button class="chip kecil" data-m="minggu">1 minggu</button><button class="chip kecil" data-m="bulan">1 bulan</button></div>
+      <p class="titik-ket" id="titikKet"></p>
       <div class="kanvas"><canvas id="cNilai"></canvas></div><div class="kosong-info" id="infoKosong" hidden></div></div>
   </div>
   <details class="lebih"><summary><svg class="ik"><use href="#i-lokasi"/></svg><span>Grafik per KM<small>Jam berhenti, kecepatan, dan tanggal kejadian per KM</small></span></summary>
@@ -329,6 +332,9 @@
         <button type="button" class="pf-tombol abu" id="btnCoba">Coba</button></div>
     </div>
 
+    <h3 class="pf-judul">Tampilan</h3>
+    <div class="pf-grup"><div class="pf-baris"><span class="pf-ik" style="--w:#0B4EA2"><svg class="ik"><use href="#i-bulan"/></svg></span><div><b>Mode layar</b><small>Otomatis ikut pengaturan HP</small></div></div>
+      <div class="pilih-tema" role="group" aria-label="Mode layar"><button type="button" data-tema="otomatis">Otomatis</button><button type="button" data-tema="terang">Terang</button><button type="button" data-tema="gelap">Gelap</button></div></div>
     <h3 class="pf-judul">Lainnya</h3>
     <div class="pf-grup">
       <button type="button" class="pf-baris pf-link" data-buka="pengguna"><span class="pf-ik" style="--w:#E86A1A"><svg class="ik"><use href="#i-orang"/></svg></span><div><b>Pengguna ALR</b><small id="pfJmlPengguna">ID card semua pengguna per divisi</small></div><svg class="ik pf-panah"><use href="#i-kanan"/></svg></button>

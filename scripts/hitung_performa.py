@@ -94,6 +94,61 @@ def baca_gps_harian():
         gps_unit=x.unit.nunique(), gps_titik=len(x),
         gps_speed=round(float(x[x.speed > 0].speed.mean()), 1) if (x.speed > 0).any() else None,
         gps_pct_berhenti=round(float((x.speed == 0).mean() * 100), 1))), include_groups=False).reset_index()
+    # per jam (untuk grafik 1 hari = 24 batang)
+    g["jam"] = g.waktu.dt.hour
+    jam = {}
+    for (tg, j), x in g.groupby(["tanggal", "jam"]):
+        jalan = x[x.speed > 0]
+        jam.setdefault(tg.strftime("%Y-%m-%d"), []).append([int(j),
+            round(float(jalan.speed.mean()), 1) if len(jalan) else None,
+            round(float((x.speed == 0).mean() * 100), 1), int(len(x)), int(x.unit.nunique())])
+    out.attrs["jam"] = jam
+    return out
+
+
+def baca_hujan():
+    """Hujan per hari (mm) di jalan ALR dari open-meteo (perkiraan satelit+model), 3 titik: 107, tengah, BSR.
+    Satu "hari hujan" = 18.00 malam sebelumnya s/d 18.00 hari itu, supaya hujan semalam ikut. Disimpan di data/hujan_harian.csv."""
+    f = P("data", "hujan_harian.csv")
+    lama = pd.read_csv(f) if os.path.exists(f) else pd.DataFrame(columns=["tanggal", "hujan_mm", "hujan_malam_mm"])
+    try:
+        import urllib.request
+        titik = [(-3.62411, 103.72945), (-3.680, 103.660), (-3.73706, 103.6244)]
+        url = ("https://api.open-meteo.com/v1/forecast?latitude=" + ",".join(f"{a}" for a, _ in titik) + "&longitude=" + ",".join(f"{b}" for _, b in titik) +
+               "&hourly=precipitation&past_days=92&forecast_days=1&timezone=Asia%2FJakarta")
+        js = json.load(urllib.request.urlopen(url, timeout=30))
+        js = js if isinstance(js, list) else [js]
+        hs = []
+        for t in js:
+            h = pd.DataFrame(dict(waktu=pd.to_datetime(t["hourly"]["time"]), mm=t["hourly"]["precipitation"])).dropna()
+            h["tanggal"] = (h.waktu + pd.Timedelta(hours=6)).dt.normalize()      # 18.00 kemarin s/d 18.00 = satu hari
+            h["malam"] = (h.waktu.dt.hour >= 18) | (h.waktu.dt.hour < 6)
+            hs.append(h.groupby("tanggal").apply(lambda x: pd.Series(dict(hujan_mm=x.mm.sum(), hujan_malam_mm=x[x.malam].mm.sum())), include_groups=False))
+        baru = pd.concat(hs).groupby(level=0).max().reset_index()           # ambil titik yang paling basah
+        baru = baru[baru.tanggal <= pd.Timestamp.now(tz="Asia/Jakarta").tz_localize(None).normalize()]
+        baru["tanggal"] = baru.tanggal.dt.strftime("%Y-%m-%d")
+        lama = pd.concat([lama[~lama.tanggal.isin(baru.tanggal)], baru]).sort_values("tanggal")
+        lama[["hujan_mm", "hujan_malam_mm"]] = lama[["hujan_mm", "hujan_malam_mm"]].astype(float).round(1)
+        lama.to_csv(f, index=False)
+        print(f"Hujan: {len(baru)} hari dari open-meteo")
+    except Exception as e:
+        print("Hujan: tidak bisa ambil open-meteo (" + str(e)[:80] + "), pakai simpanan", len(lama), "hari")
+    return {r.tanggal: (float(r.hujan_mm), float(r.hujan_malam_mm)) for r in lama.itertuples()}
+
+
+def km_lambat_harian():
+    """Per hari: berapa % KM jalan (bukan zona antre/parkir) yang kecepatan DT jalannya <= 13 km/jam."""
+    try:
+        d = json.load(open(P("docs", "data", "per_km.json")))
+    except Exception:
+        return {}
+    zona = {k["km"] for k in d["km"] if k.get("zona")}
+    out = {}
+    for tg, h in d["hari"].items():
+        sp = [v[3] / v[4] for k, v in h.items() if int(k) not in zona and v[4] >= 2]
+        if len(sp) >= 5:
+            lambat = sum(1 for x in sp if x <= KL.get("km_lambat_kmh", 13))
+            out[tg] = (lambat / len(sp) * 100, lambat, len(sp))
     return out
 
 
@@ -162,6 +217,11 @@ def per_km():
 def main():
     per_km()
     rit, gps = baca_rit(), baca_gps_harian()
+    hujan, kml = baca_hujan(), km_lambat_harian()
+    try:
+        n_trig = len(json.load(open(P("docs", "data", "ringkasan.json"))).get("trigger", []))
+    except Exception:
+        n_trig = None
     d = rit.merge(gps, on="tanggal", how="outer").sort_values("tanggal")
     t = KL
     baris = []
@@ -169,16 +229,40 @@ def main():
     for _, r in d.iterrows():
         if not (r.get("gps_titik", 0) >= min_titik):          # data GPS hari itu terlalu sedikit -> jangan dinilai
             r = r.copy(); r["gps_speed"] = r["gps_pct_berhenti"] = np.nan
+        rit_aneh = not pd.isna(r.get("median_menit", np.nan)) and r.median_menit > KL.get("durasi_tidak_wajar_menit", 720)
+        if rit_aneh:                                              # rit belasan jam = data trip salah baca, jangan dinilai
+            r = r.copy(); r["median_menit"] = r["n_lambat"] = np.nan
         n = r.get("n_trip")
         pct_lambat = (r.n_lambat / n * 100) if n and not pd.isna(n) and n > 0 else None
         s = {"durasi": skor(r.get("median_menit"), t.get("durasi_bagus_menit", 120), t.get("durasi_jelek_menit", 300)),
              "rit_lambat": skor(pct_lambat, 0, t.get("pct_lambat_jelek", 40)),
              "speed": skor(r.get("gps_speed"), t.get("speed_bagus_kmh", 20), t.get("speed_jelek_kmh", 8)),
              "berhenti": skor(r.get("gps_pct_berhenti"), 0, t.get("pct_berhenti_jelek", 40))}
+        tg = r.tanggal.strftime("%Y-%m-%d")
+        # cek silang data lain: KM yang lambat, hujan semalam, trigger merah yang masih terbuka (hari terakhir)
+        kl = kml.get(tg)
+        s["km_lambat"] = skor(kl[0], 0, KL.get("pct_km_lambat_jelek", 30)) if kl else None
+        hj = hujan.get(tg)
+        s["hujan"] = skor(hj[0], 0, KL.get("hujan_jelek_mm", 25)) if hj else None
+        terakhir = tg == d.tanggal.max().strftime("%Y-%m-%d")
+        s["trigger"] = skor(n_trig, 0, KL.get("trigger_jelek", 12)) if terakhir and n_trig is not None else None
         ada = [v for v in s.values() if v is not None]
         if not ada:
             continue
-        idx = round(sum(ada) / len(ada)) if ada else None
+        idx = round(sum(ada) / len(ada))
+        # catatan: apa yang menurunkan nilai & seberapa yakin
+        alasan = []
+        if hj and hj[0] >= 2: alasan.append(f"Hujan {hj[0]:.0f} mm" + (f", {hj[1]:.0f} mm semalam" if hj[1] >= 1 else ""))
+        if kl and kl[1]: alasan.append(f"{kl[1]} KM DT jalan pelan (13 km/jam ke bawah)")
+        if s["trigger"] is not None and n_trig: alasan.append(f"{n_trig} titik jalan merah masih terbuka")
+        if s["durasi"] is not None and s["durasi"] < 60: alasan.append(f"1 rit rata-rata {int(r.median_menit // 60)} jam {int(r.median_menit % 60)} mnt")
+        if s["berhenti"] is not None and s["berhenti"] < 60: alasan.append(f"DT berhenti {r.gps_pct_berhenti:.0f}% waktu")
+        kurang = []
+        if rit_aneh: kurang.append("data rit hari ini tidak wajar")
+        elif s["durasi"] is None: kurang.append("data rit belum masuk")
+        if s["speed"] is None: kurang.append("data GPS kurang")
+        if s["hujan"] is None: kurang.append("data hujan belum ada")
+        yakin = "tinggi" if len(ada) >= 5 and s["durasi"] is not None and s["speed"] is not None else "sedang" if len(ada) >= 4 else "rendah"
         status = None if idx is None else "Kondisi baik" if idx >= t.get("batas_layak", 75) else "Perlu perhatian" if idx >= t.get("batas_perhatian", 50) else "Perlu perbaikan"
         f = lambda v, k=1: None if v is None or pd.isna(v) else round(float(v), k)
         baris.append(dict(tanggal=r.tanggal.strftime("%Y-%m-%d"), n_trip=None if n is None or pd.isna(n) else int(n),
@@ -188,8 +272,20 @@ def main():
                           gps_unit=None if pd.isna(r.get("gps_unit", np.nan)) else int(r.gps_unit),
                           kosong_menit=f(r.get("kosong_menit")), muat_bsr_menit=f(r.get("muat_bsr_menit")),
                           bongkar_107_menit=f(r.get("bongkar_107_menit")),
-                          skor={k: f(v, 0) for k, v in s.items()}, indeks=idx, status=status))
-    out = dict(rit_lambat_menit=RIT_LAMBAT, kelayakan=KL, hari=baris)
+                          skor={k: f(v, 0) for k, v in s.items()}, indeks=idx, status=status,
+                          hujan_mm=hj[0] if hj else None, hujan_malam_mm=hj[1] if hj else None,
+                          km_lambat=kl[1] if kl else None, yakin=yakin, alasan=alasan, kurang=kurang))
+    # nilai per jam: dari kecepatan DT jalan & % berhenti (rit dihitung per hari, jadi tidak ikut)
+    jam = {}
+    for tg, a in gps.attrs.get("jam", {}).items():
+        jam[tg] = []
+        for j, sp, br, n, u in a:
+            if n < t.get("min_titik_gps_jam", 3):
+                continue
+            ss = [v for v in (skor(sp, t.get("speed_bagus_kmh", 20), t.get("speed_jelek_kmh", 8)), skor(br, 0, t.get("pct_berhenti_jelek", 40))) if v is not None]
+            jam[tg].append([j, round(sum(ss) / len(ss)) if ss else None, sp, br, n, u])
+    out = dict(rit_lambat_menit=RIT_LAMBAT, kelayakan=KL, hari=baris, jam=jam,
+               keterangan_jam="jam[tanggal] = [jam, nilai 0-100, kecepatan DT jalan, % berhenti, titik GPS, unit]")
     json.dump(out, open(P("docs", "data", "performa.json"), "w"), indent=1)
     print(f"Performa: {len(baris)} hari ({baris[0]['tanggal'] if baris else '-'} s/d {baris[-1]['tanggal'] if baris else '-'})")
 

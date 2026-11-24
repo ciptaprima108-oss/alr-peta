@@ -5,8 +5,11 @@
   const BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
   const BIRU = "#2A2F2B";
   let KM = null,
-  HARI = new Map(), KL = {}, TELAT = 195, mode = "hari", grafik = {}, awalData, akhirData;
+  HARI = new Map(), JAM = {}, KL = {}, TELAT = 195, mode = "hari", grafik = {}, awalData, akhirData;
 
+  const gelap = () => document.documentElement.getAttribute("data-tema") === "gelap";
+  const WT = () => gelap() ? { tick: "#A9B8CA", grid: "rgba(255,255,255,.08)", leg: "#D3DCE7" } : { tick: "#64748b", grid: "#eef2f6", leg: "#334155" };
+  function warnaTema() { WARNA.KOSONG = gelap() ? "#2A3646" : "#DDE1DA"; if (window.Chart) Chart.defaults.color = gelap() ? "#C9D4E2" : "#3E4541"; }
   if (window.Chart) { Chart.defaults.font.family = "Barlow, system-ui, sans-serif"; Chart.defaults.font.size = 14; Chart.defaults.color = "#3E4541"; }
   // ---------- util ----------
   const tgl = (s) => new Date(s + "T00:00:00");
@@ -102,8 +105,8 @@
     return { responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: "index", intersect: false },
       plugins: { legend: { display: false }, tooltip: { callbacks: { title: (c) => c[0] && c[0].chart.$judul[c[0].dataIndex],
         label: (c) => c.dataset.label === "Target" ? ` Target: ${c.parsed.y} ${satuan}` : c.parsed.y == null ? " Tidak ada data" : ` ${c.dataset.label}: ${c.parsed.y} ${satuan}` } } },
-      scales: { x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkipPadding: 14, color: "#64748b" } },
-        y: { beginAtZero: true, grid: { color: "#eef2f6" }, border: { display: false }, ticks: { color: "#64748b" }, ...extra } } };
+      scales: { x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkipPadding: 14, color: WT().tick } },
+        y: { beginAtZero: true, grid: { color: WT().grid }, border: { display: false }, ticks: { color: WT().tick }, ...extra } } };
   }
   function buat(id, data, o, judul) {
     grafik[id]?.destroy(); grafik[id] = new Chart($(id), { data, options: o }); grafik[id].$judul = judul;
@@ -122,15 +125,29 @@
     if (dari > sampai) [dari, sampai] = [sampai, dari];
     const P = periode(dari, sampai), L = P.map((p) => p.label), J = P.map((p) => p.judul), n = P.length;
 
-    const o = opsi("", { max: 100 });
-    o.plugins.tooltip.callbacks.label = (c) => { const r = P[c.dataIndex].r; return r ? ` Nilai ${r.nilai}, ${NAMA[r.kode].toLowerCase()}` : " Tidak ada data (belum diupload)"; };
-    buat("cNilai", { labels: L, datasets: [batang("Nilai", P.map((p) => p.r ? p.r.nilai : 100), P.map((p) => WARNA[p.r ? p.r.kode : "KOSONG"])),
-      target(n, KL.batas_layak ?? 75)] }, o, J);
+    const o = opsi("", { max: 100 }), sehari = iso(dari) === iso(sampai);
+    if (sehari) {
+      // 1 hari = 24 batang, satu per jam (nilai dari kecepatan DT jalan & % berhenti di jam itu)
+      const pj = new Map((JAM[iso(dari)] || []).map((x) => [x[0], x]));
+      const LJ = Array.from({ length: 24 }, (_, j) => String(j).padStart(2, "0")), JJ = LJ.map((j) => `Jam ${j}.00 - ${j}.59`);
+      const v = LJ.map((_, j) => pj.get(j)?.[1] ?? null);
+      o.plugins.tooltip.callbacks.label = (c) => { const x = pj.get(c.dataIndex); return x && x[1] != null ? ` Nilai ${x[1]}, DT jalan ${x[2] ?? "-"} km/jam, berhenti ${Math.round(x[3])}%, ${x[5]} unit` : " Tidak ada data GPS di jam ini"; };
+      o.scales.x.ticks.autoSkip = false; o.scales.x.ticks.callback = (val, i) => i % 3 === 0 ? LJ[i] : "";
+      o.scales.x.title = { display: true, text: "Jam", color: WT().tick };
+      buat("cNilai", { labels: LJ, datasets: [batang("Nilai", v.map((x) => x ?? 100), v.map((x) => WARNA[x == null ? "KOSONG" : kodeStatus(x)])), target(24, KL.batas_layak ?? 75)] }, o, JJ);
+      $("cNilai").closest(".kg").hidden = false;
+      if ($("titikKet")) $("titikKet").textContent = pj.size ? "Satu batang = 1 jam. Nilai per jam dihitung dari kecepatan DT dan lama berhenti." : "Belum ada data GPS per jam untuk tanggal ini.";
+    } else {
+      o.plugins.tooltip.callbacks.label = (c) => { const r = P[c.dataIndex].r; return r ? ` Nilai ${r.nilai}, ${NAMA[r.kode].toLowerCase()}` : " Tidak ada data (belum diupload)"; };
+      buat("cNilai", { labels: L, datasets: [batang("Nilai", P.map((p) => p.r ? p.r.nilai : 100), P.map((p) => WARNA[p.r ? p.r.kode : "KOSONG"])),
+        target(n, KL.batas_layak ?? 75)] }, o, J);
+      if ($("titikKet")) $("titikKet").textContent = `Satu batang = 1 ${mode}.`;
+    }
     const TAHAP = [["Kosongan 107 → BSR", "kosong", "#2a78d6"], ["Antre & muat di BSR", "muatBsr", "#eb6834"],
                    ["Muatan BSR → 107", "waktu", "#1baf7a"], ["Bongkar di 107", "bongkar", "#eda100"]];
     const adaTahap = TAHAP.filter(([, k]) => P.some((p) => p.r && p.r[k] != null));
     const oS = opsi("jam"); oS.scales.x.stacked = oS.scales.y.stacked = true;
-    oS.plugins.legend = { display: true, position: "top", align: "start", labels: { boxWidth: 12, boxHeight: 12, color: "#334155" } };
+    oS.plugins.legend = { display: true, position: "top", align: "start", labels: { boxWidth: 12, boxHeight: 12, color: WT().leg } };
     oS.plugins.tooltip.callbacks.label = (c) => c.parsed.y == null ? null : ` ${c.dataset.label}: ${jamMenit(c.parsed.y * 60)}`;
     oS.plugins.tooltip.callbacks.footer = (items) => { const t = items.reduce((s, i) => s + (i.parsed.y || 0), 0); return t ? `Total 1 rit: ${jamMenit(t * 60)}` : "Tidak ada data"; };
     buat("cSiklus", { labels: L, datasets: adaTahap.map(([nama, k, w]) => ({ type: "bar", label: nama, data: P.map((p) => p.r && p.r[k] != null ? s1(p.r[k] / 60) : null),
@@ -138,7 +155,7 @@
     const hilang = TAHAP.filter((t) => !adaTahap.includes(t)).map(([nama]) => nama.toLowerCase());
     $("infoSiklus").hidden = !hilang.length;
     $("infoSiklus").innerHTML = hilang.length ? `ℹ️ Waktu ${hilang.join(" dan ")} belum bisa dihitung: jam keluar/masuk di data trip belum terbaca.` : "";
-    const oW = opsi("jam"); oW.plugins.legend = { display: true, position: "top", align: "start", labels: { boxWidth: 12, boxHeight: 12, color: "#334155", filter: (i) => i.text !== "Target" } };
+    const oW = opsi("jam"); oW.plugins.legend = { display: true, position: "top", align: "start", labels: { boxWidth: 12, boxHeight: 12, color: WT().leg, filter: (i) => i.text !== "Target" } };
     oW.plugins.tooltip.callbacks.label = (c) => c.parsed.y == null ? null : c.dataset.label === "Target" ? ` Target muatan: ${jamMenit(c.parsed.y * 60)}` : ` ${c.dataset.label}: ${jamMenit(c.parsed.y * 60)}`;
     const wr = (lbl, k, w) => ({ ...garis(lbl, P.map((p) => p.r && p.r[k] != null ? s1(p.r[k] / 60) : null)), borderColor: w, backgroundColor: w });
     buat("cWaktu", { labels: L, datasets: [wr("Muatan BSR → 107", "waktu", "#1baf7a"), wr("Kosongan 107 → BSR", "kosong", "#2a78d6"), target(n, s1((KL.durasi_bagus_menit ?? 120) / 60))] }, oW, J);
@@ -189,14 +206,14 @@
     for (let d = new Date(dari); d <= sampai; d = tambah(d, 1)) { const z = KM.zona_hari?.[iso(d)]; if (z) for (const n in z) { const nm = n.replace(/ \(STA.*\)$/, ""); zonaJam[nm] = (zonaJam[nm] || 0) + z[n]; } }
     const L = urut.map((k) => String(k.km)), T = urut.map((k) => tot[k.km]);
     const speed = T.map((t) => t[4] ? s1(t[3] / t[4]) : null);
-    const oA = opsi("jam"); oA.scales.x.stacked = oA.scales.y.stacked = true; oA.scales.x.title = { display: true, text: "KM (BSR di kiri, 107 di kanan)", color: "#64748b" };
-    oA.plugins.legend = { display: true, position: "top", align: "start", labels: { boxWidth: 12, boxHeight: 12, color: "#334155" } };
+    const oA = opsi("jam"); oA.scales.x.stacked = oA.scales.y.stacked = true; oA.scales.x.title = { display: true, text: "KM (BSR di kiri, 107 di kanan)", color: WT().tick };
+    oA.plugins.legend = { display: true, position: "top", align: "start", labels: { boxWidth: 12, boxHeight: 12, color: WT().leg } };
     oA.plugins.tooltip.callbacks.title = (c) => `${urut[c[0].dataIndex].label}${urut[c[0].dataIndex].zona ? " · " + urut[c[0].dataIndex].zona : ""}`;
     oA.plugins.tooltip.callbacks.footer = (c) => { const t = T[c[0].dataIndex]; return `${t[5].size} unit lewat · ${t[0]} titik GPS`; };
     buat("cKmStop", { labels: L, datasets: [
       { type: "bar", label: "Berhenti mesin hidup", data: T.map((t) => t[1]), backgroundColor: "#eb6834", borderColor: "#fff", borderWidth: { top: 2 }, borderSkipped: false },
       { type: "bar", label: "Berhenti mesin mati", data: T.map((t) => t[2]), backgroundColor: "#2a78d6", borderColor: "#fff", borderWidth: { top: 2 }, borderSkipped: false }] }, oA, L);
-    const oB = opsi("km/jam"); oB.scales.x.title = { display: true, text: "KM (BSR di kiri, 107 di kanan)", color: "#64748b" };
+    const oB = opsi("km/jam"); oB.scales.x.title = { display: true, text: "KM (BSR di kiri, 107 di kanan)", color: WT().tick };
     oB.plugins.tooltip.callbacks.title = (c) => urut[c[0].dataIndex].label;
     oB.plugins.tooltip.callbacks.label = (c) => c.parsed.y == null ? " Tidak ada data" : ` Kecepatan ${c.parsed.y} km/jam · ${c.parsed.y <= 13 ? "lambat" : c.parsed.y <= 17 ? "agak pelan" : "lancar"}`;
     buat("cKmSpeed", { labels: L, datasets: [batang("Kecepatan", speed, speed.map((v) => v == null ? "#e5e7eb" : v <= 13 ? WARNA.TIDAK : v <= 17 ? WARNA.KURANG : WARNA.LAYAK)),
@@ -330,10 +347,10 @@
     const r = 80, cx = 100, cy = 96, sudut = Math.PI * (1 - Math.max(0, Math.min(100, nilai)) / 100);
     const x = cx + r * Math.cos(sudut), y = cy - r * Math.sin(sudut);
     return `<svg viewBox="0 0 200 118" role="img" aria-label="Nilai ${nilai} dari 100">
-      <path d="M20 96 A80 80 0 0 1 180 96" fill="none" stroke="#E4E7E2" stroke-width="18" stroke-linecap="round"/>
+      <path d="M20 96 A80 80 0 0 1 180 96" fill="none" style="stroke:var(--garis)" stroke-width="18" stroke-linecap="round"/>
       <path d="M20 96 A80 80 0 0 1 ${x.toFixed(1)} ${y.toFixed(1)}" fill="none" stroke="${warna}" stroke-width="18" stroke-linecap="round"/>
-      <text x="100" y="92" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="50" fill="#15191A">${nilai}</text>
-      <text x="100" y="113" text-anchor="middle" font-family="Barlow, sans-serif" font-size="13" fill="#4E5652">dari 100</text></svg>`;
+      <text x="100" y="92" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="50" style="fill:var(--tinta)">${nilai}</text>
+      <text x="100" y="113" text-anchor="middle" font-family="Barlow, sans-serif" font-size="13" style="fill:var(--pudar)">dari 100</text></svg>`;
   }
   // gambar: dump truck di jalan hauling dengan lampu rambu sesuai kondisi
   function adegan(kode) {
@@ -399,7 +416,9 @@
 
   // nilai jalan per hari untuk beranda: tiap hari ada kegiatan & perbaikan, jadi dinilai per hari
   function harian(d, km) {
-    const hari = d.hari.map((h) => ({ tanggal: h.tanggal, r: ringkas([h]) })).filter((x) => x.r && x.r.nilai != null);
+    // "lengkap" = ada data GPS hari itu; hari tanpa GPS (nilai hanya dari data rit) tidak dipakai sebagai pembanding
+    const hari = d.hari.map((h) => ({ tanggal: h.tanggal, r: ringkas([h]), lengkap: h.gps_speed != null && h.yakin !== "rendah",
+      yakin: h.yakin, alasan: h.alasan || [], kurang: h.kurang || [], hujan: h.hujan_mm, hujanMalam: h.hujan_malam_mm })).filter((x) => x.r && x.r.nilai != null);
     let kmTop = null;
     if (km && km.hari) {
       const tg = Object.keys(km.hari).sort().pop(), h = km.hari[tg] || {};
@@ -410,11 +429,13 @@
     window.dispatchEvent(new CustomEvent("alr:harian", { detail: window.ALR_HARIAN }));
   }
 
+  warnaTema();
+  window.addEventListener("alr:tema", () => { warnaTema(); if (awalData) gambar(); });
   Promise.all([fetch("data/performa.json", { cache: "no-cache" }).then((r) => r.json()), fetch("data/per_km.json", { cache: "no-cache" }).then((r) => r.ok ? r.json() : null).catch(() => null)]).then(([d, km]) => {
     KM = km;
     KL = d.kelayakan || {}; TELAT = d.rit_lambat_menit || 195;
     document.querySelectorAll(".tTelat").forEach((e) => e.textContent = jamMenit(TELAT));
-    d.hari.forEach((h) => HARI.set(h.tanggal, h));
+    d.hari.forEach((h) => HARI.set(h.tanggal, h)); JAM = d.jam || {};
     if (!d.hari.length) { $("status").innerHTML = `<div><h2>Belum ada data</h2><p>Upload data rit atau GPS dulu.</p></div>`; return; }
     awalData = tgl(d.hari[0].tanggal); akhirData = tgl(d.hari[d.hari.length - 1].tanggal);
     // data GPS per KM bisa lebih baru dari data rit: pakai tanggal paling akhir

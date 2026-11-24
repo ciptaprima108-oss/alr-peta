@@ -52,21 +52,22 @@
     const a = H.hari, el = $("kartuHari");
     el.classList.remove("skel");
     if (!a.length) { $("khJudul").textContent = "Belum ada data"; return; }
-    const t = a[a.length - 1], k = a[a.length - 2], r = t.r, w = WARNA[r.kode] || WARNA.KOSONG;
+    // pembanding: hari sebelumnya yang datanya lengkap (ada GPS). Hari tanpa GPS nilainya tidak bisa dipercaya.
+    const t = a[a.length - 1], k = [...a.slice(0, -1)].reverse().find((x) => x.lengkap), r = t.r, w = WARNA[r.kode] || WARNA.KOSONG;
     el.style.setProperty("--w", w);
     $("khTgl").textContent = `Nilai jalan ${namaHari(t.tanggal)}`;
     $("khJudul").textContent = JUDUL[r.kode];
     // cincin nilai
     const R = 42, K = 2 * Math.PI * R, isi = K * (1 - r.nilai / 100);
-    $("khCincin").innerHTML = `<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="${R}" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="10"/>
+    $("khCincin").innerHTML = `<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="${R}" fill="none" class="kh-jalur" stroke-width="10"/>
       <circle class="kh-busur" cx="50" cy="50" r="${R}" fill="none" stroke="${w}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${K.toFixed(1)}" stroke-dashoffset="${K.toFixed(1)}" transform="rotate(-90 50 50)"/></svg>
       <b id="khAngka">0</b><small>dari 100</small>`;
     requestAnimationFrame(() => requestAnimationFrame(() => { const b = el.querySelector(".kh-busur"); if (b) b.style.strokeDashoffset = isi.toFixed(1); }));
     hitung($("khAngka"), r.nilai);
     // banding dengan hari sebelumnya yang ada datanya
     if (k) {
-      const d = r.nilai - k.r.nilai, kemarin = Math.round((tgl(t.tanggal) - tgl(k.tanggal)) / 864e5) === 1;
-      const dari = kemarin ? "kemarin" : `${tgl(k.tanggal).getDate()} ${BULAN[tgl(k.tanggal).getMonth()]}`;
+      const d = r.nilai - k.r.nilai, dk = tgl(k.tanggal);
+      const dari = `${HARI[dk.getDay()]} ${dk.getDate()} ${BULAN[dk.getMonth()]}`;
       $("khBanding").innerHTML = d === 0 ? `<span class="kb sama">Sama dengan ${dari} (${k.r.nilai})</span>`
         : `<span class="kb ${d > 0 ? "naik" : "turun"}"><svg class="ik"><use href="#i-${d > 0 ? "naik" : "turun"}"/></svg>${d > 0 ? "Naik" : "Turun"} ${Math.abs(d)} dari ${dari} (${k.r.nilai})</span>`;
     } else $("khBanding").innerHTML = "";
@@ -74,14 +75,17 @@
     const tujuh = a.slice(-7);
     $("khBatang").innerHTML = tujuh.map((x, i) => {
       const d = tgl(x.tanggal), akhir = i === tujuh.length - 1;
-      return `<div class="kb-hari${akhir ? " akhir" : ""}" title="${d.getDate()} ${BULAN[d.getMonth()]}: nilai ${x.r.nilai}"><span class="kb-n">${x.r.nilai}</span>
-        <i style="--h:${Math.max(8, x.r.nilai)}%;--w:${WARNA[x.r.kode]};--d:${i * 60}ms"></i><small>${HARI[d.getDay()]}</small></div>`;
+      const ok = x.lengkap || akhir;
+      return `<div class="kb-hari${akhir ? " akhir" : ""}${ok ? "" : " kurang"}" title="${d.getDate()} ${BULAN[d.getMonth()]}: ${ok ? "nilai " + x.r.nilai : "data GPS kurang"}"><span class="kb-n">${ok ? x.r.nilai : "?"}</span>
+        <i style="--h:${ok ? Math.max(8, x.r.nilai) : 30}%;--w:${ok ? WARNA[x.r.kode] : "#8A97A8"};--d:${i * 60}ms"></i><small>${HARI[d.getDay()]}</small></div>`;
     }).join("");
-    const kal = [];
-    if (r.rit) kal.push(`<b>${r.rit} rit</b>, rata-rata <b>${jamMenit(r.waktu)}</b> per rit`);
-    if (r.pctTelat != null) kal.push(`${Math.round(r.pctTelat)}% rit telat`);
-    if (r.speed != null) kal.push(`DT jalan rata-rata <b>${Math.round(r.speed)} km/jam</b>`);
-    $("khIsi").innerHTML = kal.length ? kal.join(", ") + "." : "";
+    // apa yang menurunkan nilai (cek silang: hujan, KM pelan, jalan merah, lama rit, berhenti) + seberapa yakin
+    const chip = (t) => `<span class="kh-chip${/hujan/i.test(t) ? " hujan" : /merah/i.test(t) ? " merah" : ""}">${esc(t)}</span>`;
+    let teks = t.alasan.length ? `<div class="kh-chips">${t.alasan.slice(0, 4).map(chip).join("")}</div>` : "";
+    if (t.yakin && t.yakin !== "tinggi") teks += `<div class="kh-ragu"><svg class="ik"><use href="#i-info"/></svg><span><b>Nilai belum pasti.</b> ${esc(t.kurang.join(", "))}. Cek juga laporan lapangan.</span></div>`;
+    if (a.slice(-7).some((x) => !x.lengkap)) teks += `<span class="kh-ket">? = data hari itu kurang lengkap</span>`;
+    $("khIsi").innerHTML = teks;
+    if (t.yakin && t.yakin !== "tinggi") $("khJudul").textContent = JUDUL[r.kode] + "?";
   }
   window.addEventListener("alr:harian", (e) => { kartuHari(e.detail); hariIniKm(e.detail.kmTop); bangunBanner(); });
   if (window.ALR_HARIAN) { kartuHari(window.ALR_HARIAN); hariIniKm(window.ALR_HARIAN.kmTop); }
@@ -234,4 +238,43 @@
   // ---------- tekan = sedikit mengecil (rasa aplikasi) ----------
   document.addEventListener("pointerdown", (e) => { const b = e.target.closest(".mi, .hi, .bn-tombol, .aw-lihat, .kh-lihat, .tabbar button, .hero-btn, .kotak-baris"); if (!b) return; b.classList.add("ditekan"); const lepas = () => { b.classList.remove("ditekan"); removeEventListener("pointerup", lepas); removeEventListener("pointercancel", lepas); }; addEventListener("pointerup", lepas); addEventListener("pointercancel", lepas); });
   document.body.classList.add("ada-tab");
+
+  // ---------- mode terang / gelap ----------
+  const html = document.documentElement, mq = window.matchMedia?.("(prefers-color-scheme: dark)");
+  let pilihTema = simpan.get("alr_tema", "otomatis");
+  function pasangTema() {
+    const g = pilihTema === "gelap" || (pilihTema === "otomatis" && mq?.matches);
+    html.setAttribute("data-tema", g ? "gelap" : "terang");
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", g ? "#071B3A" : "#0B4EA2");
+    $("btnTema").innerHTML = `<svg class="ik"><use href="#i-${g ? "matahari" : "bulan"}"/></svg>`;
+    document.querySelectorAll(".pilih-tema [data-tema]").forEach((b) => b.classList.toggle("aktif", b.dataset.tema === pilihTema));
+    window.dispatchEvent(new CustomEvent("alr:tema", { detail: { gelap: g } }));
+  }
+  function setTema(p) { pilihTema = p; simpan.set("alr_tema", p); html.classList.add("ganti-tema"); pasangTema(); setTimeout(() => html.classList.remove("ganti-tema"), 450); }
+  $("btnTema").onclick = () => { klik(); setTema(html.getAttribute("data-tema") === "gelap" ? "terang" : "gelap"); };
+  document.querySelectorAll(".pilih-tema [data-tema]").forEach((b) => b.onclick = () => { klik(); setTema(b.dataset.tema); });
+  mq?.addEventListener?.("change", () => pilihTema === "otomatis" && pasangTema());
+  pasangTema();
+
+  // ---------- layar dalam: ikon 3D di judul + kartu pembuka berwarna ----------
+  const LYR = {
+    trigger: { ikon: "trigger", warna: "merah", judul: "Jalan merah yang perlu dicek", isi: () => nTrig != null ? (nTrig ? `${nTrig} titik terbuka. Pencet kartu untuk lihat di peta.` : "Semua aman, tidak ada jalan merah.") : "Memuat..." },
+    laporan: { ikon: "laporan", warna: "merah", judul: "Laporan dari lapangan", isi: () => nLap ? `${nLap} laporan belum selesai.` : "Foto dan video kondisi jalan dari pengawas." },
+    km: { ikon: "km", warna: "biru", judul: "Di mana DT berhenti", isi: () => { const t = window.ALR_HARIAN?.kmTop; return t ? `Terakhir paling lama di ${t.label}, ${t.jam} jam.` : "Per 1 KM atau per 200 meter."; } },
+    rr: { ikon: "rr", warna: "biru", judul: "Berat jalan & rawan selip", isi: () => window.ALR_RR ? `RR rata-rata ${koma(window.ALR_RR.rr_rata)}%. Jalan terawat 2 sampai 4%.` : "Perkiraan dari kecepatan DT bermuatan." },
+    hujan: { ikon: "hujan", warna: "langit", judul: "Hujan di jalan ALR", isi: () => $("subHujan")?.textContent && $("subHujan").textContent !== "-" ? $("subHujan").textContent : "Cuaca per section jalan." },
+    grafik: { ikon: "grafik", warna: "biru", judul: "Nilai jalan", isi: () => { const h = window.ALR_HARIAN?.hari; const t = h?.[h.length - 1]; return t ? `Nilai terakhir ${t.r.nilai} dari 100, ${JUDUL[t.r.kode].toLowerCase()}.` : "Nilai 0 sampai 100 dari kerja DT."; } },
+    profil: { ikon: "pengguna", warna: "biru", judul: "Akun & pengaturan", isi: () => "Nama kamu, notifikasi, suara, dan mode layar." },
+    kotak: { ikon: "laporan", warna: "biru", judul: "Kotak masuk", isi: () => "Semua pemberitahuan ALR ada di sini." },
+    forum: { ikon: "forum", warna: "merah", judul: "Forum tim ALR", isi: () => "Segera hadir." },
+  };
+  Object.entries(LYR).forEach(([n, c]) => {
+    const l = $("lyr-" + n); if (!l) return;
+    const g = l.querySelector(".lyr-gb"); if (g && window.ALR_ikon3d) { const i = window.ALR_ikon3d(c.ikon); if (i) { g.innerHTML = i; g.classList.add("gb3d"); } }
+    const badan = l.querySelector(".lyr-badan"); if (!badan || n === "forum") return;
+    const h = document.createElement("div"); h.className = `lyr-hero lh-${c.warna}`;
+    h.innerHTML = `<div class="lh-teks"><b>${c.judul}</b><span class="lh-isi"></span></div><span class="lh-ikon">${window.ALR_ikon3d?.(c.ikon) || ""}</span><i class="lh-pita"></i>`;
+    badan.prepend(h);
+  });
+  window.addEventListener("alr:layar", (e) => { const c = LYR[e.detail.aktif], l = $("lyr-" + e.detail.aktif); if (c && l) { const s = l.querySelector(".lh-isi"); if (s) s.textContent = c.isi(); } });
 })();
