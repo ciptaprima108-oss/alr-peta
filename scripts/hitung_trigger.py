@@ -142,7 +142,7 @@ def hitung(g, jalur):
         else:
             nl = len(set(p["unit_lambat"]) | set(p["unit_tertahan"]))
             med = p["speed_median"] if p["speed_median"] is not None else 0
-            if nl >= B["min_unit_lambat_merah"] or med <= B["merah_speed_median_kmh"]:
+            if nl >= B["min_unit_lambat_merah"] or (med <= B["merah_speed_median_kmh"] and p["n_unit"] >= B["min_unit_lambat_merah"]):
                 alasan = []
                 if p["unit_tertahan"]: alasan.append(f"{len(p['unit_tertahan'])} unit berhenti/tertahan")
                 if p["unit_lambat"]: alasan.append(f"{len(p['unit_lambat'])} unit jalan <= {B['lambat_kmh']} km/jam")
@@ -172,7 +172,8 @@ def hitung(g, jalur):
     for t in trig:
         meds = [p["speed_median"] for p in merah if p["seg"] in t["seg"] and p["speed_median"] is not None]
         t["speed_terendah"] = min(meds) if meds else None
-        t["alasan"] = (f"{len(t['unit'])} unit melambat/tertahan" +
+        nu = max(p["n_unit"] for p in merah if p["seg"] in t["seg"])
+        t["alasan"] = ((f"{len(t['unit'])} unit melambat/tertahan" if t["unit"] else f"{nu} unit lewat pelan") +
                        (f", speed median terendah {t['speed_terendah']:g} km/jam" if meds else "") +
                        ". Kemungkinan jalan jelek, licin, atau macet.")
         t["sta_tengah"] = round((t["sta_awal"] + t["sta_akhir"]) / 2, 2)
