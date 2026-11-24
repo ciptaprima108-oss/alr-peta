@@ -6,7 +6,7 @@ on:
     paths-ignore: ["docs/data/**"]
   workflow_dispatch:
   schedule:              # tarik data TrackSolid tiap 30 menit (jam bisa telat 5-15 mnt, normal di GitHub)
-    - cron: "7,37 * * * *"
+    - cron: "15,45 * * * *"
 
 permissions:
   contents: write
@@ -52,6 +52,7 @@ jobs:
           TS2_PASS_MD5: ${{ secrets.TS2_PASS_MD5 }}
           TS_URL: ${{ secrets.TS_URL }}
           TS_MAPPING_CSV: ${{ secrets.TS_MAPPING_CSV }}
+          TS_SHEET_ID: ${{ secrets.TS_SHEET_ID }}
         run: python scripts/tarik_tracksolid.py
 
       - name: Simpan data GPS live

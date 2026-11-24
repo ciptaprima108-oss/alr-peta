@@ -108,12 +108,61 @@ def angka(x, d=0.0):
     except (TypeError, ValueError): return d
 
 
-def main():
-    if not (KEY and SECRET and AKUN):
-        keluar(os.environ.get("GITHUB_EVENT_NAME") != "schedule",
-               "Kunci TrackSolid belum diisi di GitHub Secrets (TS_APP_KEY, TS_APP_SECRET, TS_USER, TS_PASS/TS_PASS_MD5). Lewati.")
+def tarik_sheet(sejak):
+    """Cadangan tanpa kunci API: tab LOG TRACKSOLID di Google Sheet (diisi Apps Script tiap jam).
+    Sheet ID di secret TS_SHEET_ID (sheet bisa dibuka siapa saja yg punya link, jadi ID jangan ditulis di repo)."""
+    sid = os.environ.get("TS_SHEET_ID", "")
+    if not sid:
+        return None
+    q = "select A,B,E,F,G,H where A > datetime '" + sejak.strftime("%Y-%m-%d %H:%M:%S") + "'"
+    url = (f"https://docs.google.com/spreadsheets/d/{sid}/gviz/tq?tqx=out:csv&sheet="
+           + urllib.parse.quote("LOG TRACKSOLID") + "&tq=" + urllib.parse.quote(q))
+    with urllib.request.urlopen(url, timeout=120) as r:
+        rows = list(csv.reader(r.read().decode("utf-8-sig").splitlines()))
+    out = []
+    for x in rows[1:]:
+        if len(x) < 6: continue
+        w, unit, lat, lon, sp, acc = x[:6]
+        try:
+            t = datetime.strptime(w.strip(), "%d/%m/%Y %H:%M")
+        except ValueError:
+            continue
+        out.append([unit.strip(), t.strftime("%Y-%m-%d %H:%M:%S"), angka(lat.replace(",", ".")),
+                    angka(lon.replace(",", ".")), angka(sp.replace(",", ".")), acc.strip().upper()])
+    print(f"sheet LOG TRACKSOLID: {len(out)} baris sejak {sejak:%Y-%m-%d %H:%M} WIB")
+    return out
 
+
+def simpan(lama, baru):
+    la0, la1, lo0, lo1 = koridor()
+    df = pd.DataFrame(baru, columns=["unit", "waktu", "lat", "lon", "speed", "acc"])
+    df = df[df.lat.between(la0, la1) & df.lon.between(lo0, lo1)]
+    print(f"{len(df)} titik baru di koridor ALR")
+
+    g = pd.concat([lama.astype({"lat": float, "lon": float, "speed": float}), df], ignore_index=True)
+    if g.empty:
+        keluar(False, "Belum ada titik GPS di koridor ALR. Lewati.")
+    g["t"] = pd.to_datetime(g.waktu)
+    batas_rapat = g.t.max() - pd.Timedelta(days=CFG.get("simpan_rapat_hari", 3))
+    batas_buang = g.t.max() - pd.Timedelta(days=CFG.get("simpan_hari", 60))
+    g = g[g.t > batas_buang].sort_values(["unit", "t"], kind="stable")
+    g["kunci"] = g.t.dt.floor("min").where(g.t > batas_rapat, g.t.dt.floor("h"))
+    g = g.drop_duplicates(["unit", "kunci"], keep="last")
+    g[["unit", "waktu", "lat", "lon", "speed", "acc"]].sort_values(["waktu", "unit"]).to_csv(OUT, index=False, quoting=csv.QUOTE_MINIMAL)
+    print(f"live_tracksolid.csv: {len(g)} titik, {g.unit.nunique()} unit, sampai {g.waktu.max()} WIB")
+    keluar(True, "OK")
+
+
+
+def main():
     lama = pd.read_csv(OUT, dtype=str) if os.path.exists(OUT) else pd.DataFrame(columns=["unit", "waktu", "lat", "lon", "speed", "acc"])
+    if not (KEY and SECRET and AKUN):
+        jam = CFG.get("tarik_awal_jam", 24) if lama.empty else 6
+        baru = tarik_sheet(datetime.now(ZONA).replace(tzinfo=None) - timedelta(hours=jam))
+        if baru is None:
+            keluar(os.environ.get("GITHUB_EVENT_NAME") != "schedule",
+                   "Kunci TrackSolid & TS_SHEET_ID belum diisi di GitHub Secrets. Lewati.")
+        simpan(lama, baru)
     sekarang = datetime.now(timezone.utc)
     if len(lama):
         akhir = datetime.strptime(lama.waktu.max(), "%Y-%m-%d %H:%M:%S").replace(tzinfo=ZONA).astimezone(timezone.utc)
@@ -141,7 +190,6 @@ def main():
         raise SystemExit("Semua login TrackSolid gagal")
     print(f"{len(nama)} unit dipakai")
 
-    la0, la1, lo0, lo1 = koridor()
     baru = []
 
     # 1) posisi terakhir semua unit (1 panggilan) - cadangan kalau riwayat gagal
@@ -171,22 +219,7 @@ def main():
         time.sleep(CFG.get("jeda_detik", 0.3))
     if gagal: print(f"  riwayat gagal untuk {gagal} unit (posisi terakhir tetap dipakai)")
 
-    df = pd.DataFrame(baru, columns=["unit", "waktu", "lat", "lon", "speed", "acc"])
-    df = df[df.lat.between(la0, la1) & df.lon.between(lo0, lo1)]
-    print(f"{len(df)} titik baru di koridor ALR ({b} s/d {e} UTC)")
-
-    g = pd.concat([lama.astype({"lat": float, "lon": float, "speed": float}), df], ignore_index=True)
-    if g.empty:
-        keluar(False, "Belum ada titik GPS di koridor ALR. Lewati.")
-    g["t"] = pd.to_datetime(g.waktu)
-    batas_rapat = g.t.max() - pd.Timedelta(days=CFG.get("simpan_rapat_hari", 3))
-    batas_buang = g.t.max() - pd.Timedelta(days=CFG.get("simpan_hari", 60))
-    g = g[g.t > batas_buang].sort_values(["unit", "t"], kind="stable")
-    g["kunci"] = g.t.dt.floor("min").where(g.t > batas_rapat, g.t.dt.floor("h"))
-    g = g.drop_duplicates(["unit", "kunci"], keep="last")
-    g[["unit", "waktu", "lat", "lon", "speed", "acc"]].sort_values(["waktu", "unit"]).to_csv(OUT, index=False, quoting=csv.QUOTE_MINIMAL)
-    print(f"live_tracksolid.csv: {len(g)} titik, {g.unit.nunique()} unit, sampai {g.waktu.max()} WIB")
-    keluar(True, "OK")
+    simpan(lama, baru)
 
 
 if __name__ == "__main__":
