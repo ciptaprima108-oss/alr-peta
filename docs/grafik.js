@@ -4,7 +4,8 @@
   const WARNA = { LAYAK: "#16a34a", KURANG: "#f59e0b", TIDAK: "#dc2626", KOSONG: "#eef2f6" };
   const BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
   const BIRU = "#2563eb";
-  let HARI = new Map(), KL = {}, TELAT = 195, mode = "hari", grafik = {}, awalData, akhirData;
+  let KM = null,
+  HARI = new Map(), KL = {}, TELAT = 195, mode = "hari", grafik = {}, awalData, akhirData;
 
   // ---------- util ----------
   const tgl = (s) => new Date(s + "T00:00:00");
@@ -59,9 +60,9 @@
         if (mode === "hari") { label = fmt(d); judul = d.toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "short", year: "numeric" }); }
         else if (mode === "minggu") { const s = senin(d); label = fmt(s); judul = `${fmt(s)} - ${fmtPanjang(tambah(s, 6))}`; }
         else { label = `${BULAN[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`; judul = `${BULAN[d.getMonth()]} ${d.getFullYear()}`; }
-        peta.set(k, { label, judul, hari: [] }); out.push(peta.get(k));
+        peta.set(k, { label, judul, hari: [], tgl: [] }); out.push(peta.get(k));
       }
-      peta.get(k).hari.push(HARI.get(iso(d)) || null);
+      peta.get(k).hari.push(HARI.get(iso(d)) || null); peta.get(k).tgl.push(iso(d));
     }
     return out.map((p) => ({ ...p, r: ringkas(p.hari) }));
   }
@@ -126,7 +127,58 @@
     for (let d = new Date(dari); d <= sampai; d = tambah(d, 1)) semua.push(HARI.get(iso(d)));
     for (let d = tambah(dari, -panjang); d < dari; d = tambah(d, 1)) sebelum.push(HARI.get(iso(d)));
     status(ringkas(semua), ringkas(sebelum), dari, sampai, panjang);
+    if (KM) perKm(dari, sampai);
     tabel(P);
+  }
+
+  // ---------- per kilometer ----------
+  function perKm(dari, sampai) {
+    const daftar = KM.km, n = daftar.length, tot = daftar.map(() => [0, 0, 0, 0, 0, new Set()]);
+    for (let d = new Date(dari); d <= sampai; d = tambah(d, 1)) {
+      const h = KM.hari[iso(d)]; if (!h) continue;
+      for (const k in h) { const t = tot[k], v = h[k]; for (let i = 0; i < 5; i++) t[i] += v[i]; v[5].forEach((u) => t[5].add(u)); }
+    }
+    const semuaUrut = [...daftar].reverse();                     // BSR (KM 26-27) di kiri, 107 di kanan = arah muatan
+    const urut = semuaUrut.filter((k) => !k.zona);                // zona antre/parkir tidak digambar di grafik (bukan masalah jalan)
+    const zonaJam = {};
+    semuaUrut.filter((k) => k.zona).forEach((k) => { const t = tot[k.km]; zonaJam[k.zona] = (zonaJam[k.zona] || 0) + t[1] + t[2]; });
+    const L = urut.map((k) => k.label + (k.zona ? "*" : "")), T = urut.map((k) => tot[k.km]);
+    const speed = T.map((t) => t[4] ? s1(t[3] / t[4]) : null);
+    const oA = opsi("jam"); oA.scales.x.stacked = oA.scales.y.stacked = true; oA.scales.x.ticks.autoSkip = false; oA.scales.x.ticks.maxRotation = 60;
+    oA.plugins.legend = { display: true, position: "top", align: "start", labels: { boxWidth: 12, boxHeight: 12, color: "#334155" } };
+    oA.plugins.tooltip.callbacks.title = (c) => `${urut[c[0].dataIndex].label}${urut[c[0].dataIndex].zona ? " · " + urut[c[0].dataIndex].zona : ""}`;
+    oA.plugins.tooltip.callbacks.footer = (c) => { const t = T[c[0].dataIndex]; return `${t[5].size} unit lewat · ${t[0]} titik GPS`; };
+    buat("cKmStop", { labels: L, datasets: [
+      { type: "bar", label: "Berhenti mesin hidup", data: T.map((t) => t[1]), backgroundColor: "#eb6834", borderColor: "#fff", borderWidth: { top: 2 }, borderSkipped: false },
+      { type: "bar", label: "Berhenti mesin mati", data: T.map((t) => t[2]), backgroundColor: "#2a78d6", borderColor: "#fff", borderWidth: { top: 2 }, borderSkipped: false }] }, oA, L);
+    const oB = opsi("km/jam"); oB.scales.x.ticks.autoSkip = false; oB.scales.x.ticks.maxRotation = 60;
+    oB.plugins.tooltip.callbacks.title = (c) => urut[c[0].dataIndex].label;
+    oB.plugins.tooltip.callbacks.label = (c) => c.parsed.y == null ? " Tidak ada data" : ` Kecepatan ${c.parsed.y} km/jam · ${c.parsed.y <= 13 ? "lambat" : c.parsed.y <= 17 ? "agak pelan" : "lancar"}`;
+    buat("cKmSpeed", { labels: L, datasets: [batang("Kecepatan", speed, speed.map((v) => v == null ? "#e5e7eb" : v <= 13 ? WARNA.TIDAK : v <= 17 ? WARNA.KURANG : WARNA.LAYAK)),
+      target(n, KL.speed_bagus_kmh ?? 20)] }, oB, L);
+
+    // KM paling bermasalah (bukan zona antre/parkir)
+    const skor = daftar.filter((k) => !k.zona).map((k) => { const t = tot[k.km]; return { k, jam: t[1] + t[2], hidup: t[1], sp: t[4] ? t[3] / t[4] : null, unit: t[5].size }; })
+      .filter((x) => x.jam > 0 || (x.sp != null && x.sp <= 13)).sort((a, b) => b.jam - a.jam).slice(0, 5);
+    $("topKm").innerHTML = skor.length ? `<div class="top">${skor.map((x, i) => `<div class="it"><b>${i + 1}. ${x.k.label}</b> <span class="netral">(STA ${x.k.km}+000 - ${x.k.km + 1}+000)</span><br>
+        ⏸️ <b>${x.jam} jam</b> unit tertahan (${x.hidup} jam mesin hidup)<br>💨 ${x.sp != null ? Math.round(x.sp) + " km/jam" : "-"} · 🚚 ${x.unit} unit</div>`).join("")}</div>`
+      : `<p class="netral">Tidak ada KM bermasalah di rentang ini.</p>`;
+    const zt = Object.entries(zonaJam).filter(([, v]) => v);
+    if (zt.length) $("topKm").innerHTML += `<div class="kosong-info">Tidak dihitung karena bukan masalah jalan: ${zt.map(([z, v]) => `${z} ${v} jam`).join(" · ")}.</div>`;
+
+    // tabel warna KM x periode
+    const P = periode(dari, sampai);
+    const per = [];  // per periode: jam tertahan per km
+    for (const p of P) {
+      const a = Array(n).fill(null);
+      p.tgl.forEach((t) => { const h = KM.hari[t]; if (!h) return; for (const k in h) a[k] = (a[k] || 0) + h[k][1] + h[k][2]; });
+      per.push(a);
+    }
+    const maks = Math.max(1, ...per.flatMap((a) => urut.map((k) => a[k.km] || 0)));
+    const warna = (v) => { if (!v) return "#f8fafc"; const x = Math.min(1, v / Math.max(6, maks * 0.6)); return `rgba(220,38,38,${0.12 + 0.78 * x})`; };
+    $("heat").innerHTML = `<table class="heat"><thead><tr><th></th>${P.map((p) => `<th>${p.label}</th>`).join("")}</tr></thead><tbody>` +
+      semuaUrut.map((k) => `<tr><th>${k.label}${k.zona ? "*" : ""}</th>${per.map((a, i) => { const v = a[k.km];
+        return `<td style="background:${k.zona ? (v ? "#e2e8f0" : "#f8fafc") : warna(v)};color:${!k.zona && v && v / maks > 0.5 ? "#fff" : "#111"}" title="${k.label} · ${P[i].judul}: ${v ? v + " jam unit tertahan" : "tidak ada"}">${v || ""}</td>`; }).join("")}</tr>`).join("") + `</tbody></table>`;
   }
 
   function banding(a, b, satuan, naikBaik, f = (x) => s1(x)) {
@@ -169,7 +221,8 @@
           : `<tr><td>${p.judul}</td><td colspan="6" style="text-align:left;color:#94a3b8">tidak ada data</td></tr>`; }).join("");
   }
 
-  fetch("data/performa.json").then((r) => r.json()).then((d) => {
+  Promise.all([fetch("data/performa.json").then((r) => r.json()), fetch("data/per_km.json").then((r) => r.ok ? r.json() : null).catch(() => null)]).then(([d, km]) => {
+    KM = km;
     KL = d.kelayakan || {}; TELAT = d.rit_lambat_menit || 195;
     document.querySelectorAll(".tTelat").forEach((e) => e.textContent = jamMenit(TELAT));
     d.hari.forEach((h) => HARI.set(h.tanggal, h));

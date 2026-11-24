@@ -70,7 +70,7 @@
    "pct_lambat": 7.4,
    "gps_speed": null,
    "gps_pct_berhenti": null,
-   "gps_unit": 6,
+   "gps_unit": 2,
    "kosong_menit": 80.0,
    "muat_bsr_menit": 30.0,
    "bongkar_107_menit": 35.0,
@@ -93,7 +93,7 @@
    "pct_lambat": 18.9,
    "gps_speed": null,
    "gps_pct_berhenti": null,
-   "gps_unit": 9,
+   "gps_unit": 5,
    "kosong_menit": 85.0,
    "muat_bsr_menit": 50.0,
    "bongkar_107_menit": 25.0,
@@ -116,7 +116,7 @@
    "pct_lambat": 7.1,
    "gps_speed": null,
    "gps_pct_berhenti": null,
-   "gps_unit": 6,
+   "gps_unit": 4,
    "kosong_menit": 87.5,
    "muat_bsr_menit": 32.5,
    "bongkar_107_menit": 52.5,
@@ -137,8 +137,8 @@
    "median_km": 31.8,
    "n_lambat": 11,
    "pct_lambat": 19.3,
-   "gps_speed": 22.6,
-   "gps_pct_berhenti": 7.5,
+   "gps_speed": 23.3,
+   "gps_pct_berhenti": 7.9,
    "gps_unit": 19,
    "kosong_menit": 90.0,
    "muat_bsr_menit": 49.9,
@@ -147,7 +147,7 @@
     "durasi": 100.0,
     "rit_lambat": 52.0,
     "speed": 100.0,
-    "berhenti": 81.0
+    "berhenti": 80.0
    },
    "indeks": 83,
    "status": "Layak"
@@ -160,8 +160,8 @@
    "median_km": 29.3,
    "n_lambat": 18,
    "pct_lambat": 31.6,
-   "gps_speed": 21.2,
-   "gps_pct_berhenti": 13.2,
+   "gps_speed": 21.5,
+   "gps_pct_berhenti": 11.1,
    "gps_unit": 23,
    "kosong_menit": 130.0,
    "muat_bsr_menit": 65.0,
@@ -170,9 +170,9 @@
     "durasi": 92.0,
     "rit_lambat": 21.0,
     "speed": 100.0,
-    "berhenti": 67.0
+    "berhenti": 72.0
    },
-   "indeks": 70,
+   "indeks": 71,
    "status": "Kurang layak"
   },
   {
@@ -183,8 +183,8 @@
    "median_km": 28.8,
    "n_lambat": 15,
    "pct_lambat": 31.9,
-   "gps_speed": 22.2,
-   "gps_pct_berhenti": 10.2,
+   "gps_speed": 22.9,
+   "gps_pct_berhenti": 10.9,
    "gps_unit": 20,
    "kosong_menit": 110.0,
    "muat_bsr_menit": 110.2,
@@ -193,9 +193,9 @@
     "durasi": 100.0,
     "rit_lambat": 20.0,
     "speed": 100.0,
-    "berhenti": 74.0
+    "berhenti": 73.0
    },
-   "indeks": 74,
+   "indeks": 73,
    "status": "Kurang layak"
   },
   {
@@ -206,8 +206,8 @@
    "median_km": 29.7,
    "n_lambat": 14,
    "pct_lambat": 31.8,
-   "gps_speed": 21.4,
-   "gps_pct_berhenti": 18.8,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
    "gps_unit": 20,
    "kosong_menit": 117.0,
    "muat_bsr_menit": 105.0,
@@ -215,10 +215,10 @@
    "skor": {
     "durasi": 100.0,
     "rit_lambat": 20.0,
-    "speed": 100.0,
-    "berhenti": 53.0
+    "speed": null,
+    "berhenti": null
    },
-   "indeks": 68,
+   "indeks": 60,
    "status": "Kurang layak"
   },
   {
@@ -229,8 +229,8 @@
    "median_km": 27.6,
    "n_lambat": 14,
    "pct_lambat": 26.9,
-   "gps_speed": 24.0,
-   "gps_pct_berhenti": 6.1,
+   "gps_speed": 23.9,
+   "gps_pct_berhenti": 6.2,
    "gps_unit": 24,
    "kosong_menit": 115.0,
    "muat_bsr_menit": 110.0,
@@ -239,7 +239,7 @@
     "durasi": 100.0,
     "rit_lambat": 33.0,
     "speed": 100.0,
-    "berhenti": 85.0
+    "berhenti": 84.0
    },
    "indeks": 79,
    "status": "Layak"
@@ -252,8 +252,8 @@
    "median_km": 26.6,
    "n_lambat": 13,
    "pct_lambat": 23.2,
-   "gps_speed": 19.8,
-   "gps_pct_berhenti": 8.1,
+   "gps_speed": 20.2,
+   "gps_pct_berhenti": 6.0,
    "gps_unit": 27,
    "kosong_menit": 125.0,
    "muat_bsr_menit": 100.0,
@@ -261,10 +261,10 @@
    "skor": {
     "durasi": 100.0,
     "rit_lambat": 42.0,
-    "speed": 98.0,
-    "berhenti": 80.0
+    "speed": 100.0,
+    "berhenti": 85.0
    },
-   "indeks": 80,
+   "indeks": 82,
    "status": "Layak"
   },
   {
@@ -275,9 +275,9 @@
    "median_km": 25.0,
    "n_lambat": 13,
    "pct_lambat": 16.5,
-   "gps_speed": 20.1,
-   "gps_pct_berhenti": 9.1,
-   "gps_unit": 41,
+   "gps_speed": 20.8,
+   "gps_pct_berhenti": 9.8,
+   "gps_unit": 40,
    "kosong_menit": 125.0,
    "muat_bsr_menit": 115.0,
    "bongkar_107_menit": 30.0,
@@ -285,7 +285,7 @@
     "durasi": 100.0,
     "rit_lambat": 59.0,
     "speed": 100.0,
-    "berhenti": 77.0
+    "berhenti": 76.0
    },
    "indeks": 84,
    "status": "Layak"
@@ -299,7 +299,7 @@
    "n_lambat": 22,
    "pct_lambat": 35.5,
    "gps_speed": 19.2,
-   "gps_pct_berhenti": 20.4,
+   "gps_pct_berhenti": 20.9,
    "gps_unit": 36,
    "kosong_menit": 115.0,
    "muat_bsr_menit": 115.0,
@@ -308,7 +308,7 @@
     "durasi": 83.0,
     "rit_lambat": 11.0,
     "speed": 93.0,
-    "berhenti": 49.0
+    "berhenti": 48.0
    },
    "indeks": 59,
    "status": "Kurang layak"
@@ -321,8 +321,8 @@
    "median_km": 22.6,
    "n_lambat": 27,
    "pct_lambat": 32.9,
-   "gps_speed": 18.2,
-   "gps_pct_berhenti": 6.5,
+   "gps_speed": 18.3,
+   "gps_pct_berhenti": 6.6,
    "gps_unit": 42,
    "kosong_menit": 125.0,
    "muat_bsr_menit": 100.0,
@@ -330,10 +330,10 @@
    "skor": {
     "durasi": 83.0,
     "rit_lambat": 18.0,
-    "speed": 85.0,
+    "speed": 86.0,
     "berhenti": 84.0
    },
-   "indeks": 67,
+   "indeks": 68,
    "status": "Kurang layak"
   },
   {
@@ -344,8 +344,8 @@
    "median_km": 23.6,
    "n_lambat": 23,
    "pct_lambat": 27.1,
-   "gps_speed": 16.7,
-   "gps_pct_berhenti": 5.3,
+   "gps_speed": 16.8,
+   "gps_pct_berhenti": 4.5,
    "gps_unit": 40,
    "kosong_menit": 140.0,
    "muat_bsr_menit": 75.0,
@@ -353,10 +353,10 @@
    "skor": {
     "durasi": 89.0,
     "rit_lambat": 32.0,
-    "speed": 72.0,
-    "berhenti": 87.0
+    "speed": 73.0,
+    "berhenti": 89.0
    },
-   "indeks": 70,
+   "indeks": 71,
    "status": "Kurang layak"
   },
   {
@@ -367,8 +367,8 @@
    "median_km": 23.1,
    "n_lambat": 21,
    "pct_lambat": 36.2,
-   "gps_speed": 18.1,
-   "gps_pct_berhenti": 14.7,
+   "gps_speed": 18.2,
+   "gps_pct_berhenti": 13.6,
    "gps_unit": 40,
    "kosong_menit": 155.0,
    "muat_bsr_menit": 19.9,
@@ -376,10 +376,10 @@
    "skor": {
     "durasi": 75.0,
     "rit_lambat": 9.0,
-    "speed": 84.0,
-    "berhenti": 63.0
+    "speed": 85.0,
+    "berhenti": 66.0
    },
-   "indeks": 58,
+   "indeks": 59,
    "status": "Kurang layak"
   },
   {
@@ -391,7 +391,7 @@
    "n_lambat": 18,
    "pct_lambat": 40.9,
    "gps_speed": 17.7,
-   "gps_pct_berhenti": 13.3,
+   "gps_pct_berhenti": 12.8,
    "gps_unit": 34,
    "kosong_menit": 212.5,
    "muat_bsr_menit": 10.2,
@@ -400,7 +400,7 @@
     "durasi": 85.0,
     "rit_lambat": 0.0,
     "speed": 81.0,
-    "berhenti": 67.0
+    "berhenti": 68.0
    },
    "indeks": 58,
    "status": "Kurang layak"
@@ -413,8 +413,8 @@
    "median_km": 23.5,
    "n_lambat": 13,
    "pct_lambat": 40.6,
-   "gps_speed": 18.2,
-   "gps_pct_berhenti": 14.9,
+   "gps_speed": 18.3,
+   "gps_pct_berhenti": 15.1,
    "gps_unit": 22,
    "kosong_menit": 140.0,
    "muat_bsr_menit": 20.0,
@@ -422,8 +422,8 @@
    "skor": {
     "durasi": 67.0,
     "rit_lambat": 0.0,
-    "speed": 85.0,
-    "berhenti": 63.0
+    "speed": 86.0,
+    "berhenti": 62.0
    },
    "indeks": 54,
    "status": "Kurang layak"
@@ -436,8 +436,8 @@
    "median_km": 24.3,
    "n_lambat": 8,
    "pct_lambat": 29.6,
-   "gps_speed": 20.2,
-   "gps_pct_berhenti": 11.8,
+   "gps_speed": 20.5,
+   "gps_pct_berhenti": 8.9,
    "gps_unit": 19,
    "kosong_menit": 175.0,
    "muat_bsr_menit": 15.0,
@@ -446,9 +446,9 @@
     "durasi": 89.0,
     "rit_lambat": 26.0,
     "speed": 100.0,
-    "berhenti": 70.0
+    "berhenti": 78.0
    },
-   "indeks": 71,
+   "indeks": 73,
    "status": "Kurang layak"
   },
   {
@@ -459,8 +459,8 @@
    "median_km": 23.0,
    "n_lambat": 12,
    "pct_lambat": 30.8,
-   "gps_speed": 18.8,
-   "gps_pct_berhenti": 15.1,
+   "gps_speed": 18.6,
+   "gps_pct_berhenti": 14.8,
    "gps_unit": 26,
    "kosong_menit": 165.0,
    "muat_bsr_menit": 9.9,
@@ -468,10 +468,10 @@
    "skor": {
     "durasi": 75.0,
     "rit_lambat": 23.0,
-    "speed": 90.0,
-    "berhenti": 62.0
+    "speed": 88.0,
+    "berhenti": 63.0
    },
-   "indeks": 63,
+   "indeks": 62,
    "status": "Kurang layak"
   },
   {
@@ -482,8 +482,8 @@
    "median_km": 23.4,
    "n_lambat": 10,
    "pct_lambat": 55.6,
-   "gps_speed": 17.6,
-   "gps_pct_berhenti": 11.9,
+   "gps_speed": 17.1,
+   "gps_pct_berhenti": 13.2,
    "gps_unit": 20,
    "kosong_menit": 170.0,
    "muat_bsr_menit": 15.1,
@@ -491,10 +491,10 @@
    "skor": {
     "durasi": 0.0,
     "rit_lambat": 0.0,
-    "speed": 80.0,
-    "berhenti": 70.0
+    "speed": 76.0,
+    "berhenti": 67.0
    },
-   "indeks": 38,
+   "indeks": 36,
    "status": "Tidak layak"
   },
   {
@@ -530,7 +530,7 @@
    "pct_lambat": 50.0,
    "gps_speed": null,
    "gps_pct_berhenti": null,
-   "gps_unit": 8,
+   "gps_unit": 5,
    "kosong_menit": 110.0,
    "muat_bsr_menit": 15.0,
    "bongkar_107_menit": 45.0,
@@ -553,7 +553,7 @@
    "pct_lambat": 20.0,
    "gps_speed": null,
    "gps_pct_berhenti": null,
-   "gps_unit": 12,
+   "gps_unit": 8,
    "kosong_menit": 150.0,
    "muat_bsr_menit": 24.7,
    "bongkar_107_menit": 59.9,
@@ -576,7 +576,7 @@
    "pct_lambat": 18.2,
    "gps_speed": null,
    "gps_pct_berhenti": null,
-   "gps_unit": 13,
+   "gps_unit": 5,
    "kosong_menit": 150.0,
    "muat_bsr_menit": 54.9,
    "bongkar_107_menit": 27.6,
@@ -599,7 +599,7 @@
    "pct_lambat": 24.1,
    "gps_speed": null,
    "gps_pct_berhenti": null,
-   "gps_unit": 10,
+   "gps_unit": 5,
    "kosong_menit": 112.5,
    "muat_bsr_menit": 45.0,
    "bongkar_107_menit": 28.2,
@@ -622,7 +622,7 @@
    "pct_lambat": 27.0,
    "gps_speed": null,
    "gps_pct_berhenti": null,
-   "gps_unit": 16,
+   "gps_unit": 12,
    "kosong_menit": 120.0,
    "muat_bsr_menit": 45.0,
    "bongkar_107_menit": 30.0,
@@ -645,7 +645,7 @@
    "pct_lambat": 22.1,
    "gps_speed": null,
    "gps_pct_berhenti": null,
-   "gps_unit": 13,
+   "gps_unit": 8,
    "kosong_menit": 140.0,
    "muat_bsr_menit": 87.7,
    "bongkar_107_menit": 30.0,
@@ -666,19 +666,19 @@
    "median_km": 30.4,
    "n_lambat": 16,
    "pct_lambat": 28.1,
-   "gps_speed": 18.5,
-   "gps_pct_berhenti": 22.6,
-   "gps_unit": 18,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": 16,
    "kosong_menit": 90.0,
    "muat_bsr_menit": 50.0,
    "bongkar_107_menit": 29.9,
    "skor": {
     "durasi": 89.0,
     "rit_lambat": 30.0,
-    "speed": 88.0,
-    "berhenti": 43.0
+    "speed": null,
+    "berhenti": null
    },
-   "indeks": 62,
+   "indeks": 59,
    "status": "Kurang layak"
   },
   {
@@ -691,7 +691,7 @@
    "pct_lambat": 23.9,
    "gps_speed": null,
    "gps_pct_berhenti": null,
-   "gps_unit": 11,
+   "gps_unit": 7,
    "kosong_menit": 135.0,
    "muat_bsr_menit": 42.5,
    "bongkar_107_menit": 25.0,
@@ -714,7 +714,7 @@
    "pct_lambat": 32.6,
    "gps_speed": null,
    "gps_pct_berhenti": null,
-   "gps_unit": 12,
+   "gps_unit": 10,
    "kosong_menit": 117.5,
    "muat_bsr_menit": 50.0,
    "bongkar_107_menit": 25.0,
@@ -735,19 +735,19 @@
    "median_km": 29.2,
    "n_lambat": 36,
    "pct_lambat": 83.7,
-   "gps_speed": 12.4,
-   "gps_pct_berhenti": 72.5,
-   "gps_unit": 30,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": 16,
    "kosong_menit": 120.0,
    "muat_bsr_menit": 37.6,
    "bongkar_107_menit": 23.8,
    "skor": {
     "durasi": 19.0,
     "rit_lambat": 0.0,
-    "speed": 37.0,
-    "berhenti": 0.0
+    "speed": null,
+    "berhenti": null
    },
-   "indeks": 14,
+   "indeks": 10,
    "status": "Tidak layak"
   },
   {
@@ -758,19 +758,19 @@
    "median_km": 30.8,
    "n_lambat": 30,
    "pct_lambat": 25.0,
-   "gps_speed": 17.1,
-   "gps_pct_berhenti": 15.2,
-   "gps_unit": 24,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
+   "gps_unit": 17,
    "kosong_menit": 115.0,
    "muat_bsr_menit": 69.9,
    "bongkar_107_menit": 27.5,
    "skor": {
     "durasi": 93.0,
     "rit_lambat": 38.0,
-    "speed": 76.0,
-    "berhenti": 62.0
+    "speed": null,
+    "berhenti": null
    },
-   "indeks": 67,
+   "indeks": 65,
    "status": "Kurang layak"
   },
   {
@@ -783,7 +783,7 @@
    "pct_lambat": 40.5,
    "gps_speed": null,
    "gps_pct_berhenti": null,
-   "gps_unit": 22,
+   "gps_unit": 16,
    "kosong_menit": 152.5,
    "muat_bsr_menit": 70.0,
    "bongkar_107_menit": 40.0,
@@ -850,8 +850,8 @@
    "median_km": 25.9,
    "n_lambat": 1,
    "pct_lambat": 4.3,
-   "gps_speed": 19.1,
-   "gps_pct_berhenti": 19.2,
+   "gps_speed": 19.8,
+   "gps_pct_berhenti": 18.8,
    "gps_unit": 19,
    "kosong_menit": 122.5,
    "muat_bsr_menit": 65.0,
@@ -859,10 +859,10 @@
    "skor": {
     "durasi": 100.0,
     "rit_lambat": 89.0,
-    "speed": 93.0,
-    "berhenti": 52.0
+    "speed": 98.0,
+    "berhenti": 53.0
    },
-   "indeks": 83,
+   "indeks": 85,
    "status": "Layak"
   },
   {
@@ -874,7 +874,7 @@
    "n_lambat": 10,
    "pct_lambat": 20.0,
    "gps_speed": 19.2,
-   "gps_pct_berhenti": 16.0,
+   "gps_pct_berhenti": 15.7,
    "gps_unit": 27,
    "kosong_menit": 90.0,
    "muat_bsr_menit": 50.0,
@@ -883,9 +883,9 @@
     "durasi": 90.0,
     "rit_lambat": 50.0,
     "speed": 93.0,
-    "berhenti": 60.0
+    "berhenti": 61.0
    },
-   "indeks": 73,
+   "indeks": 74,
    "status": "Kurang layak"
   },
   {
@@ -920,7 +920,7 @@
    "n_lambat": 6,
    "pct_lambat": 40.0,
    "gps_speed": 18.5,
-   "gps_pct_berhenti": 18.6,
+   "gps_pct_berhenti": 14.6,
    "gps_unit": 13,
    "kosong_menit": 90.0,
    "muat_bsr_menit": 30.0,
@@ -929,9 +929,9 @@
     "durasi": 100.0,
     "rit_lambat": -0.0,
     "speed": 88.0,
-    "berhenti": 53.0
+    "berhenti": 64.0
    },
-   "indeks": 60,
+   "indeks": 63,
    "status": "Kurang layak"
   },
   {
@@ -965,8 +965,8 @@
    "median_km": 22.2,
    "n_lambat": 5,
    "pct_lambat": 11.9,
-   "gps_speed": 20.1,
-   "gps_pct_berhenti": 7.0,
+   "gps_speed": 20.4,
+   "gps_pct_berhenti": 5.7,
    "gps_unit": 30,
    "kosong_menit": 100.0,
    "muat_bsr_menit": 95.0,
@@ -975,9 +975,9 @@
     "durasi": 100.0,
     "rit_lambat": 70.0,
     "speed": 100.0,
-    "berhenti": 82.0
+    "berhenti": 86.0
    },
-   "indeks": 88,
+   "indeks": 89,
    "status": "Layak"
   },
   {
@@ -988,8 +988,8 @@
    "median_km": 22.6,
    "n_lambat": 16,
    "pct_lambat": 30.8,
-   "gps_speed": 17.9,
-   "gps_pct_berhenti": 18.8,
+   "gps_speed": 18.1,
+   "gps_pct_berhenti": 19.0,
    "gps_unit": 30,
    "kosong_menit": 110.5,
    "muat_bsr_menit": 137.4,
@@ -997,8 +997,8 @@
    "skor": {
     "durasi": 89.0,
     "rit_lambat": 23.0,
-    "speed": 82.0,
-    "berhenti": 53.0
+    "speed": 84.0,
+    "berhenti": 52.0
    },
    "indeks": 62,
    "status": "Kurang layak"
@@ -1011,8 +1011,8 @@
    "median_km": 23.0,
    "n_lambat": 10,
    "pct_lambat": 34.5,
-   "gps_speed": 17.9,
-   "gps_pct_berhenti": 15.9,
+   "gps_speed": 18.2,
+   "gps_pct_berhenti": 15.2,
    "gps_unit": 24,
    "kosong_menit": 150.0,
    "muat_bsr_menit": 45.0,
@@ -1020,10 +1020,10 @@
    "skor": {
     "durasi": 78.0,
     "rit_lambat": 14.0,
-    "speed": 82.0,
-    "berhenti": 60.0
+    "speed": 85.0,
+    "berhenti": 62.0
    },
-   "indeks": 59,
+   "indeks": 60,
    "status": "Kurang layak"
   },
   {
@@ -1034,8 +1034,8 @@
    "median_km": 22.4,
    "n_lambat": 16,
    "pct_lambat": 30.8,
-   "gps_speed": 18.3,
-   "gps_pct_berhenti": 10.8,
+   "gps_speed": 18.5,
+   "gps_pct_berhenti": 10.9,
    "gps_unit": 24,
    "kosong_menit": 95.0,
    "muat_bsr_menit": 62.5,
@@ -1043,10 +1043,10 @@
    "skor": {
     "durasi": 83.0,
     "rit_lambat": 23.0,
-    "speed": 86.0,
+    "speed": 88.0,
     "berhenti": 73.0
    },
-   "indeks": 66,
+   "indeks": 67,
    "status": "Kurang layak"
   },
   {
@@ -1057,8 +1057,8 @@
    "median_km": 23.6,
    "n_lambat": 11,
    "pct_lambat": 91.7,
-   "gps_speed": 16.5,
-   "gps_pct_berhenti": 30.6,
+   "gps_speed": 17.1,
+   "gps_pct_berhenti": 32.4,
    "gps_unit": 11,
    "kosong_menit": 930.0,
    "muat_bsr_menit": 65.0,
@@ -1066,8 +1066,8 @@
    "skor": {
     "durasi": 0.0,
     "rit_lambat": 0.0,
-    "speed": 71.0,
-    "berhenti": 23.0
+    "speed": 76.0,
+    "berhenti": 19.0
    },
    "indeks": 24,
    "status": "Tidak layak"
@@ -1080,8 +1080,8 @@
    "median_km": 23.3,
    "n_lambat": 1,
    "pct_lambat": 6.7,
-   "gps_speed": 20.4,
-   "gps_pct_berhenti": 14.0,
+   "gps_speed": 20.6,
+   "gps_pct_berhenti": 14.3,
    "gps_unit": 17,
    "kosong_menit": 122.5,
    "muat_bsr_menit": 50.0,
@@ -1090,7 +1090,7 @@
     "durasi": 100.0,
     "rit_lambat": 83.0,
     "speed": 100.0,
-    "berhenti": 65.0
+    "berhenti": 64.0
    },
    "indeks": 87,
    "status": "Layak"
@@ -1103,8 +1103,8 @@
    "median_km": 23.2,
    "n_lambat": 11,
    "pct_lambat": 32.4,
-   "gps_speed": 17.0,
-   "gps_pct_berhenti": 15.4,
+   "gps_speed": 17.3,
+   "gps_pct_berhenti": 15.0,
    "gps_unit": 20,
    "kosong_menit": 135.0,
    "muat_bsr_menit": 67.7,
@@ -1112,10 +1112,10 @@
    "skor": {
     "durasi": 82.0,
     "rit_lambat": 19.0,
-    "speed": 75.0,
+    "speed": 78.0,
     "berhenti": 62.0
    },
-   "indeks": 59,
+   "indeks": 60,
    "status": "Kurang layak"
   },
   {
@@ -1126,8 +1126,8 @@
    "median_km": 24.3,
    "n_lambat": 12,
    "pct_lambat": 32.4,
-   "gps_speed": 19.6,
-   "gps_pct_berhenti": 14.3,
+   "gps_speed": 20.1,
+   "gps_pct_berhenti": 15.4,
    "gps_unit": 18,
    "kosong_menit": 92.5,
    "muat_bsr_menit": 40.5,
@@ -1135,10 +1135,10 @@
    "skor": {
     "durasi": 86.0,
     "rit_lambat": 19.0,
-    "speed": 97.0,
-    "berhenti": 64.0
+    "speed": 100.0,
+    "berhenti": 62.0
    },
-   "indeks": 66,
+   "indeks": 67,
    "status": "Kurang layak"
   },
   {
@@ -1149,8 +1149,8 @@
    "median_km": 22.1,
    "n_lambat": 8,
    "pct_lambat": 25.0,
-   "gps_speed": 18.8,
-   "gps_pct_berhenti": 9.9,
+   "gps_speed": 18.7,
+   "gps_pct_berhenti": 8.2,
    "gps_unit": 20,
    "kosong_menit": 195.0,
    "muat_bsr_menit": 60.0,
@@ -1158,10 +1158,10 @@
    "skor": {
     "durasi": 89.0,
     "rit_lambat": 38.0,
-    "speed": 90.0,
-    "berhenti": 75.0
+    "speed": 89.0,
+    "berhenti": 80.0
    },
-   "indeks": 73,
+   "indeks": 74,
    "status": "Kurang layak"
   },
   {
@@ -1173,7 +1173,7 @@
    "n_lambat": 5,
    "pct_lambat": 31.2,
    "gps_speed": 20.8,
-   "gps_pct_berhenti": 21.1,
+   "gps_pct_berhenti": 18.9,
    "gps_unit": 13,
    "kosong_menit": 130.0,
    "muat_bsr_menit": 42.4,
@@ -1182,9 +1182,9 @@
     "durasi": 90.0,
     "rit_lambat": 22.0,
     "speed": 100.0,
-    "berhenti": 47.0
+    "berhenti": 53.0
    },
-   "indeks": 65,
+   "indeks": 66,
    "status": "Kurang layak"
   },
   {
@@ -1197,7 +1197,7 @@
    "pct_lambat": 100.0,
    "gps_speed": null,
    "gps_pct_berhenti": null,
-   "gps_unit": 1,
+   "gps_unit": null,
    "kosong_menit": null,
    "muat_bsr_menit": 22.1,
    "bongkar_107_menit": 35.0,
@@ -1241,8 +1241,8 @@
    "median_km": 22.5,
    "n_lambat": 4,
    "pct_lambat": 25.0,
-   "gps_speed": 19.6,
-   "gps_pct_berhenti": 7.3,
+   "gps_speed": 19.1,
+   "gps_pct_berhenti": 7.8,
    "gps_unit": 17,
    "kosong_menit": 427.5,
    "muat_bsr_menit": 115.0,
@@ -1250,11 +1250,11 @@
    "skor": {
     "durasi": 88.0,
     "rit_lambat": 38.0,
-    "speed": 97.0,
-    "berhenti": 82.0
+    "speed": 93.0,
+    "berhenti": 80.0
    },
-   "indeks": 76,
-   "status": "Layak"
+   "indeks": 74,
+   "status": "Kurang layak"
   },
   {
    "tanggal": "2026-11-18",
@@ -1287,8 +1287,8 @@
    "median_km": 21.8,
    "n_lambat": 4,
    "pct_lambat": 10.3,
-   "gps_speed": 21.5,
-   "gps_pct_berhenti": 5.1,
+   "gps_speed": 21.1,
+   "gps_pct_berhenti": 5.2,
    "gps_unit": 33,
    "kosong_menit": 87.5,
    "muat_bsr_menit": 64.9,
@@ -1310,8 +1310,8 @@
    "median_km": 22.9,
    "n_lambat": 9,
    "pct_lambat": 37.5,
-   "gps_speed": 17.2,
-   "gps_pct_berhenti": 25.5,
+   "gps_speed": 17.8,
+   "gps_pct_berhenti": 26.5,
    "gps_unit": 19,
    "kosong_menit": 80.0,
    "muat_bsr_menit": 74.5,
@@ -1319,10 +1319,10 @@
    "skor": {
     "durasi": 86.0,
     "rit_lambat": 6.0,
-    "speed": 77.0,
-    "berhenti": 36.0
+    "speed": 82.0,
+    "berhenti": 34.0
    },
-   "indeks": 51,
+   "indeks": 52,
    "status": "Kurang layak"
   },
   {
@@ -1333,8 +1333,8 @@
    "median_km": 21.4,
    "n_lambat": 0,
    "pct_lambat": 0.0,
-   "gps_speed": 21.4,
-   "gps_pct_berhenti": 13.0,
+   "gps_speed": 20.5,
+   "gps_pct_berhenti": 14.0,
    "gps_unit": 14,
    "kosong_menit": 92.5,
    "muat_bsr_menit": 64.8,
@@ -1343,9 +1343,9 @@
     "durasi": 100.0,
     "rit_lambat": 100.0,
     "speed": 100.0,
-    "berhenti": 68.0
+    "berhenti": 65.0
    },
-   "indeks": 92,
+   "indeks": 91,
    "status": "Layak"
   },
   {
@@ -1356,8 +1356,8 @@
    "median_km": 18.9,
    "n_lambat": 8,
    "pct_lambat": 72.7,
-   "gps_speed": 14.8,
-   "gps_pct_berhenti": 30.0,
+   "gps_speed": null,
+   "gps_pct_berhenti": null,
    "gps_unit": 10,
    "kosong_menit": 715.0,
    "muat_bsr_menit": 45.0,
@@ -1365,10 +1365,10 @@
    "skor": {
     "durasi": 0.0,
     "rit_lambat": 0.0,
-    "speed": 57.0,
-    "berhenti": 25.0
+    "speed": null,
+    "berhenti": null
    },
-   "indeks": 20,
+   "indeks": 0,
    "status": "Tidak layak"
   }
  ]

@@ -58,6 +58,13 @@
   th { color: var(--pudar); font-weight: 600; font-size: 12.5px; }
   .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-weight: 700; font-size: 12px; }
   .p-LAYAK { background: var(--hijau-bg); color: #166534; } .p-KURANG { background: var(--kuning-bg); color: #92400e; } .p-TIDAK { background: var(--merah-bg); color: #991b1b; }
+  .top { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; }
+  .top .it { border: 1px solid var(--garis); border-left: 5px solid var(--merah); border-radius: 10px; padding: 8px 10px; font-size: 13px; line-height: 1.4; }
+  .top .it b { font-size: 15px; }
+  .heat { border-collapse: separate; border-spacing: 2px; font-size: 11.5px; }
+  .heat th { position: sticky; left: 0; background: #fff; color: var(--pudar); font-weight: 600; padding: 2px 6px; white-space: nowrap; text-align: right; }
+  .heat thead th { position: static; writing-mode: vertical-rl; transform: rotate(180deg); height: 54px; text-align: left; }
+  .heat td { min-width: 24px; height: 20px; text-align: center; border-radius: 3px; padding: 0 2px; border: 0; color: #111; }
   .catatan { margin-top: 12px; font-size: 13px; color: var(--pudar); line-height: 1.55; }
 
   @media (max-width: 800px) {
@@ -87,6 +94,22 @@
   <div class="status s-KOSONG" id="status"><div class="ikon">⏳</div><div><h2>Memuat...</h2></div></div>
   <div class="tiles" id="tiles"></div>
 
+  <div class="kartu" style="margin-top:12px">
+    <h3>📍 Per kilometer: di mana DT lambat & tertahan</h3>
+    <div class="ket">Jalan dipotong per 1 KM, dari BSR (STA 27) sampai 107 (STA 0). Ikut rentang tanggal yang dipilih di atas. Data GPS tiap jam, jadi 1 titik berhenti ≈ 1 jam unit tertahan.</div>
+    <div id="topKm"></div>
+  </div>
+  <div class="grid">
+    <div class="kartu lebar"><h3>⏸️ Jam unit tertahan per KM</h3>
+      <div class="ket">Mesin hidup = antre / macet / pelan merayap. Mesin mati = parkir, menginap, atau nunggu jalan bisa dilewati. Zona antre BSR, parkir, dan area 107 tidak digambar karena bukan masalah jalan</div>
+      <div class="kanvas" style="height:300px"><canvas id="cKmStop"></canvas></div></div>
+    <div class="kartu lebar"><h3>💨 Kecepatan DT per KM (km/jam)</h3>
+      <div class="ket">Rata-rata saat DT sedang jalan. Merah ≤ 13 = lambat, kuning ≤ 17 = agak pelan, hijau = lancar</div>
+      <div class="kanvas" style="height:260px"><canvas id="cKmSpeed"></canvas></div></div>
+    <div class="kartu lebar"><h3>🗓️ Kapan & di KM mana unit tertahan</h3>
+      <div class="ket">Angka = jam unit tertahan (mesin hidup + mati). Makin merah makin parah. Kosong = tidak ada unit tertahan / tidak ada data. Baris * abu-abu = zona antre/parkir</div>
+      <div class="tbl" id="heat"></div></div>
+  </div>
   <div class="grid">
     <div class="kartu lebar"><h3>Nilai jalan</h3>
       <div class="ket">Hijau = layak · Kuning = kurang layak · Merah = tidak layak · Abu-abu = tidak ada data</div>

@@ -97,7 +97,28 @@ def baca_gps_harian():
     return out
 
 
+def per_km():
+    """Per KM (STA n s/d n+1) per hari: titik GPS, jam berhenti mesin hidup/mati, speed DT jalan, unit."""
+    try:
+        jalur = ht.baca_jalur(); g = ht.proyeksi(ht.baca_gps(), jalur)
+    except SystemExit:
+        return
+    nkm = int(jalur.sta.max())
+    g["km"] = g.sta.astype(int).clip(upper=nkm - 1)
+    g["tg"] = g.waktu.dt.strftime("%Y-%m-%d")
+    hari = {}
+    for (tg, km), x in g.groupby(["tg", "km"]):
+        jalan = x[x.speed > 0]
+        hari.setdefault(tg, {})[int(km)] = [int(len(x)), int(((x.speed == 0) & x.acc).sum()), int(((x.speed == 0) & ~x.acc).sum()),
+                                            round(float(jalan.speed.sum()), 1), int(len(jalan)), sorted(x.unit.unique().tolist())]
+    km = [dict(km=k, label=f"KM {k}-{k + 1}", zona=ht.zona_bukan_jalan(k + 0.5)) for k in range(nkm)]
+    json.dump(dict(keterangan="hari[tanggal][km] = [titik GPS, jam berhenti mesin hidup, jam berhenti mesin mati, jumlah speed jalan, titik jalan, unit]",
+                   km=km, hari=hari), open(P("docs", "data", "per_km.json"), "w"), separators=(",", ":"))
+    print(f"Per KM: {len(hari)} hari x {nkm} KM")
+
+
 def main():
+    per_km()
     rit, gps = baca_rit(), baca_gps_harian()
     d = rit.merge(gps, on="tanggal", how="outer").sort_values("tanggal")
     t = KL

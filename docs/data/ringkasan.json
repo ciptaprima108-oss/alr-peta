@@ -5,8 +5,8 @@
  "n_unit": 19,
  "n_titik": 132,
  "jumlah_segmen": {
-  "kosong": 112,
-  "abu": 19,
+  "kosong": 109,
+  "abu": 22,
   "merah": 3,
   "kuning": 1
  },
@@ -69,5 +69,5 @@
  ],
  "label_trigger": "trigger",
  "label_laporan": "laporan-jalan",
- "dibuat": "2026-11-24 11:09 WIB"
+ "dibuat": "2026-11-24 11:14 WIB"
 }
