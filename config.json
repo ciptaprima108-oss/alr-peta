@@ -67,7 +67,7 @@
     }
   ],
   "kelayakan": {
-    "catatan": "Nilai 0-100 per hari = rata-rata skor yang datanya ada. >=75 Layak, 50-74 Perlu perhatian, <50 Tidak layak",
+    "catatan": "Nilai 0-100 per hari = rata-rata skor yang datanya ada. >=75 Kondisi baik, 50-74 Perlu perhatian, <50 Perlu perbaikan",
     "rit_lambat_menit": 195,
     "durasi_bagus_menit": 120,
     "durasi_jelek_menit": 300,

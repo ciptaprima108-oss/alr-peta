@@ -1,4 +1,4 @@
-"""Performa DT di jalan ALR per hari -> nilai kelayakan jalan (untuk halaman grafik).
+"""Performa DT di jalan ALR per hari -> nilai kondisi jalan (untuk halaman grafik).
 
 Sumber (semua opsional, dipakai yang ada):
   data/rit/*.csv   - per rit  : unit, berangkat, tiba, km           (export trip TrackSolid, arah muatan BSR -> 107)
@@ -137,7 +137,7 @@ def main():
         if not ada:
             continue
         idx = round(sum(ada) / len(ada)) if ada else None
-        status = None if idx is None else "Layak" if idx >= t.get("batas_layak", 75) else "Kurang layak" if idx >= t.get("batas_perhatian", 50) else "Tidak layak"
+        status = None if idx is None else "Kondisi baik" if idx >= t.get("batas_layak", 75) else "Perlu perhatian" if idx >= t.get("batas_perhatian", 50) else "Perlu perbaikan"
         f = lambda v, k=1: None if v is None or pd.isna(v) else round(float(v), k)
         baris.append(dict(tanggal=r.tanggal.strftime("%Y-%m-%d"), n_trip=None if n is None or pd.isna(n) else int(n),
                           median_menit=f(r.get("median_menit")), p90_menit=f(r.get("p90_menit")), median_km=f(r.get("median_km")),

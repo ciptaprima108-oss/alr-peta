@@ -1,4 +1,4 @@
-// Halaman Kondisi Jalan ALR: nilai kelayakan dari performa DT, filter rentang tanggal, per hari/minggu/bulan
+// Halaman Kondisi Jalan ALR: nilai kondisi jalan dari performa DT, filter rentang tanggal, per hari/minggu/bulan
 (function () {
   const $ = (id) => document.getElementById(id);
   const WARNA = { LAYAK: "#2E7D32", KURANG: "#D98200", TIDAK: "#C8321F", KOSONG: "#DDE1DA" };
@@ -19,7 +19,8 @@
   const rata = (a) => { const v = a.filter((x) => x != null); return v.length ? v.reduce((s, x) => s + x, 0) / v.length : null; };
   const rataBobot = (a, w) => { let s = 0, n = 0; a.forEach((x, i) => { if (x != null && w[i]) { s += x * w[i]; n += w[i]; } }); return n ? s / n : rata(a); };
   const kodeStatus = (i) => i == null ? "KOSONG" : i >= (KL.batas_layak ?? 75) ? "LAYAK" : i >= (KL.batas_perhatian ?? 50) ? "KURANG" : "TIDAK";
-  const NAMA = { LAYAK: "LAYAK", KURANG: "KURANG LAYAK", TIDAK: "TIDAK LAYAK", KOSONG: "Tidak ada data" };
+  const NAMA = { LAYAK: "Kondisi baik", KURANG: "Perlu perhatian", TIDAK: "Perlu perbaikan", KOSONG: "Tidak ada data" };
+  const JUDUL = { LAYAK: "Jalan ALR dalam kondisi baik", KURANG: "Jalan ALR perlu perhatian", TIDAK: "Jalan ALR perlu perbaikan", KOSONG: "Belum ada data jalan ALR" };
   const IKON = { LAYAK: "✅", KURANG: "⚠️", TIDAK: "⛔", KOSONG: "📭" };
 
   // ringkas sekumpulan hari (yang ada datanya) jadi satu angka per ukuran
@@ -99,7 +100,7 @@
     const P = periode(dari, sampai), L = P.map((p) => p.label), J = P.map((p) => p.judul), n = P.length;
 
     const o = opsi("", { max: 100 });
-    o.plugins.tooltip.callbacks.label = (c) => { const r = P[c.dataIndex].r; return r ? ` Nilai ${r.nilai} · ${NAMA[r.kode]}` : " Tidak ada data (belum diupload)"; };
+    o.plugins.tooltip.callbacks.label = (c) => { const r = P[c.dataIndex].r; return r ? ` Nilai ${r.nilai}, ${NAMA[r.kode].toLowerCase()}` : " Tidak ada data (belum diupload)"; };
     buat("cNilai", { labels: L, datasets: [batang("Nilai", P.map((p) => p.r ? p.r.nilai : 100), P.map((p) => WARNA[p.r ? p.r.kode : "KOSONG"])),
       target(n, KL.batas_layak ?? 75)] }, o, J);
     const TAHAP = [["Kosongan 107 → BSR", "kosong", "#2a78d6"], ["Antre & muat di BSR", "muatBsr", "#eb6834"],
@@ -227,7 +228,7 @@
     let arah = "";
     if (prev && prev.nilai != null) arah = r.nilai > prev.nilai + 2 ? `Lebih baik dari ${panjang} hari sebelumnya (nilai ${prev.nilai}).` : r.nilai < prev.nilai - 2 ? `Lebih buruk dari ${panjang} hari sebelumnya (nilai ${prev.nilai}).` : `Sama seperti ${panjang} hari sebelumnya.`;
     el.className = `status s-${r.kode}`;
-    el.innerHTML = `<div class="ikon">${IKON[r.kode]}</div><div><h2>Jalan ALR ${NAMA[r.kode].toLowerCase()}</h2>
+    el.innerHTML = `<div class="ikon">${IKON[r.kode]}</div><div><h2>${JUDUL[r.kode]}</h2>
       <div class="nilai">Nilai ${r.nilai} dari 100, ${rentangTeks}${r.hariData < panjang ? `, data ada ${r.hariData} dari ${panjang} hari` : ""}</div>
       <p>${kal.join(" ")} ${arah}</p></div>`;
     const t = (k, v, b) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="b">${b}</div></div>`;
@@ -255,7 +256,7 @@
     awalData = tgl(d.hari[0].tanggal); akhirData = tgl(d.hari[d.hari.length - 1].tanggal);
     $("dari").min = $("sampai").min = iso(awalData); $("dari").max = $("sampai").max = iso(akhirData);
     $("catatan").innerHTML = `<b>Cara baca nilai:</b> tiap hari diberi nilai 0-100 dari kerja DT: makin cepat 1 rit, makin sedikit rit telat,
-      makin kencang DT jalan, dan makin jarang DT berhenti di jalan, nilainya makin tinggi. Nilai 75 ke atas = <b>layak</b>, 50-74 = <b>kurang layak</b>, di bawah 50 = <b>tidak layak</b>.
+      makin kencang DT jalan, dan makin jarang DT berhenti di jalan, nilainya makin tinggi. Nilai 75 ke atas = <b>kondisi baik</b>, 50-74 = <b>perlu perhatian</b>, di bawah 50 = <b>perlu perbaikan</b>.
       Data tersedia ${fmtPanjang(awalData)} - ${fmtPanjang(akhirData)}. Pilihan "7 hari / 30 hari / 3 bulan" dihitung mundur dari tanggal data terakhir.`;
     document.querySelector('[data-p="semua"]').click();
   }).catch((e) => { $("status").innerHTML = `<div class="ikon">⚠️</div><div><h2>Gagal memuat data</h2><p>${e.message}</p></div>`; });
