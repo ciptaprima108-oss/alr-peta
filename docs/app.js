@@ -11,7 +11,10 @@
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
   // ---------- peta dasar ----------
-  const map = L.map("map", { zoomControl: true });
+  // scroll mouse dipakai untuk menggulir halaman; zoom peta pakai tombol +/- atau klik peta dulu
+  const map = L.map("map", { zoomControl: true, scrollWheelZoom: false });
+  map.on("click", () => map.scrollWheelZoom.enable());
+  map.on("mouseout", () => map.scrollWheelZoom.disable());
   const satelit = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", { maxZoom: 19, attribution: "Citra © Esri" });
   const jalanOSM = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap" });
   satelit.addTo(map);

@@ -1,6 +1,8 @@
 /* Halaman peta. Warna & huruf dari tema.css */
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; font-family: var(--isi); color: var(--tinta); background: var(--debu); font-size: 16px; }
+html { scroll-behavior: smooth; }
+html, body { overflow-x: hidden; }
+body { margin: 0; font-family: var(--isi); color: var(--tinta); background: var(--debu); font-size: 16px; }
 a { color: inherit; }
 :focus-visible { outline: 3px solid var(--kuning); outline-offset: 2px; }
 
@@ -12,9 +14,9 @@ a { color: inherit; }
 button { font: inherit; border: 0; cursor: pointer; }
 .badge { display: inline-block; min-width: 26px; padding: 0 7px; border-radius: 13px; background: #fff; color: var(--merah); font: 700 16px/26px var(--isi); text-align: center; }
 
-main { position: absolute; top: 73px; bottom: 0; left: 0; right: 0; display: flex; }
+main { position: relative; height: calc(100vh - 73px - 84px); min-height: 460px; display: flex; border-bottom: 5px solid var(--aspal); }
 #map { flex: 1; background: #3B413C; }
-#panel { width: 400px; overflow-y: auto; background: var(--debu); border-left: 1px solid var(--garis); padding: 12px; }
+#panel { width: 400px; overflow-y: auto; overscroll-behavior: contain; background: var(--debu); border-left: 1px solid var(--garis); padding: 12px; }
 #panel section { background: var(--kertas); border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: var(--bayang); }
 #panel h3 { margin: 0 0 6px; font: 700 24px/1.1 var(--judul); display: flex; align-items: center; gap: 10px; }
 #panel h3 .tgb { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; font-size: 22px; flex-shrink: 0; }
@@ -75,7 +77,7 @@ button.link { background: none; padding: 0; color: var(--tinta); text-decoration
 @media (prefers-reduced-motion: reduce) { .kedip { animation: none; } }
 
 @media (max-width: 760px) {
-  main { top: 65px; bottom: 78px; }
+  main { height: 62vh; min-height: 380px; }
   .teks-hp { display: none; }
   .appbar .tombol { gap: 6px; }
   .appbar .tombol button { height: 42px; padding: 0 11px; }
@@ -87,3 +89,5 @@ button.link { background: none; padding: 0; color: var(--tinta); text-decoration
   .legend .lengkap { display: none; }
   .legend.buka .lengkap { display: block; }
 }
+.kondisi .pembuka { margin: 6px 0 16px; }
+.kondisi .pembuka h2 { font-size: 36px; }
