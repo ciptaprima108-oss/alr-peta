@@ -27,6 +27,8 @@
     const nt = a.map((x) => x.n_trip), rit = nt.reduce((s, x) => s + (x || 0), 0), telat = a.reduce((s, x) => s + (x.n_lambat || 0), 0);
     const nilai = rata(a.map((x) => x.indeks));
     return { hariData: a.length, rit: rit || null, waktu: rataBobot(a.map((x) => x.median_menit), nt), pctTelat: rit ? telat / rit * 100 : null,
+      kosong: rataBobot(a.map((x) => x.kosong_menit), nt), muatBsr: rataBobot(a.map((x) => x.muat_bsr_menit), nt),
+      bongkar: rataBobot(a.map((x) => x.bongkar_107_menit), nt),
       speed: rata(a.map((x) => x.gps_speed)), berhenti: rata(a.map((x) => x.gps_pct_berhenti)), nilai: nilai == null ? null : Math.round(nilai), kode: kodeStatus(nilai) };
   }
 
@@ -98,6 +100,18 @@
     o.plugins.tooltip.callbacks.label = (c) => { const r = P[c.dataIndex].r; return r ? ` Nilai ${r.nilai} · ${NAMA[r.kode]}` : " Tidak ada data (belum diupload)"; };
     buat("cNilai", { labels: L, datasets: [batang("Nilai", P.map((p) => p.r ? p.r.nilai : 100), P.map((p) => WARNA[p.r ? p.r.kode : "KOSONG"])),
       target(n, KL.batas_layak ?? 75)] }, o, J);
+    const TAHAP = [["Kosongan 107 → BSR", "kosong", "#2a78d6"], ["Antre & muat di BSR", "muatBsr", "#eb6834"],
+                   ["Muatan BSR → 107", "waktu", "#1baf7a"], ["Bongkar di 107", "bongkar", "#eda100"]];
+    const adaTahap = TAHAP.filter(([, k]) => P.some((p) => p.r && p.r[k] != null));
+    const oS = opsi("jam"); oS.scales.x.stacked = oS.scales.y.stacked = true;
+    oS.plugins.legend = { display: true, position: "top", align: "start", labels: { boxWidth: 12, boxHeight: 12, color: "#334155" } };
+    oS.plugins.tooltip.callbacks.label = (c) => c.parsed.y == null ? null : ` ${c.dataset.label}: ${jamMenit(c.parsed.y * 60)}`;
+    oS.plugins.tooltip.callbacks.footer = (items) => { const t = items.reduce((s, i) => s + (i.parsed.y || 0), 0); return t ? `Total 1 rit: ${jamMenit(t * 60)}` : "Tidak ada data"; };
+    buat("cSiklus", { labels: L, datasets: adaTahap.map(([nama, k, w]) => ({ type: "bar", label: nama, data: P.map((p) => p.r && p.r[k] != null ? s1(p.r[k] / 60) : null),
+      backgroundColor: w, borderColor: "#ffffff", borderWidth: { top: 2 }, borderSkipped: false, maxBarThickness: 34 })) }, oS, J);
+    const hilang = TAHAP.filter((t) => !adaTahap.includes(t)).map(([nama]) => nama.toLowerCase());
+    $("infoSiklus").hidden = !hilang.length;
+    $("infoSiklus").innerHTML = hilang.length ? `ℹ️ Waktu ${hilang.join(" dan ")} belum bisa dihitung: jam keluar/masuk di data trip belum terbaca.` : "";
     buat("cWaktu", { labels: L, datasets: [garis("Waktu 1 rit", P.map((p) => p.r && s1(p.r.waktu / 60))), target(n, s1((KL.durasi_bagus_menit ?? 120) / 60))] }, opsi("jam"), J);
     buat("cTelat", { labels: L, datasets: [batang("Rit telat", P.map((p) => p.r && s1(p.r.pctTelat)), BIRU)] }, opsi("%"), J);
     buat("cRit", { labels: L, datasets: [batang("Jumlah rit", P.map((p) => p.r && p.r.rit), BIRU)] }, opsi("rit"), J);
