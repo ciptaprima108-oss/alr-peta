@@ -7,8 +7,12 @@ GitHub Actions supaya repo tidak membengkak.
 
 Kunci API diambil dari GitHub Secrets (jangan pernah ditulis di repo):
   TS_APP_KEY, TS_APP_SECRET   dari Jimi / dealer TrackSolid (menu Open API)
-  TS_USER, TS_PASS            akun login TrackSolid Pro
+  TS_USER + TS_PASS_MD5       akun 1 TrackSolid Pro (atau TS_PASS polos)
+  TS2_USER + TS2_PASS_MD5     akun 2 (opsional)
   TS_URL (opsional)           default https://hk-open.tracksolidpro.com/route/rest
+  TS_MAPPING_CSV (opsional)   link CSV tab TRACKSOLID MAPPING (IMEI -> No Lambung)
+Nilai-nilai ini sama dengan Script Properties di Apps Script "Tracking GPS WHL"
+(TS_APP_KEY, TS_APP_SECRET, TS_ACCOUNT, TS_USER_PWD_MD5, TS2_ACCOUNT, TS2_USER_PWD_MD5).
 
 Isi file:
   - 3 hari terakhir: semua titik, maks 1 titik / menit / unit
@@ -27,7 +31,20 @@ OUT = P("data", "gps", "live_tracksolid.csv")
 ZONA = timezone(timedelta(hours=CFG.get("zona_jam", 7)))       # WIB
 URL = os.environ.get("TS_URL") or CFG.get("url", "https://hk-open.tracksolidpro.com/route/rest")
 KEY, SECRET = os.environ.get("TS_APP_KEY", ""), os.environ.get("TS_APP_SECRET", "")
-USER, PASS = os.environ.get("TS_USER", ""), os.environ.get("TS_PASS", "")
+
+def akun_dari_env():
+    """Akun 1 = TS_*, akun 2 (opsional) = TS2_*. Password boleh polos (TS_PASS) atau MD5 (TS_PASS_MD5)."""
+    out = []
+    for pf in ("TS", "TS2"):
+        u = os.environ.get(pf + "_USER", "")
+        md5 = os.environ.get(pf + "_PASS_MD5", "") or (hashlib.md5(os.environ[pf + "_PASS"].encode()).hexdigest()
+                                                       if os.environ.get(pf + "_PASS") else "")
+        if u and md5:
+            out.append((u, md5.lower()))
+    return out
+
+
+AKUN = akun_dari_env()
 
 
 def keluar(lanjut, pesan):
@@ -38,7 +55,7 @@ def keluar(lanjut, pesan):
 
 
 def panggil(method, **p):
-    p.update(method=method, app_key=KEY, sign_method="md5", v="0.9", format="json",
+    p.update(method=method, app_key=KEY, sign_method="md5", v="1.0", format="json",
              timestamp=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"))
     p = {k: str(v) for k, v in p.items() if v is not None}
     s = SECRET + "".join(k + p[k] for k in sorted(p)) + SECRET
@@ -64,6 +81,22 @@ def koridor():
     return j.lat.min() - m, j.lat.max() + m, j.lon.min() - m, j.lon.max() + m
 
 
+def baca_mapping():
+    """IMEI -> No Lambung dari tab TRACKSOLID MAPPING (sheet sama dgn Apps Script). URL CSV di secret TS_MAPPING_CSV."""
+    url = os.environ.get("TS_MAPPING_CSV", "")
+    if not url:
+        return {}
+    try:
+        with urllib.request.urlopen(url, timeout=60) as r:
+            rows = list(csv.reader(r.read().decode("utf-8-sig").splitlines()))
+        h = [c.strip().lower() for c in rows[0]]
+        iu, ii = h.index("no lambung whl"), h.index("imei")
+        m = {r[ii].strip(): r[iu].strip() for r in rows[1:] if len(r) > max(iu, ii) and r[iu].strip()}
+        print(f"mapping No Lambung: {len(m)} unit"); return m
+    except Exception as ex:
+        print(f"  mapping gagal dibaca ({ex}), pakai nama device"); return {}
+
+
 def ke_lokal(t):
     """Waktu dari API (UTC) -> string waktu lokal WIB."""
     d = datetime.strptime(str(t)[:19], "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
@@ -76,9 +109,9 @@ def angka(x, d=0.0):
 
 
 def main():
-    if not all([KEY, SECRET, USER, PASS]):
+    if not (KEY and SECRET and AKUN):
         keluar(os.environ.get("GITHUB_EVENT_NAME") != "schedule",
-               "Kunci TrackSolid belum diisi di GitHub Secrets (TS_APP_KEY, TS_APP_SECRET, TS_USER, TS_PASS). Lewati.")
+               "Kunci TrackSolid belum diisi di GitHub Secrets (TS_APP_KEY, TS_APP_SECRET, TS_USER, TS_PASS/TS_PASS_MD5). Lewati.")
 
     lama = pd.read_csv(OUT, dtype=str) if os.path.exists(OUT) else pd.DataFrame(columns=["unit", "waktu", "lat", "lon", "speed", "acc"])
     sekarang = datetime.now(timezone.utc)
@@ -88,31 +121,44 @@ def main():
     else:
         mulai = sekarang - timedelta(hours=CFG.get("tarik_awal_jam", 24))
 
-    tok = panggil("jimi.oauth.token.get", user_id=USER, user_pwd_md5=hashlib.md5(PASS.encode()).hexdigest(),
-                  expires_in=7200)["accessToken"]
-    target = os.environ.get("TS_TARGET") or USER
-    alat = panggil("jimi.user.device.list", access_token=tok, target=target) or []
+    peta_nama = baca_mapping()
     awalan = CFG.get("filter_nama", "")
-    nama = {}
-    for a in alat:
-        n = (a.get("deviceName") or a.get("vehicleNumber") or a.get("imei") or "").strip()
-        if not awalan or n.upper().startswith(awalan.upper()):
-            nama[a["imei"]] = n
-    print(f"{len(nama)} unit dari {len(alat)} alat di akun")
+    sesi, nama = [], {}                     # sesi = [(token, akun)], nama = imei -> (No Lambung, token)
+    for user, md5 in AKUN:
+        try:
+            tok = panggil("jimi.oauth.token.get", user_id=user, user_pwd_md5=md5, expires_in=7200)["accessToken"]
+        except Exception as ex:
+            print(f"  login akun gagal: {ex}"); continue
+        sesi.append((tok, user))
+        alat = panggil("jimi.user.device.list", access_token=tok, target=user) or []
+        for a in alat:
+            imei = str(a.get("imei"))
+            n = peta_nama.get(imei) or (a.get("deviceName") or a.get("vehicleNumber") or imei).strip()
+            if (not awalan or n.upper().startswith(awalan.upper())) and imei not in nama:
+                nama[imei] = (n, tok)
+        print(f"akun {len(sesi)}: {len(alat)} alat")
+    if not sesi:
+        raise SystemExit("Semua login TrackSolid gagal")
+    print(f"{len(nama)} unit dipakai")
 
     la0, la1, lo0, lo1 = koridor()
     baru = []
 
     # 1) posisi terakhir semua unit (1 panggilan) - cadangan kalau riwayat gagal
-    for x in panggil("jimi.user.device.location.list", access_token=tok, target=target, map_type="GOOGLE") or []:
-        if x.get("imei") in nama and x.get("gpsTime"):
-            baru.append([nama[x["imei"]], ke_lokal(x["gpsTime"]), angka(x.get("lat")), angka(x.get("lng")),
+    lokasi = []
+    for tok, user in sesi:
+        try: lokasi += panggil("jimi.user.device.location.list", access_token=tok, target=user, map_type="GOOGLE") or []
+        except Exception as ex: print(f"  posisi terakhir gagal: {ex}")
+    for x in lokasi:
+        x["imei"] = str(x.get("imei"))
+        if x["imei"] in nama and x.get("gpsTime"):
+            baru.append([nama[x["imei"]][0], ke_lokal(x["gpsTime"]), angka(x.get("lat")), angka(x.get("lng")),
                          angka(x.get("speed")), "ON" if str(x.get("accStatus")) == "1" else "OFF"])
 
     # 2) riwayat jalan tiap unit sejak tarikan terakhir (titik rapat, buat deteksi melambat)
     b, e = mulai.strftime("%Y-%m-%d %H:%M:%S"), sekarang.strftime("%Y-%m-%d %H:%M:%S")
     gagal = 0
-    for imei, n in nama.items():
+    for imei, (n, tok) in nama.items():
         try:
             for x in panggil("jimi.device.track.list", access_token=tok, imei=imei,
                              begin_time=b, end_time=e, map_type="GOOGLE") or []:

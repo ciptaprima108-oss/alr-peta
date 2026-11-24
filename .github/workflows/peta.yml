@@ -47,8 +47,11 @@ jobs:
           TS_APP_SECRET: ${{ secrets.TS_APP_SECRET }}
           TS_USER: ${{ secrets.TS_USER }}
           TS_PASS: ${{ secrets.TS_PASS }}
+          TS_PASS_MD5: ${{ secrets.TS_PASS_MD5 }}
+          TS2_USER: ${{ secrets.TS2_USER }}
+          TS2_PASS_MD5: ${{ secrets.TS2_PASS_MD5 }}
           TS_URL: ${{ secrets.TS_URL }}
-          TS_TARGET: ${{ secrets.TS_TARGET }}
+          TS_MAPPING_CSV: ${{ secrets.TS_MAPPING_CSV }}
         run: python scripts/tarik_tracksolid.py
 
       - name: Simpan data GPS live
