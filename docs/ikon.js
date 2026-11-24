@@ -19,7 +19,7 @@
     s("kalender", '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>'),
     s("info", '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>'),
     s("daftar", '<path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/>'),
-    s("naik", '<path d="m6 15 6-6 6 6"/>'), s("turun", '<path d="m6 9 6 6 6-6"/>'),
+    s("kiri", '<path d="M15 6l-6 6 6 6"/>'), s("naik", '<path d="m6 15 6-6 6 6"/>'), s("turun", '<path d="m6 9 6 6 6-6"/>'),
   ].join("");
   const d = document.createElement("div");
   d.style.display = "none";

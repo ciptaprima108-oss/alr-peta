@@ -49,6 +49,7 @@
   .jalur .judul-bagian h2 { color: #fff; } .jalur .judul-bagian p { color: #C3C9C3; max-width: 90ch; }
   .gulir { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 14px; }
   #strip { width: 100%; min-width: 820px; height: auto; display: block; }
+  #stripHp { display: none; }
   #strip text { font-family: var(--judul); }
   .top { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-top: 16px; }
   .top .it { background: var(--aspal2); border-radius: 12px; padding: 14px 16px; font-size: 15.5px; line-height: 1.5; color: #DCE0DC; }
@@ -113,3 +114,24 @@
     .judul-bagian .gb { width: 46px; height: 46px; font-size: 26px; }
   }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* keterangan warna pita */
+.leg-strip { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 14px; font-size: 16px; color: #E3E6E1; }
+.leg-strip span { display: inline-flex; align-items: center; gap: 8px; }
+.leg-strip i { width: 26px; height: 18px; border-radius: 4px; display: inline-block; }
+.leg-strip .h, .sel.h { background: #3FA34D; } .leg-strip .k, .sel.k { background: #F2B705; } .leg-strip .m, .sel.m { background: #E5341F; }
+.leg-strip .z, .sel.z { background: repeating-linear-gradient(45deg, #454B4D 0 5px, #7A8183 5px 7px); }
+/* pita versi HP: tegak */
+.sh-kepala, .sh-baris { display: grid; grid-template-columns: 92px 1fr 1fr; gap: 6px; align-items: center; }
+.sh-kepala { position: sticky; top: 0; background: var(--aspal); padding: 6px 0; z-index: 2; font: 700 17px/1.15 var(--judul); color: #fff; text-align: center; }
+.sh-kepala small { font: 500 14px var(--isi); color: var(--kuning); }
+.sh-baris { margin-top: 5px; }
+.sh-km { font: 700 18px var(--judul); color: #fff; }
+.sel { display: block; text-align: center; border-radius: 6px; padding: 8px 4px; font: 700 17px var(--judul); color: #fff; }
+.sel.k { color: #23282A; } .sel.z { color: #E3E6E1; font-weight: 600; }
+.sh-ujung { margin: 8px 0 2px; font: 700 18px var(--judul); color: var(--kuning); }
+@media (max-width: 640px) {
+  .gulir { display: none; }
+  #stripHp { display: block; margin-top: 14px; }
+  .leg-strip { font-size: 15px; gap: 8px 16px; }
+}

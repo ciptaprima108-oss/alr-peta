@@ -91,3 +91,37 @@ button.link { background: none; padding: 0; color: var(--tinta); text-decoration
 }
 .kondisi .pembuka { margin: 6px 0 16px; }
 .kondisi .pembuka h2 { font-size: 36px; }
+
+/* layar Pengawas: layar penuh di HP, kotak di tengah di laptop */
+body.terkunci { overflow: hidden; }
+.layar { position: fixed; inset: 0; z-index: 3000; background: rgba(20,25,26,.55); display: flex; justify-content: center; align-items: flex-start; padding: 40px 16px; overflow-y: auto; }
+.layar[hidden] { display: none !important; }
+.layar-isi { background: var(--debu); width: 100%; max-width: 640px; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,.35); }
+.layar-atas { background: var(--aspal); border-bottom: 5px solid var(--kuning); padding: 10px 12px; }
+.kembali { display: inline-flex; align-items: center; gap: 6px; background: var(--aspal2); color: #fff; font: 600 17px var(--isi); padding: 10px 16px 10px 10px; border-radius: 10px; }
+.kembali .ik { font-size: 24px; }
+.layar-badan { padding: 20px; }
+.lp-kepala { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px; }
+.lp-gb { width: 56px; height: 56px; border-radius: 14px; background: var(--biru-muda); color: var(--biru); display: grid; place-items: center; font-size: 32px; flex-shrink: 0; }
+.lp-kepala h2 { margin: 0; font: 700 32px/1.05 var(--judul); }
+.lp-kepala p { margin: 4px 0 0; font-size: 16.5px; color: var(--pudar); line-height: 1.5; }
+.kartu-p-daftar { display: grid; gap: 10px; }
+.kartu-p { background: var(--kertas); border-radius: 14px; padding: 14px; display: flex; align-items: center; gap: 14px; box-shadow: var(--bayang); }
+.kartu-p .foto { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; flex-shrink: 0; background: var(--kuning); border: 3px solid var(--kuning); }
+.kartu-p .inisial { display: grid; place-items: center; font: 700 30px var(--judul); color: var(--aspal); }
+.kartu-p .info { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.kartu-p b { font: 700 24px/1.1 var(--judul); }
+.kartu-p .jab { display: inline-block; align-self: flex-start; margin-top: 4px; background: var(--kuning-muda); color: #7A5600; font: 700 14px var(--isi); padding: 2px 10px; border-radius: 999px; }
+.kartu-p .akun { font-size: 15px; color: var(--pudar); margin-top: 3px; }
+.kartu-p .hapus { background: var(--merah-muda); color: #8E2416; font: 700 15px var(--isi); padding: 10px 14px; border-radius: 10px; }
+.kotak-admin { margin-top: 18px; background: var(--kertas); border-radius: 14px; padding: 16px; box-shadow: var(--bayang); }
+.kotak-admin h3 { margin: 0 0 4px; font: 700 24px var(--judul); display: flex; align-items: center; gap: 8px; }
+.kotak-admin h3 .ik { color: var(--biru); }
+.kotak-admin a { color: var(--biru); font-weight: 700; }
+#adminAktif { margin-top: 6px; font-size: 16px; }
+@media (max-width: 760px) {
+  .layar { padding: 0; background: var(--debu); }
+  .layar-isi { border-radius: 0; max-width: none; min-height: 100%; box-shadow: none; }
+  .layar-atas { position: sticky; top: 0; z-index: 2; }
+  .layar-badan { padding: 16px 14px 40px; }
+}

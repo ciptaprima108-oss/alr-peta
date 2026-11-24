@@ -208,33 +208,44 @@
 
   // pita jalur BSR (kiri) -> 107 (kanan), dua lajur: atas muatan (BSR -> 107), bawah kosongan (107 -> BSR)
   function strip(urut, totM, totK, totSemua) {
-    const n = urut.length, x0 = 44, x1 = 956, w = (x1 - x0) / n, hgt = 26;
-    const lajur = totM ? [{ tot: totM, y: 38, nama: "Muatan", ke: 1 }, { tot: totK, y: 38 + hgt + 6, nama: "Kosongan", ke: -1 }] : [{ tot: totSemua, y: 38, nama: "Semua", ke: 1 }];
+    const L2 = totM ? [{ tot: totM, nama: "muatan" }, { tot: totK, nama: "kosongan" }] : [{ tot: totSemua, nama: "semua" }];
     const jamOf = (t, k) => k.zona ? 0 : t[k.km][1] + t[k.km][2];
-    const maks = Math.max(4, ...lajur.flatMap((l) => urut.map((k) => jamOf(l.tot, k))));
-    const isi = (k, j) => k.zona ? "url(#arsir)" : !j ? "#3B413C" : `rgba(242,${Math.round(183 - 150 * Math.min(1, j / maks))},${Math.round(5 + 26 * Math.min(1, j / maks))},${0.35 + 0.65 * Math.min(1, j / maks)})`;
-    let g = `<defs><pattern id="arsir" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#3B413C"/><line x1="0" y1="0" x2="0" y2="6" stroke="#6B726C" stroke-width="2"/></pattern>
-      <marker id="panah" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#B8BFB7"/></marker></defs>`;
-    const yb = lajur[lajur.length - 1].y + hgt;                     // bawah jalan
-    lajur.forEach((l) => urut.forEach((k, i) => {
-      const x = x0 + i * w, j = jamOf(l.tot, k);
-      g += `<rect x="${x + 1}" y="${l.y}" width="${w - 2}" height="${hgt}" rx="2" fill="${isi(k, j)}"><title>${k.label}, arah ${l.nama.toLowerCase()}${k.zona ? ", " + k.zona.toLowerCase() : ""}: ${k.zona ? "tidak dihitung" : j + " jam unit tertahan"}</title></rect>`;
-      if (!k.zona && j >= maks * 0.45) g += `<text x="${x + w / 2}" y="${l.y + hgt / 2 + 5}" text-anchor="middle" font-size="13" font-weight="700" fill="#1E2320" pointer-events="none">${j}</text>`;
+    const maks = Math.max(6, ...L2.flatMap((l) => urut.map((k) => jamOf(l.tot, k))));
+    // tiga warna tegas: hijau sedikit tertahan, kuning sedang, merah lama
+    const kelas = (k, j) => k.zona ? "z" : j >= maks * 0.6 ? "m" : j >= maks * 0.25 ? "k" : "h";
+    const WK = { h: "#3FA34D", k: "#F2B705", m: "#E5341F" }, TK = { h: "#fff", k: "#23282A", m: "#fff" };
+    const judul = (k, l, j) => `${k.label}, jalur ${l.nama}${k.zona ? ", " + k.zona.toLowerCase() + " (tidak dihitung)" : ": " + j + " jam unit tertahan"}`;
+    // --- laptop: pita mendatar dua lajur ---
+    const n = urut.length, x0 = 50, x1 = 950, w = (x1 - x0) / n, hgt = 34, yA = 58, yB = yA + hgt + 6;
+    let g = `<defs><pattern id="arsir" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#454B4D"/><line x1="0" y1="0" x2="0" y2="7" stroke="#7A8183" stroke-width="2.5"/></pattern>
+      <marker id="panah" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#F2B705"/></marker></defs>`;
+    const lajurY = L2.length > 1 ? [yA, yB] : [yA];
+    L2.forEach((l, li) => urut.forEach((k, i) => {
+      const x = x0 + i * w, j = jamOf(l.tot, k), c = kelas(k, j), y = lajurY[li];
+      g += `<rect x="${x + 1.5}" y="${y}" width="${w - 3}" height="${hgt}" rx="3" fill="${c === "z" ? "url(#arsir)" : WK[c]}"><title>${judul(k, l, j)}</title></rect>`;
+      if (c !== "z" && j > 0) g += `<text x="${x + w / 2}" y="${y + hgt / 2 + 5}" text-anchor="middle" font-size="${j >= 100 ? 13 : 15}" font-weight="700" fill="${TK[c]}" pointer-events="none">${j}</text>`;
     }));
-    if (lajur.length > 1) g += `<line x1="${x0}" y1="${38 + hgt + 3}" x2="${x1}" y2="${38 + hgt + 3}" stroke="#F2B705" stroke-width="2" stroke-dasharray="12 8"/>`;
+    const yb = lajurY[lajurY.length - 1] + hgt;
+    if (L2.length > 1) g += `<line x1="${x0}" y1="${yA + hgt + 3}" x2="${x1}" y2="${yA + hgt + 3}" stroke="#F2B705" stroke-width="2.5" stroke-dasharray="12 8"/>`;
     urut.forEach((k, i) => {
       const x = x0 + i * w, sta = k.km + 1;
-      g += `<line x1="${x}" y1="${yb + 4}" x2="${x}" y2="${yb + (sta % 5 === 0 || i === 0 ? 14 : 9)}" stroke="#B8BFB7" stroke-width="1.5"/>`;
-      if (sta % 5 === 0 || i === 0) g += `<text x="${x}" y="${yb + 28}" text-anchor="middle" font-size="13" fill="#D7DCD5">STA ${sta}</text>`;
+      g += `<line x1="${x}" y1="${yA - 4}" x2="${x}" y2="${yA - (sta % 5 === 0 || i === 0 ? 12 : 7)}" stroke="#B8BFB7" stroke-width="1.5"/>`;
+      if (sta % 5 === 0 || i === 0) g += `<text x="${x}" y="${yA - 16}" text-anchor="middle" font-size="14" fill="#D7DCD5">STA ${sta}</text>`;
     });
-    g += `<text x="${x1}" y="${yb + 28}" text-anchor="middle" font-size="13" fill="#D7DCD5">STA 0</text>`;
-    const ym = (lajur[0].y + yb) / 2;
-    g += `<text x="${x0 - 8}" y="${ym + 6}" text-anchor="end" font-size="17" font-weight="700" fill="#F2B705">BSR</text>`;
-    g += `<text x="${x1 + 8}" y="${ym + 6}" font-size="17" font-weight="700" fill="#F2B705">107</text>`;
-    g += `<text x="${x0}" y="22" font-size="13" fill="#B8BFB7">${lajur.length > 1 ? "Lajur atas: muatan" : "Arah muatan"}</text><line x1="${x0 + 118}" y1="18" x2="${x0 + 180}" y2="18" stroke="#B8BFB7" stroke-width="1.5" marker-end="url(#panah)"/>`;
-    if (lajur.length > 1) g += `<line x1="${x1 - 168}" y1="18" x2="${x1 - 230}" y2="18" stroke="#B8BFB7" stroke-width="1.5" marker-end="url(#panah)"/><text x="${x1}" y="22" text-anchor="end" font-size="13" fill="#B8BFB7">Lajur bawah: kosongan</text>`;
-    $("strip").setAttribute("viewBox", `0 0 1000 ${yb + 36}`);
+    g += `<text x="${x1}" y="${yA - 16}" text-anchor="middle" font-size="14" fill="#D7DCD5">STA 0</text>`;
+    const ym = (yA + yb) / 2;
+    g += `<text x="${x0 - 8}" y="${ym + 7}" text-anchor="end" font-size="20" font-weight="700" fill="#F2B705">BSR</text><text x="${x1 + 8}" y="${ym + 7}" font-size="20" font-weight="700" fill="#F2B705">107</text>`;
+    g += `<text x="${x0}" y="18" font-size="17" font-weight="700" fill="#fff">JALUR MUATAN</text><text x="${x0 + 122}" y="18" font-size="15" fill="#C3C9C3">BSR ke 107</text><line x1="${x0 + 205}" y1="13" x2="${x0 + 290}" y2="13" stroke="#F2B705" stroke-width="3" marker-end="url(#panah)"/>`;
+    if (L2.length > 1) g += `<line x1="${x1 - 238}" y1="${yb + 23}" x2="${x1 - 323}" y2="${yb + 23}" stroke="#F2B705" stroke-width="3" marker-end="url(#panah)"/><text x="${x1 - 140}" y="${yb + 28}" text-anchor="end" font-size="15" fill="#C3C9C3">107 ke BSR</text><text x="${x1}" y="${yb + 28}" text-anchor="end" font-size="17" font-weight="700" fill="#fff">JALUR KOSONGAN</text>`;
+    $("strip").setAttribute("viewBox", `0 0 1000 ${yb + (L2.length > 1 ? 40 : 10)}`);
     $("strip").innerHTML = g;
+    // --- HP: daftar tegak, satu baris per KM ---
+    const sel = (k, l) => { const j = jamOf(l.tot, k), c = kelas(k, j);
+      return `<span class="sel ${c}" title="${judul(k, l, j)}">${c === "z" ? "parkir" : j ? j + " jam" : "lancar"}</span>`; };
+    $("stripHp").innerHTML = `<div class="sh-kepala"><span></span>${L2.map((l) => l.nama === "muatan" ? `<span>Jalur muatan<br><small>BSR ke 107 ↓</small></span>` : l.nama === "kosongan" ? `<span>Jalur kosongan<br><small>107 ke BSR ↑</small></span>` : `<span>Semua</span>`).join("")}</div>
+      <div class="sh-ujung">BSR (STA 27)</div>
+      ${urut.map((k) => `<div class="sh-baris"><span class="sh-km">${k.label}</span>${L2.map((l) => sel(k, l)).join("")}</div>`).join("")}
+      <div class="sh-ujung">107 (STA 0)</div>`;
   }
 
   const ik = (n) => `<svg class="ik"><use href="#i-${n}"/></svg>`;

@@ -282,14 +282,21 @@
       if (ADMIN) try { cfg = JSON.parse(decodeURIComponent(escape(atob((await gh(`/repos/${REPO}/contents/config.json?ref=main`)).content.replace(/\n/g, ""))))); } catch {}
       if (!cfg) { const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/config.json?t=${Date.now()}`); if (!r.ok) throw new Error(r.status); cfg = await r.json(); }
       const daftar = (cfg.pengawas_github || []).map((p) => (typeof p === "string" ? { username: p } : p));
-      $("listPengawas").innerHTML = daftar.length ? daftar.map((p) => `<div class="pengawas"><span><b>${esc(p.nama || p.username)}</b>
-          <span class="kecil">@${esc(p.username)}${p.jabatan ? ", " + esc(p.jabatan) : ""}</span></span>
-          ${ADMIN ? `<button type="button" class="hapus" data-hapus="${esc(p.username)}">Hapus</button>` : ""}</div>`).join("")
-        : `<p class="kecil">Belum ada pengawas.</p>`;
+      $("listPengawas").innerHTML = daftar.length ? `<div class="kartu-p-daftar">${daftar.map((p) => `<div class="kartu-p">
+          <img class="foto" src="https://github.com/${encodeURIComponent(p.username)}.png?size=120" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'foto inisial',textContent:'${esc((p.nama || p.username).slice(0, 1).toUpperCase())}'}))">
+          <div class="info"><b>${esc(p.nama || p.username)}</b><span class="jab">${esc(p.jabatan || "Pengawas")}</span><span class="akun">@${esc(p.username)}</span></div>
+          ${ADMIN ? `<button type="button" class="hapus" data-hapus="${esc(p.username)}">Hapus</button>` : ""}</div>`).join("")}</div>`
+        : `<p class="kecil">Belum ada pengawas. Admin bisa menambah di bawah.</p>`;
     } catch (e) { $("listPengawas").innerHTML = `<p class="kecil">Daftar pengawas belum bisa dimuat.</p>`; }
   }
   cekAdmin().then(muatPengawas);
-  $("btnPengawas").onclick = () => { $("panel").classList.add("buka"); $("secPengawas").scrollIntoView({ behavior: "smooth" }); };
+  const layarP = $("layarPengawas");
+  const bukaPengawas = () => { layarP.hidden = false; document.body.classList.add("terkunci"); $("tutupPengawas").focus(); muatPengawas(); };
+  const tutupPengawas = () => { layarP.hidden = true; document.body.classList.remove("terkunci"); $("btnPengawas").focus(); };
+  $("btnPengawas").onclick = bukaPengawas;
+  $("tutupPengawas").onclick = tutupPengawas;
+  layarP.addEventListener("click", (e) => { if (e.target === layarP) tutupPengawas(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !layarP.hidden) tutupPengawas(); });
   $("btnPanel").onclick = () => $("panel").classList.toggle("buka");
   $("legend").onclick = () => $("legend").classList.toggle("buka");
 

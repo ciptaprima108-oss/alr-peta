@@ -23,7 +23,7 @@
   <a class="merek" href="./"><span class="logo logo-alr"><img src="ikon/logo_alr.png" alt="Logo ALR"></span><span><b>ALR</b><small id="info">memuat data...</small></span></a>
   <div class="kanan tombol">
     <button id="btnLokasi" title="Cari posisi saya di jalan ALR"><svg class="ik"><use href="#i-lokasi"/></svg><span class="teks-hp">Lokasi saya</span></button>
-    <button id="btnPengawas" title="Pengawas ALR / RM"><svg class="ik"><use href="#i-helm"/></svg><span class="teks-hp">Pengawas</span></button>
+    <button id="btnPengawas" title="Pengawas ALR / RM"><svg class="ik"><use href="#i-orang"/></svg><span class="teks-hp">Pengawas</span></button>
     <button id="btnPanel" class="utama"><svg class="ik"><use href="#i-awas"/></svg><span class="teks-hp">Trigger</span> <span id="nTrig" class="badge">0</span></button>
   </div>
 </div></header>
@@ -40,26 +40,6 @@
       <h3><span class="tgb" style="background:var(--biru-muda);color:var(--biru)"><svg class="ik"><use href="#i-kamera"/></svg></span>Laporan lapangan</h3>
       <div id="listLap"><p class="kecil">Belum ada laporan.</p></div>
     </section>
-    <section id="secPengawas">
-      <h3><span class="tgb" style="background:var(--kuning-muda);color:#8A6200"><svg class="ik"><use href="#i-helm"/></svg></span>Pengawas ALR / RM</h3>
-      <p class="kecil">Yang terdaftar dapat notif tiap ada trigger merah. Pengawas perlu punya akun GitHub (daftar gratis di github.com/signup).</p>
-      <div id="listPengawas"><p class="kecil">memuat...</p></div>
-      <div id="adminPesan" class="kecil" aria-live="polite"></div>
-      <form id="formToken" class="form-p"><div id="adminMasuk">
-        <p class="kecil"><b>Admin:</b> masuk sekali untuk bisa menambah atau menghapus pengawas dari sini.
-          <a target="_blank" href="https://github.com/settings/personal-access-tokens/new?name=Peta%20ALR&amp;description=Kelola%20pengawas%20dari%20peta%20ALR&amp;target_name=ciptaprima108-oss&amp;expires_in=365&amp;issues=write&amp;contents=read">Buat kode akses di GitHub</a>
-          (pilih repo <b>alr-peta</b>, izin <b>Issues: Read and write</b>), lalu tempel di bawah.</p>
-        <label>Kode akses GitHub<input id="isiToken" type="password" required placeholder="github_pat_..." autocomplete="off"></label>
-        <button type="submit" class="kirim">Masuk sebagai admin</button>
-      </div></form>
-      <div id="adminAktif" class="kecil" hidden>Masuk sebagai <b id="adminNama"></b>. <button type="button" id="btnKeluar" class="link">Keluar</button></div>
-      <form id="formPengawas" class="form-p" hidden>
-        <label>Username GitHub pengawas<input id="pUser" required placeholder="contoh: budi-alr" autocomplete="off" pattern="@?[A-Za-z0-9-]+"></label>
-        <label>Nama<input id="pNama" placeholder="contoh: Budi Santoso"></label>
-        <label>Jabatan<select id="pJab"><option>Pengawas ALR</option><option>RM</option><option>Lainnya</option></select></label>
-        <button type="submit" class="kirim">Tambah pengawas</button>
-      </form>
-    </section>
     <section>
       <h3><span class="tgb" style="background:var(--debu);color:var(--pudar)"><svg class="ik"><use href="#i-daftar"/></svg></span>Ringkasan segmen</h3>
       <div id="ringkas"></div>
@@ -74,6 +54,40 @@
   <div class="lengkap"><i style="background:#5E665F"></i>Abu gelap: belum ada data GPS</div>
 </div>
 </main>
+
+
+<div class="layar" id="layarPengawas" hidden role="dialog" aria-modal="true" aria-labelledby="lpJudul">
+  <div class="layar-isi">
+    <div class="layar-atas">
+      <button type="button" class="kembali" id="tutupPengawas"><svg class="ik"><use href="#i-kiri"/></svg><span>Kembali</span></button>
+    </div>
+    <div class="layar-badan">
+      <div class="lp-kepala"><span class="lp-gb"><svg class="ik"><use href="#i-orang"/></svg></span><div><h2 id="lpJudul">Pengawas ALR / RM</h2>
+        <p>Orang-orang ini dapat notif setiap ada jalan merah, lalu cek ke lokasi dan upload foto.</p></div></div>
+      
+      
+      <div id="listPengawas"><p class="kecil">memuat...</p></div>
+      <div id="adminPesan" class="kecil" aria-live="polite"></div>
+      <div class="kotak-admin"><h3><svg class="ik"><use href="#i-info"/></svg>Untuk admin</h3>
+      <form id="formToken" class="form-p"><div id="adminMasuk">
+        <p class="kecil">Masuk sekali untuk bisa menambah atau menghapus pengawas dari sini.
+          <a target="_blank" href="https://github.com/settings/personal-access-tokens/new?name=Peta%20ALR&amp;description=Kelola%20pengawas%20dari%20peta%20ALR&amp;target_name=ciptaprima108-oss&amp;expires_in=365&amp;issues=write&amp;contents=read">Buat kode akses di GitHub</a>
+          (pilih repo <b>alr-peta</b>, izin <b>Issues: Read and write</b>), lalu tempel di bawah.</p>
+        <label>Kode akses GitHub<input id="isiToken" type="password" required placeholder="github_pat_..." autocomplete="off"></label>
+        <button type="submit" class="kirim">Masuk sebagai admin</button>
+      </div></form>
+      <div id="adminAktif" class="kecil" hidden>Masuk sebagai <b id="adminNama"></b>. <button type="button" id="btnKeluar" class="link">Keluar</button></div>
+      <form id="formPengawas" class="form-p" hidden>
+        <label>Username GitHub pengawas<input id="pUser" required placeholder="contoh: budi-alr" autocomplete="off" pattern="@?[A-Za-z0-9-]+"></label>
+        <label>Nama<input id="pNama" placeholder="contoh: Budi Santoso"></label>
+        <label>Jabatan<select id="pJab"><option>Pengawas ALR</option><option>RM</option><option>Lainnya</option></select></label>
+        <button type="submit" class="kirim">Tambah pengawas</button>
+      </form>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <div class="wrap kondisi" id="kondisi">
   <div class="judul-bagian pembuka"><span class="gb"><svg class="ik"><use href="#i-grafik"/></svg></span><div><h2>Kondisi jalan ALR</h2>
@@ -92,8 +106,10 @@
 
   <section class="jalur" aria-labelledby="jJudul"><div class="dalam">
     <div class="judul-bagian"><span class="gb"><svg class="ik"><use href="#i-jalan"/></svg></span><div><h2 id="jJudul">Di KM mana unit tertahan</h2>
-    <p>Jalan ALR dari BSR (STA 27) sampai 107 (STA 0), per 1 KM, mengikuti tanggal yang dipilih. Lajur atas untuk DT bermuatan, lajur bawah untuk DT kosongan. Makin merah, makin lama unit tertahan di KM itu. Arsir = zona antre atau parkir.</p></div></div>
-    <div class="gulir"><svg id="strip" viewBox="0 0 1000 140" role="img" aria-label="Jalur ALR per kilometer"></svg></div>
+    <p>Jalan ALR dari BSR (STA 27) sampai 107 (STA 0), per 1 KM, mengikuti tanggal yang dipilih. Jalur atas untuk DT bermuatan, jalur bawah untuk DT kosongan. Angka di kotak adalah jam unit tertahan di KM itu.</p></div></div>
+    <div class="gulir"><svg id="strip" viewBox="0 0 1000 180" role="img" aria-label="Jalur ALR per kilometer"></svg></div>
+    <div id="stripHp"></div>
+    <div class="leg-strip"><span><i class="h"></i>Hijau: lancar / sebentar</span><span><i class="k"></i>Kuning: cukup lama</span><span><i class="m"></i>Merah: paling lama tertahan</span><span><i class="z"></i>Arsir: zona antre / parkir</span></div>
     <div id="topKm"></div>
   </div></section>
   <div class="judul-bagian bagian"><span class="gb"><svg class="ik"><use href="#i-lokasi"/></svg></span><div><h2>Rincian per kilometer</h2>
