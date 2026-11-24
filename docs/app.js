@@ -201,10 +201,15 @@
     }, () => alert("Lokasi tidak bisa diambil. Izinkan akses lokasi di browser."), { enableHighAccuracy: true });
   };
   // ---------- pengawas (dibaca langsung dari config.json di repo, jadi langsung update tanpa deploy ulang) ----------
-  const linkPengawas = (aksi, user = "") => `https://github.com/${REPO}/issues/new?` + new URLSearchParams({ template: "kelola_pengawas.yml",
-    title: `[PENGAWAS] ${aksi} ${user}`.trim(), aksi, username: user, labels: "kelola-pengawas" });
+  const linkPengawas = (aksi, user = "", nama = "", jabatan = "") => `https://github.com/${REPO}/issues/new?` + new URLSearchParams({ template: "kelola_pengawas.yml",
+    title: `[PENGAWAS] ${aksi} ${user}`.trim(), aksi, username: user, nama, jabatan, labels: "kelola-pengawas" });
+  $("formPengawas").onsubmit = (e) => {
+    e.preventDefault();
+    const u = $("pUser").value.trim().replace(/^@/, "");
+    if (!u) return;
+    window.open(linkPengawas("Tambah", u, $("pNama").value.trim(), $("pJab").value), "_blank");
+  };
   async function muatPengawas() {
-    $("btnTambahPengawas").href = linkPengawas("Tambah");
     try {
       const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/config.json?t=${Date.now()}`);
       if (!r.ok) throw new Error(r.status);

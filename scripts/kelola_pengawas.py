@@ -38,7 +38,10 @@ def main():
         izin = "none"
     if izin not in ("admin", "maintain", "write"):
         return balas(f"❌ @{pembuat} belum punya akses admin di repo ini, jadi permintaan tidak diproses. Minta admin/tim development yang buat.")
-    aksi = field("Aksi")
+    aksi = (field("Aksi") or "").strip().lower()
+    aksi = "Tambah" if aksi.startswith("tambah") else "Hapus" if aksi.startswith("hapus") else ""
+    if not aksi:
+        return balas("❌ Isian Aksi harus Tambah atau Hapus.")
     user = field("Username GitHub pengawas").lstrip("@").strip()
     if not re.fullmatch(r"[A-Za-z0-9-]{1,39}", user):
         return balas(f"❌ Username `{user}` tidak valid.")

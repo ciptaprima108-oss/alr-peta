@@ -39,7 +39,13 @@
       <h3><span class="tanda" style="background:var(--kuning)"></span>Pengawas ALR / RM</h3>
       <p class="kecil">Yang terdaftar dapat notif tiap ada trigger merah. Tambah atau hapus diproses otomatis kalau diajukan oleh admin.</p>
       <div id="listPengawas"><p class="kecil">memuat...</p></div>
-      <a id="btnTambahPengawas" class="btn hijau" target="_blank">Tambah pengawas</a>
+      <form id="formPengawas" class="form-p">
+        <label>Username GitHub<input id="pUser" required placeholder="contoh: budi-alr" autocomplete="off" pattern="[A-Za-z0-9-]+"></label>
+        <label>Nama<input id="pNama" placeholder="contoh: Budi Santoso"></label>
+        <label>Jabatan<select id="pJab"><option>Pengawas ALR</option><option>RM</option><option>Lainnya</option></select></label>
+        <button type="submit" class="kirim">Tambah pengawas</button>
+        <p class="kecil">Setelah ini GitHub terbuka dengan isian sudah lengkap. Tinggal tekan <b>Create</b>. Daftar di atas diperbarui sekitar 1 menit kemudian.</p>
+      </form>
     </section>
     <section>
       <h3>Ringkasan segmen</h3>

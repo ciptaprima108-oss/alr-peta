@@ -83,3 +83,9 @@ a.btn.hijau { background: var(--aspal); color: #fff; margin-top: 8px; }
   .legend .lengkap { display: none; }
   .legend.buka .lengkap { display: block; }
 }
+
+.form-p { display: grid; gap: 8px; margin-top: 10px; }
+.form-p label { display: grid; gap: 3px; font: 600 13px var(--isi); color: var(--pudar); }
+.form-p input, .form-p select { font: 15px var(--isi); color: var(--tinta); padding: 8px 9px; border: 1px solid var(--garis); border-radius: 4px; background: #fff; }
+.form-p input:focus, .form-p select:focus { outline: 2px solid var(--kuning); border-color: var(--aspal); }
+.form-p .kirim { background: var(--aspal); color: #fff; font: 600 14.5px var(--isi); padding: 9px 12px; border-radius: 4px; }

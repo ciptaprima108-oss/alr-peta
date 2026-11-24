@@ -3,13 +3,12 @@ description: Tambah atau hapus pengawas ALR / RM yang menerima notif trigger. Ha
 title: "[PENGAWAS] "
 labels: ["kelola-pengawas"]
 body:
-  - type: dropdown
+  - type: input
     id: aksi
     attributes:
       label: Aksi
-      options:
-        - Tambah
-        - Hapus
+      description: Tulis Tambah atau Hapus (sudah terisi otomatis kalau dibuka dari peta)
+      placeholder: Tambah
     validations:
       required: true
   - type: input
@@ -25,11 +24,8 @@ body:
     attributes:
       label: Nama
       placeholder: "contoh: Budi Santoso"
-  - type: dropdown
+  - type: input
     id: jabatan
     attributes:
       label: Jabatan
-      options:
-        - Pengawas ALR
-        - RM
-        - Lainnya
+      placeholder: "contoh: Pengawas ALR / RM"
