@@ -234,7 +234,8 @@
     const tim = j === "rm" ? "RM" : nilai("tim")[0] || "";
     const l = lokasiSekarang();
     const trig = +($("lpTrig")?.value || 0) || null;
-    const d = { v: 1, jenis: j, pelapor: nama, tim, waktu: new Date().toISOString(), trigger: trig, catatan: ($("lpCatatan")?.value || "").trim() };
+    const rid = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    const d = { v: 1, rid, jenis: j, pelapor: nama, tim, waktu: new Date().toISOString(), trigger: trig, catatan: ($("lpCatatan")?.value || "").trim() };
     if (l?.sumber === "gps") Object.assign(d, { lat: +l.lat.toFixed(6), lon: +l.lon.toFixed(6), akurasi: l.akurasi });
     else if (l?.lat != null) Object.assign(d, { lat: +l.lat.toFixed(6), lon: +l.lon.toFixed(6), lokasi_dari: l.sumber });
     let foto = [], judul = "", baris = [];
@@ -277,7 +278,7 @@
       [["Pelapor", `${nama}${tim ? " (" + tim + ")" : ""}`], ["Waktu", WIB(d.waktu)], ["Lokasi", lokTeks], ...baris, ["Catatan", d.catatan], ["Trigger", trig ? "#" + trig : ""]]
         .filter(([, v]) => v).map(([k, v]) => `**${k}:** ${String(v).replace(/[<>]/g, "")}  `).join("\n") + "\n\n{{FOTO}}\n\n_Dikirim dari aplikasi ALR_";
     // paket: buat tiket baru, atau tambah ke permintaan logistik yang sudah ada
-    const paket = { versi: 1, foto: foto.map((f, i) => ({ b64: f.b64, ket: f.ket || `Foto ${i + 1}` })), komentar: [] };
+    const paket = { versi: 1, rid, foto: foto.map((f, i) => ({ b64: f.b64, ket: f.ket || `Foto ${i + 1}` })), komentar: [] };
     if (j === "logistik" && d.permintaan) paket.komentar.push({ nomor: d.permintaan, isi, tutup: d.status === "Diterima" });
     else paket.baru = { label: JENIS[j].label, judul: judul.slice(0, 200), isi };
     if (trig) {
@@ -288,7 +289,7 @@
   }
 
   // ---------- kirim ----------
-  let CFG = null;
+  let CFG = null; const TERKIRIM = "alr_terkirim";
   const muatCfg = () => CFG || (CFG = fetch("lapor.json", { cache: "no-cache" }).then((r) => r.ok ? r.json() : {}).catch(() => ({})));
   async function lewatToken(p) {
     const gh = window.ALR_gh, R = REPO(), bln = new Date().toISOString().slice(0, 7);
@@ -312,7 +313,9 @@
     const r = await fetch(url, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(p) });
     const j = await r.json();
     if (!j.ok) throw new Error(j.pesan || "relay menolak");
-    return j.nomor;
+    if (j.nomor) return j.nomor;
+    const t = simpan.get(TERKIRIM, []); t.push({ rid: p.rid, judul: (p.baru?.judul || "Update laporan"), waktu: Date.now() }); simpan.set(TERKIRIM, t.slice(-30));
+    return "antre";
   }
   async function kirimPaket(p) {
     if (!navigator.onLine) throw new Error("offline");
@@ -327,9 +330,12 @@
   function tampilAntre() {
     const el = $("antrean"); if (!el) return;
     const a = simpan.get(ANTRE, []);
-    el.hidden = !a.length;
-    el.innerHTML = a.length ? `<div class="lp-antre"><svg class="ik"><use href="#i-jam"/></svg><div><b>${a.length} laporan belum terkirim</b><span>Tersimpan di HP ini. Dikirim otomatis saat ada sinyal.</span></div>
-      <button type="button" id="btnKirimAntre">Kirim sekarang</button></div>` : "";
+    const sudah = new Set(LAP.map((i) => i._d?.rid).filter(Boolean));
+    const proses = simpan.get(TERKIRIM, []).filter((x) => !sudah.has(x.rid) && Date.now() - x.waktu < 2 * 864e5);
+    simpan.set(TERKIRIM, proses);
+    el.hidden = !a.length && !proses.length;
+    el.innerHTML = proses.map((x) => `<div class="lp-antre lp-proses"><span class="lp-putar"></span><div><b>${esc(x.judul.replace(/^\[[A-Z ]+\]\s*/, ""))}</b><span>Terkirim ${WIB(x.waktu)}. Sedang diproses, muncul di daftar dalam 5 sampai 15 menit.</span></div></div>`).join("") + (a.length ? `<div class="lp-antre"><svg class="ik"><use href="#i-jam"/></svg><div><b>${a.length} laporan belum terkirim</b><span>Tersimpan di HP ini. Dikirim otomatis saat ada sinyal.</span></div>
+      <button type="button" id="btnKirimAntre">Kirim sekarang</button></div>` : "");
   }
   async function kirimAntre(diam) {
     const a = simpan.get(ANTRE, []); if (!a.length) return;
@@ -362,7 +368,8 @@
     const foto = [...st.foto.umum, ...st.foto.sebelum, ...st.foto.sesudah];
     try {
       const no = await kirimPaket(paket);
-      selesai(true, `Laporan terkirim${no ? " (nomor " + no + ")" : ""}`, "Sudah masuk ke Laporan lapangan dan Kotak masuk.", judul, foto);
+      selesai(true, no === "antre" ? "Laporan terkirim" : `Laporan terkirim (nomor ${no})`, no === "antre" ? "Muncul di Laporan lapangan dan Kotak masuk dalam 5 sampai 15 menit." : "Sudah masuk ke Laporan lapangan dan Kotak masuk.", judul, foto);
+      tampilAntre();
       window.ALR_umumkan?.("ALR, laporan terkirim");
       setTimeout(() => window.ALR_muatTiket?.(), 4000);
     } catch (err) {
@@ -478,7 +485,7 @@
   window.addEventListener("alr:tiket", (e) => {
     TRIG = e.detail.trig || []; LAP = e.detail.lap || [];
     for (const i of LAP) { const all = bacaData(i._teks || i.body); i._d = all[0] || null; i._up = all.slice(1).filter((x) => !x.tahap); if (!i._lok?.ll && i._d?.lat != null) i._lok = { ll: [i._d.lat, i._d.lon], sta: i._d.sta, label: i._d.sta != null ? "STA " + fmtSta(i._d.sta) : "Lokasi" }; }
-    tampilLap();
+    tampilLap(); tampilAntre();
     const lt = $("listTrig");
     if (lt && TRIG.length) lt.innerHTML = [...TRIG].sort((a, b) => (a.state === "open" ? 0 : 1) - (b.state === "open" ? 0 : 1)).map(kartuTrig).join("");
   });

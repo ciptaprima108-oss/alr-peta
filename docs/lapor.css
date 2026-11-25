@@ -157,3 +157,4 @@ textarea.lp-input { resize: vertical; min-height: 90px; }
 .rr-chip { display: inline-block; min-width: 64px; text-align: center; border-radius: 9px; padding: 6px 8px; font: 700 17px var(--judul); }
 .rr-tabel tr.zona td { font-size: 14px; color: #9AA29B; }
 #rrTabel { margin-top: 8px; }
+.lp-proses { background: #DCEBFF; color: #0B4EA2; } .lp-proses .lp-putar { border-color: rgba(11,78,162,.25); border-top-color: #0B4EA2; flex-shrink: 0; }
