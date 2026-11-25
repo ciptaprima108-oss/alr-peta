@@ -134,10 +134,11 @@ body.terkunci { overflow: hidden; }
 .chip-d.aktif b { background: var(--kuning); color: var(--aspal); }
 .div-judul { margin: 18px 0 10px; font: 700 24px var(--judul); display: flex; align-items: center; gap: 10px; }
 .div-judul::before { content: ""; width: 8px; height: 26px; border-radius: 3px; background: var(--c); }
-.div-pim { --c: #23282A; } .div-rm { --c: #C2531F; } .div-log { --c: #2a78d6; }
+.div-pim { --c: #23282A; } .div-rm { --c: #C2531F; } .div-log { --c: #2a78d6; } .div-pjo { --c: #6A3FB5; } .div-ch { --c: #0F8A5F; } .div-hse { --c: #D32F2F; } .div-eng { --c: #00838F; } .div-sec { --c: #37474F; } .div-dev { --c: #0B4EA2; }
 .idc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; }
 .idc { --c: #23282A; --c2: #F2B705; position: relative; background: #fff; border-radius: 16px; overflow: hidden; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,.06), 0 8px 22px rgba(0,0,0,.08); padding-bottom: 12px; }
 .idc-pim { --c: #23282A; --c2: #F2B705; } .idc-rm { --c: #C2531F; --c2: #FFD7BF; } .idc-log { --c: #2a78d6; --c2: #CFE3FA; }
+.idc-pjo { --c: #6A3FB5; --c2: #E3D7FA; } .idc-ch { --c: #0F8A5F; --c2: #CDEFE0; } .idc-hse { --c: #D32F2F; --c2: #FFD6D6; } .idc-eng { --c: #00838F; --c2: #C9EEF1; } .idc-sec { --c: #37474F; --c2: #D5DEE3; } .idc-dev { --c: #0B4EA2; --c2: #D3E3FA; }
 .idc-atas { background: var(--c); height: 86px; display: flex; align-items: flex-start; justify-content: space-between; padding: 10px 12px; border-bottom: 5px solid var(--c2); }
 .idc-atas img { height: 30px; background: #fff; border-radius: 6px; padding: 2px 5px; }
 .idc-atas span { color: #fff; font: 700 13px/30px var(--isi); letter-spacing: .06em; opacity: .9; white-space: nowrap; }

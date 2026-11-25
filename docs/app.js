@@ -256,9 +256,9 @@
   $("btnKeluar").onclick = () => { try { localStorage.removeItem(KUNCI); } catch {} ADMIN = null; tampilAdmin("Sudah keluar."); };
 
   // ---------- pengguna (ID card) ----------
-  const DIVISI = { "Pimpinan": "pim", "Road Maintenance": "rm", "Logistik": "log" };
+  const DIVISI = { "Pimpinan": "pim", "PJO": "pjo", "CH": "ch", "Road Maintenance": "rm", "Logistik": "log", "Safety": "hse", "Engineering": "eng", "Security": "sec", "Developer": "dev" };
   const AKSES_NAMA = { lihat: ["Lihat", "peta"], lapor: ["Lapor", "kamera"], kelola: ["Kelola", "orang"] };
-  const AKSES_BAWAAN = { "Pimpinan": ["lihat", "lapor", "kelola"], "Road Maintenance": ["lihat", "lapor"], "Logistik": ["lihat"] };
+  const AKSES_BAWAAN = Object.fromEntries(Object.keys(DIVISI).map((d) => [d, ["lihat", "lapor", "kelola"]]));  // semua pengguna boleh buka seluruh aplikasi
   let PENGGUNA = [], FILTER = "Semua";
   async function kirimPengguna(aksi, d) {
     const isi = (j, v) => `### ${j}\n\n${v || "_No response_"}\n\n`;
