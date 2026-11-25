@@ -266,6 +266,7 @@
     grafik: { ikon: "grafik", warna: "biru", judul: "Nilai jalan", isi: () => { const h = window.ALR_HARIAN?.hari; const t = h?.[h.length - 1]; return t ? `Nilai terakhir ${t.r.nilai} dari 100, ${JUDUL[t.r.kode].toLowerCase()}.` : "Nilai 0 sampai 100 dari kerja DT."; } },
     profil: { ikon: "pengguna", warna: "biru", judul: "Akun & pengaturan", isi: () => "Nama kamu, notifikasi, suara, dan mode layar." },
     kotak: { ikon: "laporan", warna: "biru", judul: "Kotak masuk", isi: () => "Semua pemberitahuan ALR ada di sini." },
+    database: { ikon: "database", warna: "hijau", judul: "Database laporan", isi: () => window.ALR_DB_RINGKAS || "Semua laporan lapangan tersimpan di sini. Bisa disaring, dicari, dan diunduh." },
     forum: { ikon: "forum", warna: "merah", judul: "Forum tim ALR", isi: () => "Segera hadir." },
   };
   Object.entries(LYR).forEach(([n, c]) => {
@@ -276,5 +277,6 @@
     h.innerHTML = `<div class="lh-teks"><b>${c.judul}</b><span class="lh-isi"></span></div><span class="lh-ikon">${window.ALR_ikon3d?.(c.ikon) || ""}</span><i class="lh-pita"></i>`;
     badan.prepend(h);
   });
+  window.ALR_isiHero = (n) => { const c = LYR[n], s = $("lyr-" + n)?.querySelector(".lh-isi"); if (c && s) s.textContent = c.isi(); };
   window.addEventListener("alr:layar", (e) => { const c = LYR[e.detail.aktif], l = $("lyr-" + e.detail.aktif); if (c && l) { const s = l.querySelector(".lh-isi"); if (s) s.textContent = c.isi(); } });
 })();

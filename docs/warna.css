@@ -111,7 +111,7 @@ html[data-tema="gelap"] .lyr-atas { background: linear-gradient(120deg, #0E3B7A 
 .lyr-hero { position: relative; overflow: hidden; display: flex; align-items: center; gap: 12px; min-height: 108px; margin: 2px 0 14px; padding: 16px 16px 20px 18px; border-radius: 22px; color: #fff;
   background: radial-gradient(80% 120% at 100% 0%, rgba(255,255,255,.25), rgba(255,255,255,0) 60%), linear-gradient(135deg, var(--h1), var(--h2)); box-shadow: 0 10px 24px color-mix(in srgb, var(--h2) 35%, transparent);
   animation: naik .45s var(--geser) both; }
-.lh-biru { --h1: #1E88E5; --h2: #0B3F8C; } .lh-merah { --h1: #FF5A4E; --h2: #B3121F; } .lh-langit { --h1: #3BC4F2; --h2: #0B6FB8; }
+.lh-biru { --h1: #1E88E5; --h2: #0B3F8C; } .lh-hijau { --h1: #22B573; --h2: #0B6B4A; } .lh-merah { --h1: #FF5A4E; --h2: #B3121F; } .lh-langit { --h1: #3BC4F2; --h2: #0B6FB8; }
 .lh-teks { flex: 1; min-width: 0; position: relative; z-index: 1; }
 .lh-teks b { display: block; font: italic 700 27px/1.05 var(--judul); text-shadow: 0 2px 0 rgba(0,0,0,.12); }
 .lh-isi { display: block; margin-top: 6px; font: 500 15.5px/1.4 var(--isi); opacity: .95; }

@@ -12,7 +12,13 @@
     kegiatan: "Kegiatan", alat: "Alat", operator: "Operator", mulai: "Jam mulai", selesai: "Jam selesai", catatan: "Catatan", trigger: "Trigger jalan merah",
     akurasi: "Akurasi GPS (m)", tutup_trigger: "Trigger ditutup" };
   const LEWATI = new Set(["v", "rid", "jenis", "lat", "lon", "lokasi_dari", "foto_ket"]);
-  const st = { data: [], jenis: "semua", periode: "7", cari: "", buka: null, muat: false, salah: "" };
+  const st = { data: [], jenis: "semua", periode: "7", cari: "", buka: null, muat: false, salah: "", tindak: false, mode: "kartu", urut: "waktu", turun: true };
+  try { st.mode = localStorage.getItem("alr_db_mode") || "kartu"; } catch {}
+  const WARNA_STATUS = { Permintaan: "#D27A00", Dikirim: "#1565C0", Diterima: "#1E8E3E", Selesai: "#1E8E3E", "Lanjut besok": "#C2410C" };
+  // perlu tindak lanjut: material belum sampai, kerja RM belum beres, temuan inspeksi berat
+  const perluTindak = (r) => (r.jenis === "logistik" && ["Permintaan", "Dikirim"].includes(r.status)) || (r.jenis === "rm" && r.status === "Lanjut besok") ||
+    (r.jenis === "inspeksi" && /berat/i.test(r.data?.tingkat || ""));
+  const tglKey = (t) => new Date(t).toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta" });
 
   const WIB = (t) => new Date(t).toLocaleString("id-ID", { timeZone: "Asia/Jakarta", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).replace(".", ":");
   const sta = (v) => v == null || v === "" ? "–" : Number(v).toLocaleString("id-ID", { minimumFractionDigits: 1, maximumFractionDigits: 2 });
@@ -23,8 +29,12 @@
     if (!window.ALR_db) { st.salah = "Sambungan database belum terpasang di aplikasi."; return gambar(); }
     st.muat = true; st.salah = ""; gambar();
     try {
-      const sejak = st.periode === "semua" ? "" : `&waktu=gte.${new Date(Date.now() - (+st.periode === 1 ? jamHariIni() : +st.periode * 864e5)).toISOString()}`;
-      st.data = await window.ALR_db.minta(`laporan?select=*&order=waktu.desc&limit=2000${sejak}`) || [];
+      // ambil 2x rentang supaya bisa dibandingkan dengan rentang sebelumnya (kemarin / minggu lalu)
+      const lebar = st.periode === "semua" ? 0 : +st.periode === 1 ? jamHariIni() : +st.periode * 864e5;
+      const batas = Date.now() - lebar, sejak = lebar ? `&waktu=gte.${new Date(batas - (+st.periode === 1 ? 864e5 : lebar)).toISOString()}` : "";
+      const semua = await window.ALR_db.minta(`laporan?select=*&order=waktu.desc&limit=4000${sejak}`) || [];
+      st.data = lebar ? semua.filter((r) => new Date(r.waktu) >= batas) : semua;
+      st.lalu = lebar ? semua.length - st.data.length : null;
     } catch (e) { st.salah = /belum-diatur/.test(e.message) ? "Database belum disambungkan oleh admin." : !navigator.onLine ? "Tidak ada sinyal. Coba lagi saat ada sinyal." : "Database belum bisa dihubungi. Coba muat ulang."; }
     st.muat = false; gambar();
   }
@@ -33,25 +43,74 @@
 
   function tersaring() {
     const q = st.cari.trim().toLowerCase();
-    return st.data.filter((r) => (st.jenis === "semua" || r.jenis === st.jenis) &&
+    const out = st.data.filter((r) => (st.jenis === "semua" || r.jenis === st.jenis) && (!st.tindak || perluTindak(r)) &&
       (!q || [r.judul, r.pelapor, r.tim, r.status, sta(r.sta), JSON.stringify(r.data)].join(" ").toLowerCase().includes(q)));
+    const k = st.urut, arah = st.turun ? -1 : 1;
+    const v = (r) => k === "sta" ? (r.sta ?? -1) : k === "jenis" ? (JENIS[r.jenis]?.n || "") : k === "pelapor" ? (r.pelapor || "").toLowerCase() : k === "status" ? (r.status || "") : k === "judul" ? judul(r).toLowerCase() : r.waktu;
+    return out.sort((a, b) => (v(a) > v(b) ? 1 : v(a) < v(b) ? -1 : 0) * arah);
+  }
+  // grafik batang laporan per hari (paling banyak 14 hari terakhir)
+  // ringkasan: A angka besar + B lampu status (pengganti grafik batang)
+  const beres = (r) => ["Selesai", "Diterima"].includes(r.status);
+  const berjalan = (r) => (r.jenis === "logistik" && ["Permintaan", "Dikirim"].includes(r.status)) || (r.jenis === "rm" && r.status === "Lanjut besok");
+  const mendesak = (r) => r.jenis === "inspeksi" && /berat/i.test(r.data?.tingkat || "");
+  function grafik() {
+    // grafik garis sederhana: 7 hari, angka di tiap titik, hari ini merah
+    if (st.periode === "1") return "";
+    const n = 7, hari = [...Array(n)].map((_, i) => tglKey(Date.now() - (n - 1 - i) * 864e5));
+    const hit = Object.fromEntries(hari.map((h) => [h, 0]));
+    tersaring().forEach((r) => { const k = tglKey(r.waktu); if (k in hit) hit[k]++; });
+    const maks = Math.max(1, ...Object.values(hit)), kini = hari[n - 1];
+    const nama = (h) => h === kini ? "Ini" : new Date(h + "T12:00:00+07:00").toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", weekday: "short" });
+    const tgl = (h) => new Date(h + "T12:00:00+07:00").getDate();
+    const X = (i) => 24 + i * (292 / (n - 1)), Y = (v) => 150 - (v / maks) * 100;
+    const titik = hari.map((h, i) => [X(i), Y(hit[h]), hit[h], h]);
+    const garis = titik.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`).join(" ");
+    return `<div class="db-grafik"><div class="db-g-kepala"><b>Laporan per hari, 7 hari terakhir</b></div>
+      <svg class="db-garis" viewBox="0 0 340 196" role="img" aria-label="Jumlah laporan per hari: ${titik.map(([, , v, h]) => nama(h) + " " + v).join(", ")}">
+        <defs><linearGradient id="dbIsiGaris" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1565C0" stop-opacity=".28"/><stop offset="1" stop-color="#1565C0" stop-opacity="0"/></linearGradient></defs>
+        <line x1="12" y1="150" x2="328" y2="150" class="db-g-dasar"/>
+        <path d="${garis} L${X(n - 1)} 150 L${X(0)} 150Z" fill="url(#dbIsiGaris)"/>
+        <path d="${garis}" class="db-g-jalur"/>
+        ${titik.map(([x, y, v, h]) => `<circle cx="${x}" cy="${y}" r="${h === kini ? 8 : 7}" class="${h === kini ? "db-g-kini" : "db-g-titik"}"/><text x="${x}" y="${y - 14}" class="db-g-angka${h === kini ? " kini" : ""}">${v}</text>
+          <text x="${x}" y="172" class="db-g-hari${h === kini ? " kini" : ""}">${nama(h)}</text><text x="${x}" y="189" class="db-g-tgl">${tgl(h)}</text>`).join("")}
+      </svg></div>`;
+  }
+  function kelompok(rows) {
+    if (st.urut !== "waktu") return rows.map(baris).join("");
+    const hariIni = tglKey(Date.now()), kemarin = tglKey(Date.now() - 864e5); let akhir = "", out = "";
+    rows.forEach((r) => { const k = tglKey(r.waktu); if (k !== akhir) { akhir = k;
+      const n = rows.filter((x) => tglKey(x.waktu) === k).length;
+      out += `<h3 class="db-tgl"><span>${k === hariIni ? "Hari ini" : k === kemarin ? "Kemarin" : new Date(k + "T12:00:00+07:00").toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long" })}</span><small>${n} laporan</small></h3>`; }
+      out += baris(r); });
+    return out;
+  }
+  function tabel(rows) {
+    const kol = [["waktu", "Tanggal"], ["jenis", "Jenis"], ["sta", "STA"], ["judul", "Isi laporan"], ["pelapor", "Pelapor"], ["status", "Status"]];
+    return `<div class="db-tabel-bungkus"><table class="db-tabel"><thead><tr>${kol.map(([k, n]) => `<th><button type="button" data-db-urut="${k}" class="${st.urut === k ? "aktif" : ""}">${n}${st.urut === k ? (st.turun ? " ▼" : " ▲") : ""}</button></th>`).join("")}</tr></thead>
+      <tbody>${rows.map((r) => `<tr data-db-baris="${r.id}" style="--w:${(JENIS[r.jenis] || JENIS.lainnya).w}"><td>${WIB(r.waktu)}</td><td><span class="db-jenis">${esc((JENIS[r.jenis] || JENIS.lainnya).n)}</span></td><td class="db-angka">${sta(r.sta)}</td><td>${esc(judul(r))}</td><td>${esc(r.pelapor || "")}</td><td>${r.status ? `<span class="db-status" style="--s:${WARNA_STATUS[r.status] || "var(--w)"}">${esc(r.status)}</span>` : ""}</td></tr>`).join("")}</tbody></table></div>`;
   }
 
   function gambar() {
     const hit = { semua: st.data.length }; st.data.forEach((r) => hit[r.jenis] = (hit[r.jenis] || 0) + 1);
     const tab = ["semua", "inspeksi", "logistik", "rm", ...Object.keys(hit).filter((k) => !["semua", "inspeksi", "logistik", "rm"].includes(k))];
-    const rows = tersaring();
+    const rows = tersaring(), nTindak = st.data.filter(perluTindak).length;
+    window.ALR_DB_RINGKAS = st.muat ? "Memuat..." : st.salah ? st.salah : `${st.data.length} laporan ${{ "1": "hari ini", "7": "dalam 7 hari terakhir", "30": "dalam 30 hari terakhir", semua: "tersimpan" }[st.periode]}.`;
+    window.ALR_isiHero?.("database");
     el.innerHTML = `
       <div class="db-pita" role="group" aria-label="Jenis laporan">${tab.map((k) => `<button type="button" data-db-jenis="${k}" class="${st.jenis === k ? "aktif" : ""}" style="--w:${k === "semua" ? "var(--rb-biru)" : (JENIS[k]?.w || "#5B6B80")}">
-        <b>${hit[k] || 0}</b><span>${k === "semua" ? "Semua" : esc(JENIS[k]?.n || k)}</span></button>`).join("")}</div>
+        <b>${hit[k] || 0}</b><span>${k === "semua" ? "Semua" : k === "rm" ? "RM" : esc(JENIS[k]?.n || k)}</span></button>`).join("")}</div>
+      ${st.data.length && !st.muat ? grafik() : ""}
       <div class="db-alat">
         <div class="db-periode" role="group" aria-label="Rentang waktu">${PERIODE.map(([v, n]) => `<button type="button" data-db-per="${v}" class="${st.periode === v ? "aktif" : ""}">${n}</button>`).join("")}</div>
         <label class="db-cari"><svg class="ik"><use href="#i-cari"/></svg><input type="search" id="dbCari" placeholder="Cari nama, STA, barang, kegiatan" value="${esc(st.cari)}"></label>
+        <div class="db-baris2"><button type="button" class="db-tindak${st.tindak ? " aktif" : ""}" data-db-aksi="tindak" aria-pressed="${st.tindak}">${st.tindak ? "Tampilkan semua laporan" : "Hanya yang perlu tindak lanjut"}</button>
+          <div class="db-mode" role="group" aria-label="Tampilan"><button type="button" data-db-mode="kartu" class="${st.mode === "kartu" ? "aktif" : ""}">Kartu</button><button type="button" data-db-mode="tabel" class="${st.mode === "tabel" ? "aktif" : ""}">Tabel</button></div></div>
         <div class="db-tombol"><span>${rows.length} laporan</span><button type="button" data-db-aksi="muat">Muat ulang</button><button type="button" data-db-aksi="csv" ${rows.length ? "" : "disabled"}><b class="xl">X</b>Unduh Excel</button></div>
       </div>
       <div class="db-daftar" aria-live="polite">${st.muat ? `<p class="db-kosong">Memuat database...</p>` : st.salah ? `<p class="db-kosong db-salah">${esc(st.salah)}</p>` :
         !rows.length ? `<p class="db-kosong">${st.data.length ? "Tidak ada laporan yang cocok. Coba hapus kata pencarian atau pilih jenis lain." : "Belum ada laporan di rentang waktu ini. Pilih rentang yang lebih panjang."}</p>` :
-        rows.map(baris).join("")}</div>`;
+        st.mode === "tabel" ? tabel(rows) : kelompok(rows)}</div>`;
     const c = $("dbCari"); c.oninput = () => { st.cari = c.value; const pos = c.selectionStart; gambar(); const n = $("dbCari"); n.focus(); n.setSelectionRange(pos, pos); };
   }
 
@@ -61,7 +120,7 @@
       <button type="button" class="db-kepala" data-db-id="${r.id}" aria-expanded="${terbuka}">
         <span class="db-sta"><small>STA</small><b>${sta(r.sta)}</b></span>
         <span class="db-teks"><b>${esc(judul(r))}</b><small>${esc(j.n)} · ${esc(r.pelapor || "Tanpa nama")}${r.tim ? " (" + esc(r.tim) + ")" : ""} · ${WIB(r.waktu)}</small></span>
-        ${r.status ? `<span class="db-status">${esc(r.status)}</span>` : ""}
+        ${r.status ? `<span class="db-status" style="--s:${WARNA_STATUS[r.status] || "var(--w)"}">${esc(r.status)}</span>` : perluTindak(r) ? `<span class="db-status" style="--s:#E11D2E">Berat</span>` : ""}
       </button>
       ${terbuka ? detail(r) : ""}</article>`;
   }
@@ -88,7 +147,12 @@
   }
 
   el.addEventListener("click", (e) => {
+    const tr = e.target.closest("[data-db-baris]");
+    if (tr) { klik(); st.mode = "kartu"; st.buka = +tr.dataset.dbBaris; gambar(); setTimeout(() => el.querySelector(".db-baris.buka")?.scrollIntoView({ behavior: "smooth", block: "center" }), 50); return; }
     const b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.dbMode) { klik(); st.mode = b.dataset.dbMode; try { localStorage.setItem("alr_db_mode", st.mode); } catch {} return gambar(); }
+    if (b.dataset.dbUrut) { klik(); if (st.urut === b.dataset.dbUrut) st.turun = !st.turun; else { st.urut = b.dataset.dbUrut; st.turun = b.dataset.dbUrut === "waktu"; } return gambar(); }
+    if (b.dataset.dbAksi === "tindak") { klik(); st.tindak = !st.tindak; return gambar(); }
     if (b.dataset.dbJenis) { klik(); st.jenis = b.dataset.dbJenis; gambar(); }
     else if (b.dataset.dbPer) { klik(); st.periode = b.dataset.dbPer; muat(); }
     else if (b.dataset.dbId) { klik(); st.buka = st.buka === +b.dataset.dbId ? null : +b.dataset.dbId; gambar(); }
