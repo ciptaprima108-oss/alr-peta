@@ -15,7 +15,7 @@ RELAY = CFG.get("relay", "")
 CABANG = "laporan-foto"
 LABEL_BARU = ["laporan-jalan", "logistik", "pekerjaan-rm"]
 LABEL_KOMENTAR = ["trigger", "laporan-jalan", "logistik", "pekerjaan-rm"]
-LABEL_TUTUP = ["trigger", "logistik"]
+LABEL_TUTUP = ["trigger", "logistik", "laporan-jalan", "pekerjaan-rm"]
 UA = {"User-Agent": "alr-laporan"}
 
 
@@ -56,7 +56,7 @@ def proses(p):
         raise ValueError("laporan kosong")
     if baru:
         if baru.get("label") not in LABEL_BARU: raise ValueError("jenis tidak dikenal")
-        if not re.match(r"^\[(INSPEKSI|LOGISTIK|PEKERJAAN RM)\]", baru.get("judul", "")): raise ValueError("judul tidak sah")
+        if not re.match(r"^\[(INSPEKSI|LOGISTIK|PEKERJAAN RM|LAINNYA)\]", baru.get("judul", "")): raise ValueError("judul tidak sah")
     url = []
     bln = time.strftime("%Y-%m")
     for i, f in enumerate(foto):
