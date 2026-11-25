@@ -37,3 +37,13 @@ python -m http.server -d docs 8000   # buka http://localhost:8000
 Di web peta klik tombol 👷 > **+ Tambah pengawas** (atau *Hapus* di samping nama). Form terbuka di GitHub, isi username, nama, jabatan, lalu *Submit*.
 GitHub Action otomatis memasukkan/menghapus pengawas di `config.json` dan membalas tiket. Hanya diproses kalau pembuatnya admin/collaborator repo.
 Pengawas cukup punya akun GitHub gratis (github.com/signup). Notif dikirim lewat @mention di tiket trigger, jadi tidak wajib jadi collaborator.
+
+## Database Supabase (tahap 1)
+
+Tiap laporan lapangan juga disalin ke tabel `laporan` di Supabase. Cara lama lewat relay tetap jalan sebagai jalur utama.
+
+1. Buat project gratis di supabase.com (region Singapore).
+2. Buka *SQL Editor*, tempel isi `supabase/skema.sql`, lalu klik *Run*. Ini membuat tabel `divisi`, `pengguna`, `laporan`, view `rekap_harian`, dan aturan hak akses (RLS).
+3. Isi `docs/lapor.json` dengan `"supabase": {"url": "https://xxxx.supabase.co", "key": "<anon / publishable key>"}`. Kunci ini memang publik. Jangan pernah taruh service_role key di sini.
+
+Kalau Supabase mati atau belum diatur, laporan tetap terkirim lewat relay.
