@@ -25,6 +25,7 @@
 <link rel="stylesheet" href="beranda.css?v=202611240419">
 <link rel="stylesheet" href="warna.css?v=202611240419">
 <link rel="stylesheet" href="lapor.css?v=202611240419">
+<link rel="stylesheet" href="database.css?v=202611250940">
 </head>
 <body>
 <div id="splash" aria-hidden="true"><div class="sp-isi"><span class="sp-logo"><img src="ikon/logo_alr.png" alt=""></span><b>ALR</b><small>Jalan hauling BSR ke 107</small><i class="sp-bar"><i></i></i></div></div>
@@ -98,6 +99,7 @@
         <button type="button" class="mi" data-buka="hujan"><span class="u-gb" data-ikon="hujan"></span><b>Hujan</b></button>
         <button type="button" class="mi" data-buka="grafik"><span class="u-gb" data-ikon="grafik"></span><b>Nilai jalan</b></button>
         <button type="button" class="mi" data-buka="laporan"><span class="u-gb" data-ikon="laporan"></span><i class="u-badge" id="ubinLap" hidden>0</i><b>Laporan</b></button>
+        <button type="button" class="mi" data-buka="database"><span class="u-gb" data-ikon="database"></span><i class="u-badge baru">Baru</i><b>Database</b></button>
         <button type="button" class="mi" data-buka="pengguna"><span class="u-gb" data-ikon="pengguna"></span><b>Pengguna</b></button>
       </div>
     </section>
@@ -202,6 +204,11 @@
       <div id="listLap"><p class="kecil">Belum ada laporan.</p></div>
     </section>
   </div>
+</section>
+<section class="lyr kondisi" id="lyr-database" hidden aria-labelledby="lyrJ-database">
+  <div class="lyr-atas"><button type="button" class="kembali" data-tutup><svg class="ik"><use href="#i-kiri"/></svg><span>Kembali</span></button>
+    <h2 id="lyrJ-database"><span class="lyr-gb" style="--w:#0F8A5F"><svg class="ik"><use href="#i-kotak"/></svg></span>Database laporan</h2></div>
+  <div class="lyr-badan"><div id="dbIsi" class="db"></div></div>
 </section>
 <section class="lyr kondisi" id="lyr-lapor" hidden aria-labelledby="lyrJ-lapor">
   <div class="lyr-atas"><button type="button" class="kembali" data-tutup><svg class="ik"><use href="#i-kiri"/></svg><span>Kembali</span></button>
@@ -389,5 +396,6 @@
 <script src="beranda.js?v=202611240419"></script>
 <script src="supabase.js?v=202611250930"></script>
 <script src="lapor.js?v=202611250930"></script>
+<script src="database.js?v=202611250940"></script>
 </body>
 </html>
