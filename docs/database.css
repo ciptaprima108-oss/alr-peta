@@ -162,3 +162,17 @@ html[data-tema="gelap"] .db-naik { color: #FF8A80; } html[data-tema="gelap"] .db
 .db-garis .kini { fill: #E11D2E; }
 html[data-tema="gelap"] .db-g-jalur, html[data-tema="gelap"] .db-g-titik { stroke: #5AA7F0; }
 html[data-tema="gelap"] .db-garis .kini { fill: #FF6B6B; } html[data-tema="gelap"] .db-g-kini { fill: #FF5A5A; }
+
+/* urutan di laptop: saringan dulu, lalu jenis & grafik */
+/* ---------- laptop / layar lebar: kiri saringan + grafik (menempel), kanan daftar ---------- */
+.db-kiri { display: grid; gap: 14px; align-content: start; min-width: 0; }
+.db-garis { max-height: 240px; }
+@media (min-width: 900px) {
+  .db { grid-template-columns: minmax(340px, 400px) minmax(0, 1fr); align-items: start; gap: 20px; }
+  .db-kiri { position: sticky; top: 84px; max-height: calc(100vh - 170px); overflow-y: auto; scrollbar-width: thin; padding: 2px 4px 8px 2px; }
+  .db-daftar { gap: 10px; }
+  .db-teks b { font-size: 18px; }
+  .db-tabel { min-width: 0; }
+  .db-alat { order: -1; }
+}
+@media (min-width: 1300px) { .db { grid-template-columns: 420px minmax(0, 1fr); } }
