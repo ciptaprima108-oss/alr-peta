@@ -2169,8 +2169,8 @@
    "median_km": null,
    "n_lambat": null,
    "pct_lambat": null,
-   "gps_speed": 21.0,
-   "gps_pct_berhenti": 20.0,
+   "gps_speed": 20.5,
+   "gps_pct_berhenti": 18.2,
    "gps_unit": 11,
    "kosong_menit": null,
    "muat_bsr_menit": null,
@@ -2179,12 +2179,12 @@
     "durasi": null,
     "rit_lambat": null,
     "speed": 100.0,
-    "berhenti": 50.0,
-    "km_lambat": 52.0,
+    "berhenti": 55.0,
+    "km_lambat": 58.0,
     "hujan": 41.0,
-    "trigger": 50.0
+    "trigger": 67.0
    },
-   "indeks": 59,
+   "indeks": 64,
    "status": "Perlu perhatian",
    "hujan_mm": 14.7,
    "hujan_malam_mm": 10.1,
@@ -2193,8 +2193,8 @@
    "alasan": [
     "Hujan 15 mm, 10 mm semalam",
     "1 KM DT jalan pelan (13 km/jam ke bawah)",
-    "6 titik jalan merah masih terbuka",
-    "DT berhenti 20% waktu"
+    "4 titik jalan merah masih terbuka",
+    "DT berhenti 18% waktu"
    ],
    "kurang": [
     "data rit belum masuk"
