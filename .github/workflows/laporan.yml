@@ -26,4 +26,3 @@ jobs:
       - run: python scripts/ambil_laporan.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ALR_KUNCI: ${{ secrets.ALR_KUNCI }}

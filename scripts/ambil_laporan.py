@@ -1,9 +1,9 @@
 """Ambil laporan dari aplikasi ALR (kotak surat Google Apps Script milik pemilik) lalu simpan ke GitHub.
 
 Aplikasi mengirim laporan (isi + foto) ke relay di docs/lapor.json, tanpa login.
-Script ini jalan tiap ~5 menit di GitHub Action: ambil laporan baru pakai secret ALR_KUNCI,
-simpan foto ke cabang laporan-foto, buat tiket (issue) laporan, beri komentar / tutup trigger
-yang terkait, lalu tandai laporan selesai di kotak surat.
+Script ini jalan tiap ~5 menit di GitHub Action: ambil laporan baru,
+simpan foto ke cabang laporan-foto, buat tiket (issue) laporan, lalu beri komentar / tutup trigger
+yang terkait. Laporan yang sudah diproses dicatat di cabang laporan-foto (diproses.json).
 """
 import base64, json, os, re, time, urllib.parse, urllib.request, urllib.error
 
@@ -12,7 +12,6 @@ REPO = os.environ.get("GITHUB_REPOSITORY", "")
 TOKEN = os.environ.get("GITHUB_TOKEN", "")
 CFG = json.load(open(os.path.join(ROOT, "docs", "lapor.json"), encoding="utf-8"))
 RELAY = CFG.get("relay", "")
-KUNCI = os.environ.get("ALR_KUNCI", "")
 CABANG = "laporan-foto"
 LABEL_BARU = ["laporan-jalan", "logistik", "pekerjaan-rm"]
 LABEL_KOMENTAR = ["trigger", "laporan-jalan", "logistik", "pekerjaan-rm"]
@@ -43,7 +42,7 @@ def baca_status():
 
 def simpan_status(ids, sha):
     isi = dict(message="Catat laporan yang sudah diproses", branch=CABANG,
-               content=base64.b64encode(json.dumps(ids[-1000:]).encode()).decode())
+               content=base64.b64encode(json.dumps(ids).encode()).decode())
     if sha:
         isi["sha"] = sha
     gh("PUT", "/contents/diproses.json", isi)
@@ -90,24 +89,32 @@ def proses(p):
 
 
 def main():
-    if not (RELAY and KUNCI and TOKEN and REPO):
-        print("relay / kunci belum diatur, lewati"); return
-    ids, sha = baca_status()
-    q = lambda extra="": f"{RELAY}?kunci={urllib.parse.quote(KUNCI)}{extra}"
-    daftar = json.loads(ambil(q())).get("laporan", [])
+    if not (RELAY and TOKEN and REPO):
+        print("relay belum diatur, lewati"); return
+    st, sha = baca_status()
+    if isinstance(st, list):
+        st = dict(ids=st, sejak=0)
+    ids = st.get("ids", [])
+    sejak = st.get("sejak") or int((time.time() - 3 * 86400) * 1000)
     baru = 0
-    for p in daftar:
-        rid = str(p.get("rid", ""))
-        try:
-            if rid not in ids:
-                no = proses(p); baru += 1; ids.append(rid)
+    for _ in range(20):
+        daftar = json.loads(ambil(f"{RELAY}?sejak={sejak}")).get("laporan", [])
+        for x in daftar:
+            p, rid = x["p"], str(x["p"].get("rid", ""))
+            sejak = max(sejak, int(x["t"]))
+            if rid in ids:
+                continue
+            try:
+                no = proses(p); baru += 1
                 print(f"  laporan {rid} -> #{no}")
-        except Exception as e:
-            print(f"  laporan {rid} ditolak: {e}")
-        ambil(q(f"&selesai={urllib.parse.quote(rid)}"))
-    if baru:
-        simpan_status(ids, sha)
-    print(f"Laporan baru: {baru} dari {len(daftar)}")
+            except Exception as e:
+                print(f"  laporan {rid} ditolak: {e}")
+            ids.append(rid)
+        if len(daftar) < 10:
+            break
+    if baru or sejak != st.get("sejak"):
+        simpan_status(dict(ids=ids[-1000:], sejak=sejak), sha)
+    print(f"Laporan baru: {baru}")
 
 
 if __name__ == "__main__":

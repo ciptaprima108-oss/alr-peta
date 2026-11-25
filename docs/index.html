@@ -195,6 +195,9 @@
         <button type="button" class="lc" data-lapor="rm"><span data-ikon="rm"></span><b>Pekerjaan RM</b></button>
       </div>
       <div class="lap-saring" role="group" aria-label="Jenis laporan"><button type="button" class="aktif" data-saring="semua">Semua</button><button type="button" data-saring="inspeksi">Inspeksi</button><button type="button" data-saring="logistik">Logistik</button><button type="button" data-saring="rm">RM</button></div>
+      <div class="lap-periode" role="group" aria-label="Rentang waktu"><button type="button" data-lp="1">Hari ini</button><button type="button" class="aktif" data-lp="7">7 hari</button><button type="button" data-lp="30">1 bulan</button><button type="button" data-lp="rentang">Pilih tanggal</button></div>
+      <div class="lap-rentang" id="lapRentang" hidden><label>Dari<input type="date" id="lapDari" class="lp-input"></label><label>Sampai<input type="date" id="lapSampai" class="lp-input"></label></div>
+      <div class="lap-ekspor"><span id="lapJumlah">0 laporan</span><button type="button" data-ekspor="xlsx"><b class="xl">X</b>Excel</button><button type="button" data-ekspor="pdf"><b class="pd">P</b>PDF</button><button type="button" data-ekspor="jpg"><b class="jp">J</b>JPG</button></div>
       <div id="antrean" hidden></div>
       <div id="listLap"><p class="kecil">Belum ada laporan.</p></div>
     </section>

@@ -416,7 +416,20 @@
       (i._up || []).map((u) => `<p class="lp-k-up"><svg class="ik"><use href="#i-cek"/></svg>${esc(u.status)} oleh ${esc(u.pelapor)}, ${WIB(u.waktu)}</p>`).join("")}`;
     return `<div class="lp-chips">${chip(d.kegiatan)}</div><p class="lp-k-isi">${[d.alat?.length ? "Alat: " + d.alat.join(", ") : "", d.operator ? "Operator: " + d.operator : "", d.mulai || d.selesai ? `Jam ${d.mulai || "?"} sampai ${d.selesai || "?"}` : "", d.barang ? `Material: ${koma(d.jumlah)} ${d.satuan} ${d.barang}` : ""].filter(Boolean).map(esc).join(". ")}</p>${d.catatan ? `<p class="lp-k-isi">${esc(d.catatan)}</p>` : ""}`;
   }
-  let SARING = "semua";
+  let SARING = "semua", PER = { p: "7", dari: null, sampai: null };
+  const tglIso = (d) => new Date(d).toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta" });
+  function rentang() {
+    const hari = tglIso(Date.now());
+    if (PER.p === "rentang") return [PER.dari || "2000-01-01", PER.sampai || hari];
+    const d = new Date(Date.now() + 7 * 36e5); d.setUTCDate(d.getUTCDate() - (+PER.p - 1));
+    return [d.toISOString().slice(0, 10), hari];
+  }
+  const waktuLap = (i) => i._d?.waktu || i.created_at;
+  function terpilih() {
+    const [a, b] = rentang();
+    return LAP.filter((i) => (SARING === "semua" || jenisDari(i) === SARING) && tglIso(waktuLap(i)) >= a && tglIso(waktuLap(i)) <= b);
+  }
+  const teksPeriode = () => { const [a, b] = rentang(), f = (x) => new Date(x + "T12:00:00+07:00").toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }); return a === b ? f(a) : `${f(a)} sampai ${f(b)}`; };
   function kartuLap(i) {
     const j = jenisDari(i), d = i._d, [st1, w] = statusLap(i), ll = i._lok?.ll;
     const lok = d?.jenis === "rm" && d.sta1 != null ? `STA ${fmtSta(d.sta1)}${d.sta2 != null ? " - " + fmtSta(d.sta2) : ""}` : d?.sta != null ? `STA ${fmtSta(d.sta)}` : i._lok?.label || "";
@@ -432,12 +445,19 @@
   }
   function tampilLap() {
     const el = $("listLap"); if (!el) return;
-    const daftar = LAP.filter((i) => SARING === "semua" || jenisDari(i) === SARING);
+    const daftar = terpilih();
+    if ($("lapJumlah")) $("lapJumlah").textContent = `${daftar.length} laporan, ${teksPeriode()}`;
     el.innerHTML = daftar.length ? daftar.map(kartuLap).join("") : `<div class="kosong-besar kecil-k"><span class="kb-gb">${window.ALR_ikon3d?.("laporan") || ""}</span><h3>Belum ada laporan</h3><p>Pencet salah satu tombol di atas untuk buat laporan pertama.</p></div>`;
   }
   document.addEventListener("click", (e) => {
     const s = e.target.closest(".lap-saring [data-saring]");
     if (s) { klik(); SARING = s.dataset.saring; document.querySelectorAll(".lap-saring button").forEach((b) => b.classList.toggle("aktif", b === s)); tampilLap(); return; }
+    const pr = e.target.closest(".lap-periode [data-lp]");
+    if (pr) { klik(); PER.p = pr.dataset.lp; document.querySelectorAll(".lap-periode button").forEach((b) => b.classList.toggle("aktif", b === pr)); $("lapRentang").hidden = PER.p !== "rentang";
+      if (PER.p === "rentang" && !$("lapDari").value) { const [a, b] = [tglIso(Date.now() - 6 * 864e5), tglIso(Date.now())]; $("lapDari").value = a; $("lapSampai").value = b; PER.dari = a; PER.sampai = b; }
+      tampilLap(); return; }
+    const ek = e.target.closest("[data-ekspor]");
+    if (ek) { klik(); ekspor(ek.dataset.ekspor, ek); return; }
     const u = e.target.closest("[data-update-log]");
     if (u) {
       const i = LAP.find((x) => x.number === +u.dataset.updateLog); if (!i) return;
@@ -458,6 +478,72 @@
     const k = e.target.closest(".lyr .kartu[data-ll]");
     if (k && !e.target.closest("a,button")) { const ll = k.dataset.ll.split(",").map(Number); setTimeout(() => window.ALR_peta?.setView(ll, 16), 340); }
   });
+  document.addEventListener("change", (e) => { if (e.target.id === "lapDari" || e.target.id === "lapSampai") { PER.dari = $("lapDari").value; PER.sampai = $("lapSampai").value; tampilLap(); } });
+
+  // ---------- ekspor: Excel, PDF, JPG ----------
+  const muatJs = (u) => new Promise((ok, gagal) => { if (document.querySelector(`script[src="${u}"]`)) return ok(); const s = document.createElement("script"); s.src = u; s.onload = ok; s.onerror = gagal; document.head.appendChild(s); });
+  const LIB = { xlsx: "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js", h2c: "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js", pdf: "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" };
+  function baris(i) {
+    const d = i._d || {}, j = jenisDari(i), w = new Date(waktuLap(i)), up = (i._up || []).slice(-1)[0];
+    const lok = j === "rm" && d.sta1 != null ? `${fmtSta(d.sta1)}${d.sta2 != null ? " - " + fmtSta(d.sta2) : ""}` : d.sta != null ? fmtSta(d.sta) : (i._lok?.label || "").replace("STA ", "");
+    return { "No": i.number, "Jenis": JENIS[j].nama, "Tanggal": w.toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", day: "2-digit", month: "2-digit", year: "numeric" }),
+      "Jam (WIB)": w.toLocaleTimeString("id-ID", { timeZone: "Asia/Jakarta", hour: "2-digit", minute: "2-digit" }).replace(".", ":"), "Pelapor": d.pelapor || "", "Tim": d.tim || "", "STA": lok,
+      "Kendala / kegiatan": (d.kendala || d.kegiatan || []).join(", ") || (d.barang && j === "logistik" ? d.barang : ""), "Tingkat / status": statusLap(i)[0],
+      "Barang / material": d.barang || "", "Jumlah": d.jumlah ?? "", "Satuan": d.satuan || "", "Alat": (d.alat || []).join(", "), "Operator": d.operator || "",
+      "Jam kerja": d.mulai || d.selesai ? `${d.mulai || "?"} - ${d.selesai || "?"}` : "", "Catatan": d.catatan || "", "Trigger": d.trigger ? "#" + d.trigger : "",
+      "Update terakhir": up ? `${up.status} oleh ${up.pelapor}` : "", "Koordinat": d.lat != null ? `${d.lat}, ${d.lon}` : "", "Foto": i._gambar.join(" ") };
+  }
+  const namaFile = (ext) => `Laporan ALR ${SARING === "semua" ? "semua" : JENIS[SARING].nama} ${rentang().join(" sd ")}.${ext}`;
+  function unduh(blob, nama) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = nama; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000); }
+  function rekapEl(daftar) {
+    const el = document.createElement("div"); el.className = "rekap";
+    const hit = (j) => daftar.filter((i) => jenisDari(i) === j).length;
+    el.innerHTML = `<div class="rk-atas"><img src="ikon/icon-192.png" alt=""><div><b>Rekap Laporan Lapangan ALR</b><span>${esc(teksPeriode())} · ${SARING === "semua" ? "Semua jenis" : esc(JENIS[SARING].nama)}</span></div></div>
+      <div class="rk-angka"><div><b>${daftar.length}</b>laporan</div><div><b>${hit("inspeksi")}</b>inspeksi</div><div><b>${hit("logistik")}</b>logistik</div><div><b>${hit("rm")}</b>pekerjaan RM</div></div>
+      <table><thead><tr><th>Foto</th><th>Waktu</th><th>Jenis</th><th>STA</th><th>Isi</th><th>Pelapor</th><th>Status</th></tr></thead><tbody>${daftar.map((i) => { const b = baris(i);
+        return `<tr><td>${i._gambar[0] ? `<img src="${esc(i._gambar[0])}" crossorigin="anonymous" alt="">` : ""}</td><td>${b.Tanggal}<br>${b["Jam (WIB)"]}</td><td>${esc(b.Jenis)}</td><td>${esc(b.STA)}</td>
+          <td>${esc([b["Kendala / kegiatan"], b["Barang / material"] && b.Jenis !== "Logistik" ? "Material: " + b["Jumlah"] + " " + b.Satuan + " " + b["Barang / material"] : b.Jenis === "Logistik" ? b.Jumlah + " " + b.Satuan : "", b.Alat && "Alat: " + b.Alat, b.Catatan].filter(Boolean).join(". "))}</td>
+          <td>${esc(b.Pelapor)}${b.Tim ? "<br><small>" + esc(b.Tim) + "</small>" : ""}</td><td>${esc(b["Tingkat / status"])}</td></tr>`; }).join("")}</tbody></table>
+      <p class="rk-kaki">Dibuat dari aplikasi ALR, ${WIB(Date.now())}</p>`;
+    document.body.appendChild(el); return el;
+  }
+  async function gambarRekap(daftar) {
+    await muatJs(LIB.h2c);
+    const el = rekapEl(daftar);
+    await Promise.all([...el.querySelectorAll("img")].map((im) => im.complete ? 0 : new Promise((ok) => { im.onload = im.onerror = ok; })));
+    try { return await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: "#ffffff" }); } finally { el.remove(); }
+  }
+  async function ekspor(jenis, tombol) {
+    const daftar = terpilih();
+    if (!daftar.length) return toast("ALR: Tidak ada laporan", "Coba ganti rentang waktu atau jenis laporan.");
+    const asli = tombol.innerHTML; tombol.disabled = true; tombol.innerHTML = `<span class="lp-putar"></span>`;
+    try {
+      if (jenis === "xlsx") {
+        await muatJs(LIB.xlsx);
+        const wb = XLSX.utils.book_new(), tambah = (nama, d) => { const ws = XLSX.utils.json_to_sheet(d.map(baris)); ws["!cols"] = Object.keys(baris(d[0] || daftar[0])).map((k) => ({ wch: Math.min(40, Math.max(8, k.length + 2)) })); XLSX.utils.book_append_sheet(wb, ws, nama); };
+        tambah("Semua", daftar);
+        for (const j of ["inspeksi", "logistik", "rm"]) { const d = daftar.filter((i) => jenisDari(i) === j); if (d.length) tambah(JENIS[j].nama, d); }
+        XLSX.writeFile(wb, namaFile("xlsx"));
+      } else {
+        const c = await gambarRekap(daftar);
+        if (jenis === "jpg") await new Promise((ok) => c.toBlob((b) => { unduh(b, namaFile("jpg")); ok(); }, "image/jpeg", 0.9));
+        else {
+          await muatJs(LIB.pdf);
+          const pdf = new jspdf.jsPDF({ unit: "mm", format: "a4" }), W = 190, hHal = 277, pxPerMm = c.width / W, potong = Math.floor(hHal * pxPerMm);
+          for (let y = 0, hal = 0; y < c.height; y += potong, hal++) {
+            const tinggi = Math.min(potong, c.height - y), k = document.createElement("canvas"); k.width = c.width; k.height = tinggi;
+            k.getContext("2d").drawImage(c, 0, y, c.width, tinggi, 0, 0, c.width, tinggi);
+            if (hal) pdf.addPage();
+            pdf.addImage(k.toDataURL("image/jpeg", 0.88), "JPEG", 10, 10, W, tinggi / pxPerMm);
+          }
+          pdf.save(namaFile("pdf"));
+        }
+      }
+      toast("ALR: File siap", `${daftar.length} laporan disimpan ke HP.`);
+    } catch (err) { toast("ALR: Gagal membuat file", "Cek sinyal lalu coba lagi."); }
+    finally { tombol.disabled = false; tombol.innerHTML = asli; }
+  }
+
   function lihatFoto(u) {
     const v = document.createElement("div"); v.className = "lp-penampil"; v.innerHTML = `<img src="${esc(u)}" alt="Foto laporan"><button type="button" aria-label="Tutup">×</button>`;
     v.onclick = () => { v.classList.remove("tampil"); setTimeout(() => v.remove(), 250); };
