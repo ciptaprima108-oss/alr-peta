@@ -9,7 +9,7 @@
     if (!c?.url || !c?.key) throw new Error("supabase-belum-diatur");
     const r = await fetch(`${c.url.replace(/\/$/, "")}/rest/v1/${path}`, {
       ...opsi,
-      headers: { apikey: c.key, Authorization: `Bearer ${c.key}`, "Content-Type": "application/json", ...(opsi.headers || {}) },
+      headers: { apikey: c.key, ...(c.key.startsWith("eyJ") ? { Authorization: `Bearer ${c.key}` } : {}), "Content-Type": "application/json", ...(opsi.headers || {}) },
     });
     if (!r.ok) throw new Error(`supabase ${r.status}: ${(await r.text()).slice(0, 150)}`);
     const t = await r.text(); return t ? JSON.parse(t) : null;
