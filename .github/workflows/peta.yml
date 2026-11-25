@@ -39,6 +39,14 @@ jobs:
           key: gps-live-${{ github.run_id }}
           restore-keys: gps-live-
 
+      # GPS per menit (tab GPS ALR RAPAT, diisi Apps Script tiap 15 mnt): arsip per hari, ikut di-commit sekali sehari
+      - name: Ambil arsip GPS per menit sebelumnya
+        uses: actions/cache/restore@v4
+        with:
+          path: data/gps/rapat
+          key: gps-rapat-${{ github.run_id }}
+          restore-keys: gps-rapat-
+
       - name: Tarik data terbaru dari TrackSolid
         id: tarik
         if: github.event_name != 'push'
@@ -62,6 +70,13 @@ jobs:
           path: data/gps/live_tracksolid.csv
           key: gps-live-${{ github.run_id }}
 
+      - name: Simpan arsip GPS per menit
+        if: steps.tarik.outcome == 'success' && hashFiles('data/gps/rapat/*.csv.gz') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: data/gps/rapat
+          key: gps-rapat-${{ github.run_id }}
+
       - name: Hitung status jalan per segmen
         if: steps.tarik.outputs.lanjut != 'false'
         run: python scripts/hitung_trigger.py
@@ -74,6 +89,10 @@ jobs:
         if: steps.tarik.outputs.lanjut != 'false'
         run: cd scripts && python hitung_rr_traksi.py
 
+      - name: Hitung GPS per menit (berhenti, masuk/keluar BSR, lama tempuh)
+        if: steps.tarik.outputs.lanjut != 'false'
+        run: cd scripts && python hitung_gps_rapat.py
+
       - name: Simpan hasil ke repo
         if: steps.tarik.outputs.lanjut != 'false'
         run: |
@@ -82,6 +101,7 @@ jobs:
           git add docs/data
           git add data/elevasi_jalur.csv 2>/dev/null || true
           git add data/hujan_harian.csv 2>/dev/null || true
+          git add data/gps/rapat 2>/dev/null || true
           # run terjadwal: commit cuma sekali sehari (jam 00 WIB); peta tetap update tiap 30 mnt lewat Pages
           if [ "${{ github.event_name }}" = "schedule" ] && [ "$(TZ=Asia/Jakarta date +%H)" != "00" ]; then
             echo "Run terjadwal, tidak commit"; exit 0
