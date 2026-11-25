@@ -29,8 +29,12 @@
     if (!window.ALR_db) { st.salah = "Sambungan database belum terpasang di aplikasi."; return gambar(); }
     st.muat = true; st.salah = ""; gambar();
     try {
-      const sejak = st.periode === "semua" ? "" : `&waktu=gte.${new Date(Date.now() - (+st.periode === 1 ? jamHariIni() : +st.periode * 864e5)).toISOString()}`;
-      st.data = await window.ALR_db.minta(`laporan?select=*&order=waktu.desc&limit=2000${sejak}`) || [];
+      // ambil 2x rentang supaya bisa dibandingkan dengan rentang sebelumnya (kemarin / minggu lalu)
+      const lebar = st.periode === "semua" ? 0 : +st.periode === 1 ? jamHariIni() : +st.periode * 864e5;
+      const batas = Date.now() - lebar, sejak = lebar ? `&waktu=gte.${new Date(batas - (+st.periode === 1 ? 864e5 : lebar)).toISOString()}` : "";
+      const semua = await window.ALR_db.minta(`laporan?select=*&order=waktu.desc&limit=4000${sejak}`) || [];
+      st.data = lebar ? semua.filter((r) => new Date(r.waktu) >= batas) : semua;
+      st.lalu = lebar ? semua.length - st.data.length : null;
     } catch (e) { st.salah = /belum-diatur/.test(e.message) ? "Database belum disambungkan oleh admin." : !navigator.onLine ? "Tidak ada sinyal. Coba lagi saat ada sinyal." : "Database belum bisa dihubungi. Coba muat ulang."; }
     st.muat = false; gambar();
   }
@@ -46,20 +50,34 @@
     return out.sort((a, b) => (v(a) > v(b) ? 1 : v(a) < v(b) ? -1 : 0) * arah);
   }
   // grafik batang laporan per hari (paling banyak 14 hari terakhir)
+  // ringkasan: A angka besar + B lampu status (pengganti grafik batang)
+  const beres = (r) => ["Selesai", "Diterima"].includes(r.status);
+  const berjalan = (r) => (r.jenis === "logistik" && ["Permintaan", "Dikirim"].includes(r.status)) || (r.jenis === "rm" && r.status === "Lanjut besok");
+  const mendesak = (r) => r.jenis === "inspeksi" && /berat/i.test(r.data?.tingkat || "");
   function grafik() {
-    // satu warna, angka langsung di atas batang, nama hari jelas: mudah dibaca
-    const n = st.periode === "1" ? 1 : 7;
-    const hari = [...Array(n)].map((_, i) => tglKey(Date.now() - (n - 1 - i) * 864e5));
-    const hit = Object.fromEntries(hari.map((h) => [h, 0]));
-    st.data.forEach((r) => { const k = tglKey(r.waktu); if (k in hit) hit[k]++; });
-    const maks = Math.max(1, ...Object.values(hit)), hariIni = hari[hari.length - 1];
-    const nama = (h) => h === hariIni ? "Hari ini" : new Date(h + "T12:00:00+07:00").toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", weekday: "short" });
-    const tgl = (h) => new Date(h + "T12:00:00+07:00").toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", day: "numeric", month: "short" });
-    const total = Object.values(hit).reduce((a, b) => a + b, 0), top = hari.reduce((a, h) => hit[h] > hit[a] ? h : a, hari[0]);
-    const kalimat = n === 1 ? `Hari ini masuk ${total} laporan.` : total ? `Total ${total} laporan dalam 7 hari. Paling banyak ${nama(top) === "Hari ini" ? "hari ini" : new Date(top + "T12:00:00+07:00").toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", weekday: "long", day: "numeric", month: "long" })} (${hit[top]} laporan).` : "Belum ada laporan dalam 7 hari ini.";
-    return `<div class="db-grafik"><div class="db-g-kepala"><b>Jumlah laporan per hari</b></div><p class="db-g-kal">${kalimat}</p>
-      ${n === 1 ? "" : `<div class="db-batang" style="--n:${n}">${hari.map((h) => `<div class="db-bt${h === hariIni ? " kini" : ""}" title="${tgl(h)}: ${hit[h]} laporan">
-        <small>${hit[h]}</small><div class="db-tumpuk" style="--t:${hit[h] / maks}"></div><span>${nama(h)}</span><em>${tgl(h)}</em></div>`).join("")}</div>`}</div>`;
+    const d = st.data, hariIni = tglKey(Date.now()), kemarin = tglKey(Date.now() - 864e5);
+    const nHari = d.filter((r) => tglKey(r.waktu) === hariIni).length;
+    const nKemarin = st.periode === "1" ? (st.lalu ?? 0) : d.filter((r) => tglKey(r.waktu) === kemarin).length;
+    const banding = (a, b, kata) => a === b ? `Sama dengan ${kata} (${b})` : `<span class="${a > b ? "db-naik" : "db-turun"}">${a > b ? "▲" : "▼"} ${Math.abs(a - b)}</span> dari ${kata} (${b})`;
+    const nama = { "1": "Hari ini", "7": "7 hari", "30": "30 hari", semua: "Semua" }[st.periode];
+    const kataLalu = { "7": "minggu lalu", "30": "bulan lalu" }[st.periode];
+    const hitSta = {}; d.forEach((r) => { if (r.sta != null) { const k = Math.round(r.sta * 2) / 2; hitSta[k] = (hitSta[k] || 0) + 1; } });
+    const topSta = Object.entries(hitSta).sort((a, b) => b[1] - a[1])[0];
+    const nM = d.filter(mendesak).length, nJ = d.filter(berjalan).length, nB = d.filter(beres).length;
+    return `<div class="db-ringkas">
+      <div class="db-a">
+        <div class="db-a-besar"><span>Laporan hari ini</span><b>${nHari}</b><small>${banding(nHari, nKemarin, "kemarin")}</small></div>
+        ${st.periode !== "1" ? `<div><span>${nama}</span><b>${d.length}</b><small>${kataLalu && st.lalu != null ? banding(d.length, st.lalu, kataLalu) : "laporan"}</small></div>` : ""}
+        <button type="button" data-db-aksi="tindak" class="${st.tindak ? "aktif" : ""}"><span>Perlu tindak lanjut</span><b class="${nM + nJ ? "db-naik" : "db-turun"}">${nM + nJ}</b><small>${st.tindak ? "tampilkan semua" : "buka daftarnya"}</small></button>
+        <div><span>Selesai</span><b class="db-turun">${nB}</b><small>RM & material</small></div>
+        ${topSta ? `<div><span>STA paling sering</span><b>${sta(+topSta[0])}</b><small>${topSta[1]} laporan</small></div>` : ""}
+      </div>
+      <div class="db-b">
+        <div class="db-lampu m"><i></i><b>${nM}</b><span>Mendesak<small>Inspeksi tingkat berat</small></span></div>
+        <div class="db-lampu k"><i></i><b>${nJ}</b><span>Sedang berjalan<small>Material belum sampai, RM lanjut besok</small></span></div>
+        <div class="db-lampu h"><i></i><b>${nB}</b><span>Beres<small>Selesai atau sudah diterima</small></span></div>
+        ${nM + nJ + nB ? `<div class="db-lampu-bar"><u style="flex:${nM};background:#E11D2E"></u><u style="flex:${nJ};background:#F2A900"></u><u style="flex:${nB};background:#1E8E3E"></u></div>` : ""}
+      </div></div>`;
   }
   function kelompok(rows) {
     if (st.urut !== "waktu") return rows.map(baris).join("");
@@ -88,7 +106,7 @@
       <div class="db-alat">
         <div class="db-periode" role="group" aria-label="Rentang waktu">${PERIODE.map(([v, n]) => `<button type="button" data-db-per="${v}" class="${st.periode === v ? "aktif" : ""}">${n}</button>`).join("")}</div>
         <label class="db-cari"><svg class="ik"><use href="#i-cari"/></svg><input type="search" id="dbCari" placeholder="Cari nama, STA, barang, kegiatan" value="${esc(st.cari)}"></label>
-        <div class="db-baris2">${nTindak ? `<button type="button" class="db-tindak${st.tindak ? " aktif" : ""}" data-db-aksi="tindak" aria-pressed="${st.tindak}"><b>${nTindak}</b> perlu tindak lanjut</button>` : `<span class="db-beres">Tidak ada yang perlu tindak lanjut</span>`}
+        <div class="db-baris2">${st.tindak ? `<button type="button" class="db-tindak aktif" data-db-aksi="tindak" aria-pressed="true">Hanya yang perlu tindak lanjut ✕</button>` : `<span class="db-beres"></span>`}
           <div class="db-mode" role="group" aria-label="Tampilan"><button type="button" data-db-mode="kartu" class="${st.mode === "kartu" ? "aktif" : ""}">Kartu</button><button type="button" data-db-mode="tabel" class="${st.mode === "tabel" ? "aktif" : ""}">Tabel</button></div></div>
         <div class="db-tombol"><span>${rows.length} laporan</span><button type="button" data-db-aksi="muat">Muat ulang</button><button type="button" data-db-aksi="csv" ${rows.length ? "" : "disabled"}><b class="xl">X</b>Unduh Excel</button></div>
       </div>

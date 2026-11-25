@@ -115,3 +115,27 @@ html[data-tema="gelap"] .db-pita button.aktif, html[data-tema="gelap"] .db-perio
 @media (prefers-reduced-motion: reduce) { .db button:active { transform: none; } }
 .db-pita button.aktif::before, .db-periode button.aktif::before, .db-tindak.aktif::before { opacity: .35; height: 40%; }
 .db-pita span { font-size: 14.5px; }
+
+/* ---------- ringkasan A (angka besar) + B (lampu status) ---------- */
+.db-ringkas { display: grid; gap: 12px; }
+.db-a { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.db-a > div, .db-a > button { border-radius: 16px; padding: 12px 14px; background: var(--kertas); box-shadow: var(--bayang); text-align: left; color: var(--tinta); border: 0; font: inherit; }
+.db-a > button { cursor: pointer; border: 2px solid transparent; }
+.db-a > button.aktif { border-color: var(--rb-merah); }
+.db-a span { font: 600 16.5px/1.2 var(--isi); display: block; }
+.db-a b { font: 700 50px/1 var(--judul); display: block; margin: 4px 0 2px; }
+.db-a small { font: 600 14.5px/1.3 var(--isi); color: var(--pudar); display: block; }
+.db-a .db-a-besar { grid-column: 1 / -1; color: #fff; background: linear-gradient(135deg, #1E88E5, #0B3F8C); box-shadow: 0 10px 22px rgba(11,63,140,.3); }
+.db-a .db-a-besar b { font-size: 64px; } .db-a .db-a-besar small { color: #D6E6FA; }
+.db-a .db-a-besar .db-naik { color: #FFD1D1; } .db-a .db-a-besar .db-turun { color: #B9F5CF; }
+.db-naik { color: #E11D2E; } .db-turun { color: #1E8E3E; }
+html[data-tema="gelap"] .db-naik { color: #FF8A80; } html[data-tema="gelap"] .db-turun { color: #6EE7A0; }
+.db-b { background: var(--kertas); border-radius: 18px; padding: 12px; box-shadow: var(--bayang); display: grid; gap: 8px; }
+.db-lampu { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 14px; }
+.db-lampu i { width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; box-shadow: inset 0 -4px 0 rgba(0,0,0,.18), 0 0 0 4px rgba(255,255,255,.5); }
+.db-lampu b { font: 700 38px/1 var(--judul); width: 52px; text-align: center; flex-shrink: 0; }
+.db-lampu span { font: 700 18px/1.2 var(--isi); } .db-lampu small { display: block; font: 500 14.5px/1.3 var(--isi); color: var(--pudar); }
+.db-lampu.m { background: color-mix(in srgb, #E11D2E 10%, var(--kertas)); } .db-lampu.m i { background: #E11D2E; }
+.db-lampu.k { background: color-mix(in srgb, #F2A900 13%, var(--kertas)); } .db-lampu.k i { background: #F2A900; }
+.db-lampu.h { background: color-mix(in srgb, #1E8E3E 11%, var(--kertas)); } .db-lampu.h i { background: #1E8E3E; }
+.db-lampu-bar { display: flex; height: 14px; border-radius: 8px; overflow: hidden; margin: 4px 2px 2px; } .db-lampu-bar u { display: block; }
