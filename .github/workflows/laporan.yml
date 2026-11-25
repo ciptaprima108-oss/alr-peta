@@ -27,3 +27,7 @@ jobs:
       - run: python scripts/ambil_laporan.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: python scripts/tulis_tiket.py
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
