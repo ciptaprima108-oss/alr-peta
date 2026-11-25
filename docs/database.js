@@ -55,29 +55,14 @@
   const berjalan = (r) => (r.jenis === "logistik" && ["Permintaan", "Dikirim"].includes(r.status)) || (r.jenis === "rm" && r.status === "Lanjut besok");
   const mendesak = (r) => r.jenis === "inspeksi" && /berat/i.test(r.data?.tingkat || "");
   function grafik() {
-    const d = st.data, hariIni = tglKey(Date.now()), kemarin = tglKey(Date.now() - 864e5);
-    const nHari = d.filter((r) => tglKey(r.waktu) === hariIni).length;
-    const nKemarin = st.periode === "1" ? (st.lalu ?? 0) : d.filter((r) => tglKey(r.waktu) === kemarin).length;
-    const banding = (a, b, kata) => a === b ? `Sama dengan ${kata} (${b})` : `<span class="${a > b ? "db-naik" : "db-turun"}">${a > b ? "▲" : "▼"} ${Math.abs(a - b)}</span> dari ${kata} (${b})`;
-    const nama = { "1": "Hari ini", "7": "7 hari", "30": "30 hari", semua: "Semua" }[st.periode];
-    const kataLalu = { "7": "minggu lalu", "30": "bulan lalu" }[st.periode];
-    const hitSta = {}; d.forEach((r) => { if (r.sta != null) { const k = Math.round(r.sta * 2) / 2; hitSta[k] = (hitSta[k] || 0) + 1; } });
-    const topSta = Object.entries(hitSta).sort((a, b) => b[1] - a[1])[0];
-    const nM = d.filter(mendesak).length, nJ = d.filter(berjalan).length, nB = d.filter(beres).length;
-    return `<div class="db-ringkas">
-      <div class="db-a">
-        <div class="db-a-besar"><span>Laporan hari ini</span><b>${nHari}</b><small>${banding(nHari, nKemarin, "kemarin")}</small></div>
-        ${st.periode !== "1" ? `<div><span>${nama}</span><b>${d.length}</b><small>${kataLalu && st.lalu != null ? banding(d.length, st.lalu, kataLalu) : "laporan"}</small></div>` : ""}
-        <button type="button" data-db-aksi="tindak" class="${st.tindak ? "aktif" : ""}"><span>Perlu tindak lanjut</span><b class="${nM + nJ ? "db-naik" : "db-turun"}">${nM + nJ}</b><small>${st.tindak ? "tampilkan semua" : "buka daftarnya"}</small></button>
-        <div><span>Selesai</span><b class="db-turun">${nB}</b><small>RM & material</small></div>
-        ${topSta ? `<div><span>STA paling sering</span><b>${sta(+topSta[0])}</b><small>${topSta[1]} laporan</small></div>` : ""}
-      </div>
-      <div class="db-b">
-        <div class="db-lampu m"><i></i><b>${nM}</b><span>Mendesak<small>Inspeksi tingkat berat</small></span></div>
-        <div class="db-lampu k"><i></i><b>${nJ}</b><span>Sedang berjalan<small>Material belum sampai, RM lanjut besok</small></span></div>
-        <div class="db-lampu h"><i></i><b>${nB}</b><span>Beres<small>Selesai atau sudah diterima</small></span></div>
-        ${nM + nJ + nB ? `<div class="db-lampu-bar"><u style="flex:${nM};background:#E11D2E"></u><u style="flex:${nJ};background:#F2A900"></u><u style="flex:${nB};background:#1E8E3E"></u></div>` : ""}
-      </div></div>`;
+    // satu baris angka kecil, sisanya langsung daftar laporan
+    const d = st.data, hariIni = tglKey(Date.now());
+    const nHari = d.filter((r) => tglKey(r.waktu) === hariIni).length, nT = d.filter(perluTindak).length, nB = d.filter(beres).length;
+    const nama = { "1": "Hari ini", "7": "7 hari", "30": "30 hari", semua: "Total" }[st.periode];
+    return `<div class="db-strip">
+      <div><b>${nHari}</b><span>Hari ini</span></div>
+      <button type="button" data-db-aksi="tindak" class="${st.tindak ? "aktif" : ""}" aria-pressed="${st.tindak}"><b class="${nT ? "db-naik" : ""}">${nT}</b><span>Perlu tindak lanjut</span></button>
+      <div><b class="db-turun">${nB}</b><span>Beres</span></div></div>`;
   }
   function kelompok(rows) {
     if (st.urut !== "waktu") return rows.map(baris).join("");

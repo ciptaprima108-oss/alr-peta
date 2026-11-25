@@ -139,3 +139,12 @@ html[data-tema="gelap"] .db-naik { color: #FF8A80; } html[data-tema="gelap"] .db
 .db-lampu.k { background: color-mix(in srgb, #F2A900 13%, var(--kertas)); } .db-lampu.k i { background: #F2A900; }
 .db-lampu.h { background: color-mix(in srgb, #1E8E3E 11%, var(--kertas)); } .db-lampu.h i { background: #1E8E3E; }
 .db-lampu-bar { display: flex; height: 14px; border-radius: 8px; overflow: hidden; margin: 4px 2px 2px; } .db-lampu-bar u { display: block; }
+
+/* ---------- satu baris angka kecil ---------- */
+.db-strip { display: flex; background: var(--kertas); border-radius: 16px; box-shadow: var(--bayang); overflow: hidden; }
+.db-strip > div, .db-strip > button { flex: 1; min-width: 0; padding: 10px 6px; text-align: center; border: 0; background: none; color: var(--tinta); font: inherit; }
+.db-strip > * + * { border-left: 1px solid var(--garis); }
+.db-strip b { display: block; font: 700 30px/1 var(--judul); }
+.db-strip span { display: block; margin-top: 3px; font: 600 14.5px/1.2 var(--isi); color: var(--pudar); }
+.db-strip > button { cursor: pointer; } .db-strip > button.aktif { background: color-mix(in srgb, #E11D2E 12%, var(--kertas)); }
+.db-strip > button.aktif span { color: var(--rb-merah); }
