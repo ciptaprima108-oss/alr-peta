@@ -148,3 +148,17 @@ html[data-tema="gelap"] .db-naik { color: #FF8A80; } html[data-tema="gelap"] .db
 .db-strip span { display: block; margin-top: 3px; font: 600 14.5px/1.2 var(--isi); color: var(--pudar); }
 .db-strip > button { cursor: pointer; } .db-strip > button.aktif { background: color-mix(in srgb, #E11D2E 12%, var(--kertas)); }
 .db-strip > button.aktif span { color: var(--rb-merah); }
+
+/* ---------- grafik garis ---------- */
+.db-garis { width: 100%; height: auto; display: block; overflow: visible; }
+.db-g-dasar { stroke: var(--garis); stroke-width: 2; }
+.db-g-jalur { fill: none; stroke: #1565C0; stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
+.db-g-titik { fill: var(--kertas); stroke: #1565C0; stroke-width: 4; }
+.db-g-kini { fill: #E11D2E; }
+.db-garis text { text-anchor: middle; font-family: var(--isi); }
+.db-g-angka { font-weight: 700; font-size: 20px; fill: var(--tinta); }
+.db-g-hari { font-weight: 600; font-size: 14px; fill: var(--tinta); }
+.db-g-tgl { font-size: 11.5px; fill: var(--pudar); }
+.db-garis .kini { fill: #E11D2E; }
+html[data-tema="gelap"] .db-g-jalur, html[data-tema="gelap"] .db-g-titik { stroke: #5AA7F0; }
+html[data-tema="gelap"] .db-garis .kini { fill: #FF6B6B; } html[data-tema="gelap"] .db-g-kini { fill: #FF5A5A; }

@@ -55,16 +55,26 @@
   const berjalan = (r) => (r.jenis === "logistik" && ["Permintaan", "Dikirim"].includes(r.status)) || (r.jenis === "rm" && r.status === "Lanjut besok");
   const mendesak = (r) => r.jenis === "inspeksi" && /berat/i.test(r.data?.tingkat || "");
   function grafik() {
-    // grafik sederhana: 1 batang per hari, angka di atas, hari ini merah
+    // grafik garis sederhana: 7 hari, angka di tiap titik, hari ini merah
     if (st.periode === "1") return "";
     const n = 7, hari = [...Array(n)].map((_, i) => tglKey(Date.now() - (n - 1 - i) * 864e5));
     const hit = Object.fromEntries(hari.map((h) => [h, 0]));
     tersaring().forEach((r) => { const k = tglKey(r.waktu); if (k in hit) hit[k]++; });
     const maks = Math.max(1, ...Object.values(hit)), kini = hari[n - 1];
-    const nama = (h) => h === kini ? "Hari ini" : new Date(h + "T12:00:00+07:00").toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", weekday: "short" });
-    const tgl = (h) => new Date(h + "T12:00:00+07:00").toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", day: "numeric", month: "short" });
+    const nama = (h) => h === kini ? "Ini" : new Date(h + "T12:00:00+07:00").toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", weekday: "short" });
+    const tgl = (h) => new Date(h + "T12:00:00+07:00").getDate();
+    const X = (i) => 24 + i * (292 / (n - 1)), Y = (v) => 150 - (v / maks) * 100;
+    const titik = hari.map((h, i) => [X(i), Y(hit[h]), hit[h], h]);
+    const garis = titik.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`).join(" ");
     return `<div class="db-grafik"><div class="db-g-kepala"><b>Laporan per hari, 7 hari terakhir</b></div>
-      <div class="db-batang" style="--n:${n}">${hari.map((h) => `<div class="db-bt${h === kini ? " kini" : ""}"><small>${hit[h]}</small><div class="db-tumpuk" style="--t:${hit[h] / maks}"></div><span>${nama(h)}</span><em>${tgl(h)}</em></div>`).join("")}</div></div>`;
+      <svg class="db-garis" viewBox="0 0 340 196" role="img" aria-label="Jumlah laporan per hari: ${titik.map(([, , v, h]) => nama(h) + " " + v).join(", ")}">
+        <defs><linearGradient id="dbIsiGaris" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1565C0" stop-opacity=".28"/><stop offset="1" stop-color="#1565C0" stop-opacity="0"/></linearGradient></defs>
+        <line x1="12" y1="150" x2="328" y2="150" class="db-g-dasar"/>
+        <path d="${garis} L${X(n - 1)} 150 L${X(0)} 150Z" fill="url(#dbIsiGaris)"/>
+        <path d="${garis}" class="db-g-jalur"/>
+        ${titik.map(([x, y, v, h]) => `<circle cx="${x}" cy="${y}" r="${h === kini ? 8 : 7}" class="${h === kini ? "db-g-kini" : "db-g-titik"}"/><text x="${x}" y="${y - 14}" class="db-g-angka${h === kini ? " kini" : ""}">${v}</text>
+          <text x="${x}" y="172" class="db-g-hari${h === kini ? " kini" : ""}">${nama(h)}</text><text x="${x}" y="189" class="db-g-tgl">${tgl(h)}</text>`).join("")}
+      </svg></div>`;
   }
   function kelompok(rows) {
     if (st.urut !== "waktu") return rows.map(baris).join("");
