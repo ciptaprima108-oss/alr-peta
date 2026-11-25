@@ -1,7 +1,7 @@
 /* Layar Database laporan (Supabase) */
 .db { display: grid; gap: 14px; }
-.db-pita { display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 8px; }
-.db-pita button { border: 2px solid color-mix(in srgb, var(--w) 35%, var(--garis)); background: var(--kertas); color: var(--tinta); border-radius: 16px;
+.db-pita { display: grid; grid-template-columns: repeat(auto-fit, minmax(78px, 1fr)); gap: 8px; }
+.db-pita button { color: var(--tinta); border-radius: 16px;
   padding: 10px 8px 9px; text-align: left; cursor: pointer; box-shadow: var(--bayang); display: grid; gap: 2px; min-width: 0; }
 .db-pita b { font: 700 38px/1 var(--judul); color: var(--w); }
 .db-pita span { font: 600 15px/1.2 var(--isi); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -11,14 +11,14 @@
 
 .db-alat { background: var(--kertas); border-radius: 18px; padding: 12px; box-shadow: var(--bayang); display: grid; gap: 10px; }
 .db-periode { display: flex; gap: 6px; overflow-x: auto; }
-.db-periode button { flex: 1 0 auto; border: 2px solid var(--garis); background: var(--debu); color: var(--tinta); border-radius: 999px; padding: 8px 12px; font: 600 16px var(--isi); cursor: pointer; }
+.db-periode button { flex: 1 0 auto; border-radius: 999px; padding: 8px 12px; font: 600 16px var(--isi); cursor: pointer; }
 .db-periode button.aktif { background: var(--rb-biru); border-color: var(--rb-biru); color: #fff; }
 .db-cari { display: flex; align-items: center; gap: 8px; border: 2px solid var(--garis); background: var(--debu); border-radius: 12px; padding: 0 12px; }
 .db-cari .ik { color: var(--pudar); font-size: 20px; flex-shrink: 0; }
 .db-cari input { flex: 1; min-width: 0; border: 0; background: none; color: var(--tinta); font: 500 18px var(--isi); padding: 12px 0; outline: none; }
 .db-tombol { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .db-tombol span { flex: 1; font: 600 16px var(--isi); color: var(--pudar); }
-.db-tombol button { border: 2px solid var(--garis); background: var(--kertas); color: var(--tinta); border-radius: 12px; padding: 9px 12px; font: 600 16px var(--isi); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.db-tombol button { color: var(--tinta); border-radius: 12px; padding: 9px 12px; font: 600 16px var(--isi); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
 .db-tombol button:disabled { opacity: .45; cursor: default; }
 .db-tombol .xl { background: #1D7A45; color: #fff; border-radius: 5px; width: 22px; height: 22px; display: grid; place-items: center; font: 700 14px var(--isi); }
 
@@ -44,3 +44,70 @@
 @media (max-width: 420px) { .db-kepala { gap: 10px; padding: 11px 10px; } .db-sta { width: 56px; } .db-status { font-size: 12.5px; padding: 3px 7px; } .db-pita b { font-size: 32px; } }
 html[data-tema="gelap"] .db-pita b, html[data-tema="gelap"] .db-sta b, html[data-tema="gelap"] .db-status { color: color-mix(in srgb, var(--w) 55%, #fff); }
 html[data-tema="gelap"] .db-pita button.aktif b { color: #fff; }
+
+/* ---------- grafik per hari ---------- */
+.db-grafik { background: var(--kertas); border-radius: 18px; padding: 14px 14px 10px; box-shadow: var(--bayang); }
+.db-g-kepala { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+.db-g-kepala b { font: 700 20px var(--judul); } .db-g-kepala span { font: 500 14px var(--isi); color: var(--pudar); }
+.db-batang { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 6px; align-items: end; height: 130px; }
+.db-bt { display: grid; grid-template-rows: 18px 1fr 18px; height: 100%; text-align: center; min-width: 0; }
+.db-bt small { font: 700 13px var(--isi); color: var(--tinta); }
+.db-tumpuk { align-self: end; justify-self: center; width: min(100%, 30px); height: max(4px, calc(var(--t) * 100%)); display: flex; flex-direction: column-reverse;
+  border-radius: 8px 8px 3px 3px; overflow: hidden; background: var(--garis); }
+.db-tumpuk i { background: linear-gradient(180deg, color-mix(in srgb, var(--w) 70%, #fff), var(--w)); min-height: 3px; }
+.db-bt span { font: 500 12px var(--isi); color: var(--pudar); white-space: nowrap; overflow: hidden; }
+.db-legenda { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px; font: 500 14px var(--isi); color: var(--pudar); }
+.db-legenda i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; background: var(--w); margin-right: 5px; vertical-align: -1px; }
+
+/* ---------- tindak lanjut + mode ---------- */
+.db-baris2 { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.db-tindak b { font: 700 19px var(--judul); margin-right: 2px; }
+.db-beres { flex: 1; font: 600 15px var(--isi); color: #1E8E3E; }
+.db-mode { margin-left: auto; display: flex; padding: 3px; border-radius: 999px; gap: 3px; }
+.db-mode button { border: 0; border-radius: 999px; padding: 7px 14px; font: 600 15px var(--isi); cursor: pointer; }
+
+/* ---------- kelompok tanggal + tabel ---------- */
+.db-tgl { display: flex; justify-content: space-between; align-items: baseline; margin: 10px 4px 0; font: 700 19px var(--judul); color: var(--tinta); }
+.db-tgl:first-child { margin-top: 0; } .db-tgl small { font: 500 14px var(--isi); color: var(--pudar); }
+.db-status { color: var(--s, var(--w)); background: color-mix(in srgb, var(--s, var(--w)) 14%, var(--kertas)); }
+.db-tabel-bungkus { overflow-x: auto; background: var(--kertas); border-radius: 16px; box-shadow: var(--bayang); }
+.db-tabel { width: 100%; min-width: 640px; border-collapse: collapse; font: 500 15px/1.35 var(--isi); }
+.db-tabel th { position: sticky; top: 0; background: color-mix(in srgb, var(--rb-biru) 10%, var(--kertas)); text-align: left; padding: 0; }
+.db-tabel th button { width: 100%; border: 0; background: none; color: var(--tinta); font: 700 14.5px var(--isi); padding: 11px 10px; text-align: left; cursor: pointer; white-space: nowrap; }
+.db-tabel th button.aktif { color: var(--rb-biru2); }
+.db-tabel td { text-align: left; padding: 10px; border-top: 1px solid var(--garis); vertical-align: top; }
+.db-tabel tr[data-db-baris] { cursor: pointer; } .db-tabel tr[data-db-baris]:hover td { background: color-mix(in srgb, var(--w) 7%, transparent); }
+.db-tabel td:first-child { white-space: nowrap; box-shadow: inset 4px 0 0 var(--w); }
+.db-jenis { color: var(--w); font-weight: 700; white-space: nowrap; }
+.db-angka { font: 700 18px var(--judul); color: var(--w); }
+html[data-tema="gelap"] .db-jenis, html[data-tema="gelap"] .db-angka { color: color-mix(in srgb, var(--w) 55%, #fff); }
+html[data-tema="gelap"] .db-tabel th button.aktif { color: #8FC2FF; }
+
+/* ---------- tombol kaca (glassy) ---------- */
+.db-pita button, .db-periode button, .db-tombol button, .db-tindak, .db-mode {
+  position: relative; overflow: hidden; isolation: isolate;
+  background: linear-gradient(160deg, rgba(255,255,255,.75), rgba(255,255,255,.35)) , color-mix(in srgb, var(--rb-biru) 6%, var(--kertas));
+  border: 1px solid rgba(255,255,255,.7); box-shadow: inset 0 1px 0 rgba(255,255,255,.9), inset 0 -1px 0 rgba(11,78,162,.06), 0 4px 14px rgba(11,40,90,.10);
+  -webkit-backdrop-filter: blur(12px) saturate(160%); backdrop-filter: blur(12px) saturate(160%); }
+.db-pita button::before, .db-periode button::before, .db-tombol button::before, .db-tindak::before {
+  content: ""; position: absolute; left: 6%; right: 6%; top: 1px; height: 46%; border-radius: inherit; z-index: -1;
+  background: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,0)); opacity: .7; pointer-events: none; }
+.db-pita button { border-left: 4px solid var(--w); }
+.db-pita button.aktif, .db-periode button.aktif, .db-mode button.aktif, .db-tindak.aktif {
+  background: linear-gradient(160deg, color-mix(in srgb, var(--w, var(--rb-biru2)) 75%, #fff), var(--w, var(--rb-biru)));
+  border-color: rgba(255,255,255,.55); color: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 8px 18px color-mix(in srgb, var(--w, var(--rb-biru)) 40%, transparent); }
+.db-periode button, .db-mode button { --w: var(--rb-biru2); color: var(--tinta); }
+.db-mode button { background: transparent; }
+.db-tindak { --w: #E11D2E; color: #B3121F; border-radius: 999px; padding: 7px 14px; font: 600 15px var(--isi); cursor: pointer; }
+.db-tombol button { border-radius: 14px; }
+.db-pita button:active, .db-periode button:active, .db-tombol button:active, .db-tindak:active, .db-mode button:active { transform: scale(.97); }
+html[data-tema="gelap"] .db-pita button, html[data-tema="gelap"] .db-periode button, html[data-tema="gelap"] .db-tombol button, html[data-tema="gelap"] .db-tindak, html[data-tema="gelap"] .db-mode {
+  background: linear-gradient(160deg, rgba(255,255,255,.12), rgba(255,255,255,.03)), var(--kertas); border-color: rgba(255,255,255,.14);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 6px 16px rgba(0,0,0,.35); }
+html[data-tema="gelap"] .db-pita button::before, html[data-tema="gelap"] .db-periode button::before, html[data-tema="gelap"] .db-tombol button::before, html[data-tema="gelap"] .db-tindak::before { opacity: .12; }
+html[data-tema="gelap"] .db-tindak { color: #FF8A80; }
+html[data-tema="gelap"] .db-pita button.aktif, html[data-tema="gelap"] .db-periode button.aktif, html[data-tema="gelap"] .db-mode button.aktif, html[data-tema="gelap"] .db-tindak.aktif {
+  background: linear-gradient(160deg, color-mix(in srgb, var(--w, var(--rb-biru2)) 80%, #fff), var(--w, var(--rb-biru))); color: #fff; }
+@media (prefers-reduced-motion: reduce) { .db button:active { transform: none; } }
+.db-pita button.aktif::before, .db-periode button.aktif::before, .db-tindak.aktif::before { opacity: .35; height: 40%; }
+.db-pita span { font-size: 14.5px; }
