@@ -196,3 +196,26 @@ body.peta-penuh main#petaArea { position: fixed; inset: 0 0 calc(var(--tabh) + e
   .kh-busur { transition: none; }
 }
 @media (min-width: 761px) { .banner { clip-path: inset(-20px 14px); } }
+
+/* ---------- laptop / layar lebar: peta besar di kiri, kartu di kanan ---------- */
+@media (min-width: 1000px) {
+  .beranda { max-width: none; padding: 0 28px 24px; }
+  .atas-ber { border-radius: 0 0 30px 30px; padding-left: 28px; padding-right: 28px; }
+  .atas-ber .cari { max-width: 640px; }
+  .atas-ber::before { right: 0; border-radius: 0 0 30px 50%; }
+  .isi-beranda { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(400px, 1fr); gap: 18px; padding: 0; margin-top: 18px; align-items: start; }
+  .isi-beranda > .kartu-peta { grid-column: 1; grid-row: 1 / span 3; }
+  .isi-beranda > .segar { grid-column: 1; grid-row: 4; }
+  .isi-beranda > .kartu-hari { grid-column: 2; grid-row: 1; }
+  .isi-beranda > .hari-ini { grid-column: 2; grid-row: 2; }
+  .isi-beranda > .lapor-cepat { grid-column: 2; grid-row: 3; }
+  .isi-beranda > .peringatan { grid-column: 1 / -1; grid-row: 5; }
+  .isi-beranda > .banner { grid-column: 1 / -1; grid-row: 6; }
+  .isi-beranda > .menu-kartu { grid-column: 1 / -1; grid-row: 7; }
+  .isi-beranda > .segar { margin-top: 0; }
+  .bn-gambar { flex: 0 0 auto; width: 170px; }
+  .bn-teks { padding: 22px 0 26px 26px; }
+  .kartu-peta main#petaArea { height: 560px; }
+  .isi-beranda .menu { grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); }
+}
+@media (min-width: 1500px) { .kartu-peta main#petaArea { height: 640px; } }

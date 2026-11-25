@@ -98,7 +98,7 @@
     window.ALR_DB_RINGKAS = st.muat ? "Memuat..." : st.salah ? st.salah : `${st.data.length} laporan ${{ "1": "hari ini", "7": "dalam 7 hari terakhir", "30": "dalam 30 hari terakhir", semua: "tersimpan" }[st.periode]}.`;
     window.ALR_isiHero?.("database");
     el.innerHTML = `
-      <div class="db-pita" role="group" aria-label="Jenis laporan">${tab.map((k) => `<button type="button" data-db-jenis="${k}" class="${st.jenis === k ? "aktif" : ""}" style="--w:${k === "semua" ? "var(--rb-biru)" : (JENIS[k]?.w || "#5B6B80")}">
+      <div class="db-kiri"><div class="db-pita" role="group" aria-label="Jenis laporan">${tab.map((k) => `<button type="button" data-db-jenis="${k}" class="${st.jenis === k ? "aktif" : ""}" style="--w:${k === "semua" ? "var(--rb-biru)" : (JENIS[k]?.w || "#5B6B80")}">
         <b>${hit[k] || 0}</b><span>${k === "semua" ? "Semua" : k === "rm" ? "RM" : esc(JENIS[k]?.n || k)}</span></button>`).join("")}</div>
       ${st.data.length && !st.muat ? grafik() : ""}
       <div class="db-alat">
@@ -108,7 +108,7 @@
           <div class="db-mode" role="group" aria-label="Tampilan"><button type="button" data-db-mode="kartu" class="${st.mode === "kartu" ? "aktif" : ""}">Kartu</button><button type="button" data-db-mode="tabel" class="${st.mode === "tabel" ? "aktif" : ""}">Tabel</button></div></div>
         <div class="db-tombol"><span>${rows.length} laporan</span><button type="button" data-db-aksi="muat">Muat ulang</button><button type="button" data-db-aksi="csv" ${rows.length ? "" : "disabled"}><b class="xl">X</b>Unduh Excel</button></div>
       </div>
-      <div class="db-daftar" aria-live="polite">${st.muat ? `<p class="db-kosong">Memuat database...</p>` : st.salah ? `<p class="db-kosong db-salah">${esc(st.salah)}</p>` :
+      </div><div class="db-daftar" aria-live="polite">${st.muat ? `<p class="db-kosong">Memuat database...</p>` : st.salah ? `<p class="db-kosong db-salah">${esc(st.salah)}</p>` :
         !rows.length ? `<p class="db-kosong">${st.data.length ? "Tidak ada laporan yang cocok. Coba hapus kata pencarian atau pilih jenis lain." : "Belum ada laporan di rentang waktu ini. Pilih rentang yang lebih panjang."}</p>` :
         st.mode === "tabel" ? tabel(rows) : kelompok(rows)}</div>`;
     const c = $("dbCari"); c.oninput = () => { st.cari = c.value; const pos = c.selectionStart; gambar(); const n = $("dbCari"); n.focus(); n.setSelectionRange(pos, pos); };
