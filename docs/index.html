@@ -14,6 +14,7 @@
 <link rel="apple-touch-icon" href="ikon/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="ikon/favicon-32.png">
 <link rel="manifest" href="manifest.webmanifest">
+<script>/* link pelapor (?pelapor): nama "ALR Lapor" + ikon sendiri untuk Tambah ke Layar Utama */(function(){var p=/[?&]pelapor\b/.test(location.search);try{p=p||(JSON.parse(localStorage.getItem("alr_mode_pelapor"))&&!localStorage.getItem("alr_masuk"))}catch(e){}if(!p)return;document.title="ALR Lapor";var q=function(s){return document.querySelector(s)};q('meta[name="apple-mobile-web-app-title"]').content="ALR Lapor";q('link[rel="apple-touch-icon"]').href="ikon/lapor-apple-touch.png";q('link[rel="icon"]').href="ikon/lapor-192.png";q('link[rel="manifest"]').href="manifest-lapor.webmanifest";})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
