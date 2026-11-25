@@ -1,53 +1,66 @@
 {
+ "versi": 2,
  "iterasi": 150000,
  "akun": {
   "01001": {
-   "garam": "4fc2e9d1d1da6c76862df11edc3baedf",
-   "hash": "3deffb5135d051c8738711a99af587f46dae426afb2959fa9fd23ec8346997ce"
+   "garam": "fe444fefde6bd28cc568f9ee08126db0",
+   "cek": "2e961b6a5e05e6ed9bdabadfb1b5cd943a5e74924d026a9f4ca499c8440f2539",
+   "awal": true
   },
   "01002": {
-   "garam": "6bcb00aafad4e6a2cbfd8fb9a71886eb",
-   "hash": "3b7919743d4187d31eeb5db2bfce9f410050c10ebb04e6677606fe509689a4d9"
+   "garam": "09346bb37acc86989c4dd45c3ed20b8c",
+   "cek": "4a455d5fa56c051e82335b19ccec31a594c7157c83e9cf6b3332969edb6cf061",
+   "awal": true
   },
   "01003": {
-   "garam": "08d077d081e4c0472e003f67a56517e0",
-   "hash": "fed054e9f31da546a302e4a3243c36544841072857313331efe674fecf4d1967"
+   "garam": "93f840d8d97ec6e764cb3813d3adb72b",
+   "cek": "b52a30fe4ed53bfc62b3e33dea9be7f7de855a85d86bedd0a1e184d67c1887b3",
+   "awal": true
   },
   "01004": {
-   "garam": "c57a08a96f83cab1aa1a9b1e1ee80650",
-   "hash": "75f6713dbbdd565727cbc4c6f41c0d57a8069dc393d60f296e7cfca4a6d9e691"
+   "garam": "efb86b5a98027ddc8dac52c4d1068338",
+   "cek": "b4e3beebb7c2e6fa7048835b705af3a711f583a6cfae76ad29f167ecce8d9339",
+   "awal": true
   },
   "01005": {
-   "garam": "83b4bf9ff5567ec8da95660a17ba9ec8",
-   "hash": "88ead4f8ee9cc54c30c64065c87198601a28f0fe67e3a299345760d7b0f4ec44"
+   "garam": "0edf86f442790bd0c00f7fe22f047785",
+   "cek": "feca06bab7506b64415f99830301216eaffa6c5a9093c4c30c067ad3489414dd",
+   "awal": true
   },
   "01006": {
-   "garam": "89e8cdb2f9d576b826449c6e9fc853ac",
-   "hash": "99e4f7c8e5bdfab05e35abdbdebdff9b938535d6ca05e9c06cb671f36aaaa16b"
+   "garam": "41adbb9044a313e6cf0e9546bf52ef4d",
+   "cek": "35362f601eed46571b3ac9bebfd4e3e97e7c9bca9384d34c3f8bae8aa42261db",
+   "awal": true
   },
   "01007": {
-   "garam": "87f98d2db6739e315f8812b150cfbb3a",
-   "hash": "d5f8bd85ffaa0a937870ff0a3b3e3e57fbf8278ea4ffbb0377d2a3a045750fc1"
+   "garam": "c5f7699ca805b36ea6edae0c14d947a0",
+   "cek": "5818cd900d304194c84f73a62f9593fe631f3fc6e4fd9db09d84d3cb5c1ad72f",
+   "awal": true
   },
   "01008": {
-   "garam": "070afdb35ed587247bb9a3c530835504",
-   "hash": "62cd6f9691f2334f8b684e69bb3b8fb81ba939b984fe81b456030f589df38ba0"
+   "garam": "1940269abbb4967556d3ae033e6fb8a1",
+   "cek": "afc2e5dd5647cd7a4d92e0a19a0fb0c235b0c2ce8f9efc107d93335fb082c15c",
+   "awal": true
   },
   "01009": {
-   "garam": "f3b6156550c589315a547c394e0b62d8",
-   "hash": "1ecb9e17b97a107704698cf383cd5227c1d0cb312a4909e52fbda09fc6c9b227"
+   "garam": "186c660d692b5a24ec363b29a2cfac80",
+   "cek": "2412b6f47cceeb8c0800aa5b7851fdc736d4e8f1274ddcf5142502d36a01c7da",
+   "awal": true
   },
   "01010": {
-   "garam": "e75462b2ead0b96b7839b90d3575c20c",
-   "hash": "7a351591b89533b629f8797d76b30f4d56222d2e53bab05e0dcb6b75e2b47351"
+   "garam": "9a22d3ddf6ee3d2098da00a1adc4f2c2",
+   "cek": "a0d39996d61380249de2d64800c48e8c25053cf65e0c8d3851f8e6e3bfc35361",
+   "awal": true
   },
   "01011": {
-   "garam": "b02cd8123324cf75e45d840eb24cb83d",
-   "hash": "b3fa931dbaf0276cfcc025d4a1c64197d44125d69043b5e7b517fa1c15338e9e"
+   "garam": "02fad52ec51e3ec74a42f200d8350291",
+   "cek": "6621d5048404f7a660f6ceb5735c1223a5f9c90c3da7868a9b4ea55608cc3fc4",
+   "awal": true
   },
   "01012": {
-   "garam": "d3ee50cf9f933dd84fd98b6eb50c82d3",
-   "hash": "5575f7131e1280b8d39adf0b8f7a3bbecd57eae643a4b926ba3de0f2bc658044"
+   "garam": "3b48108f0505e594dfc3593e9d693187",
+   "cek": "fd06f3d520f41178d93620de6ceca1ed151ed02f6016f9a4e67ac88458d15de3",
+   "awal": true
   }
  }
 }

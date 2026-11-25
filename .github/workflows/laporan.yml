@@ -8,6 +8,7 @@ on:
 permissions:
   contents: write
   issues: write
+  actions: write      # tayangkan ulang Pages setelah PIN diganti
 
 concurrency:
   group: laporan
