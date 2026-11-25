@@ -3,7 +3,7 @@
 --
 -- Cara masuk di aplikasi: No. ID (5 angka) + PIN (6 angka).
 -- PIN awal dibuat ACAK di dalam database. PIN TIDAK ditulis di file ini dan tidak ada di GitHub.
--- Untuk melihat PIN awal: Supabase > Table Editor > tabel "pin_awal" (hanya bisa dibuka pemilik project Supabase).
+-- PIN awal langsung tampil di hasil paling bawah setelah Run (juga tersimpan di tabel "pin_awal", hanya bisa dibuka pemilik project Supabase).
 -- Bagikan PIN ke masing-masing orang secara pribadi, minta mereka ganti PIN di Profil > Ganti PIN,
 -- lalu kosongkan tabelnya:  delete from public.pin_awal;
 
@@ -75,6 +75,7 @@ begin
   end loop;
 end $$;
 
--- cek hasil: 12 baris
-select p.kode_alr, p.nama, p.divisi, p.jabatan, (p.auth_id is not null) as punya_login
-from public.pengguna p order by p.kode_alr;
+-- hasil: 12 baris No. ID + nama + PIN awal (langsung tampil di bawah editor, tinggal dibagikan)
+select p.kode_alr as no_id, p.nama, p.jabatan, coalesce(a.pin, '(PIN sudah diganti / sudah dibagikan)') as pin_awal
+from public.pengguna p left join public.pin_awal a on a.kode_alr = p.kode_alr
+where p.kode_alr ~ '^[0-9]{5}$' order by p.kode_alr;
