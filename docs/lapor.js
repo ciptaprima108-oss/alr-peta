@@ -20,8 +20,13 @@
     inspeksi: { nama: "Inspeksi jalan", label: "laporan-jalan", tag: "INSPEKSI", ikon: "inspeksi" },
     logistik: { nama: "Logistik", label: "logistik", tag: "LOGISTIK", ikon: "logistik" },
     rm: { nama: "Pekerjaan RM", label: "pekerjaan-rm", tag: "PEKERJAAN RM", ikon: "rm" },
+    lainnya: { nama: "Hujan / lainnya", label: "laporan-jalan", tag: "LAINNYA", ikon: "hujan" },
   };
-  const TIM_INSPEKSI = ["CH GPE", "WHL", "ALR", "Lainnya"];
+  const TIM_INSPEKSI = ["CH GPE", "WHL", "RM", "Patroli", "ALR", "Lainnya"];
+  const KATEGORI_LAIN = ["Hujan deras", "Banjir / genangan", "Kecelakaan / insiden", "Unit mogok / rusak", "Antrean panjang", "Lainnya"];
+  // nomor laporan seragam: L + tanggal WIB (yymmdd) + 4 huruf acak, contoh L251125-K7QF. Dicap di foto dan jadi bukti untuk pelapor.
+  const nomorBaru = () => { const t = new Date(Date.now() + 7 * 36e5).toISOString(); const a = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+    return `L${t.slice(2, 4)}${t.slice(5, 7)}${t.slice(8, 10)}-${Array.from({ length: 4 }, () => a[Math.floor(Math.random() * a.length)]).join("")}`; };
   const TIM_LOGISTIK = ["Logistik", "RM", "CH GPE", "WHL", "ALR", "Lainnya"];
   const KENDALA = ["Licin / becek", "Berlubang / bergelombang", "Genangan air", "Amblas / longsor", "Tanjakan berat / unit selip",
     "Unit terjebak / tertahan", "Drainase tersumbat", "Debu tebal", "Tanggul / rambu rusak", "Jalan normal (trigger palsu)"];
@@ -114,6 +119,9 @@
       bag("Kendala di jalan", pilih("kendala", KENDALA, { multi: true }) + `<div class="lp-sub">Seberapa parah</div>` + pilih("tingkat", TINGKAT, { nilai: ["Sedang"] })) +
       bag("Foto bukti", slotFoto("umum", "Foto kondisi jalan", 4, true)) + catatan("contoh: licin sepanjang 50 m habis hujan, 2 DT selip") + opsiTrigger() +
       `<label class="lp-cek" id="lpTutupWrap" hidden><input type="checkbox" id="lpTutup"> Tutup trigger ini, jalan ternyata normal</label>`;
+    if (j === "lainnya") return siapa(TIM_INSPEKSI, timAwal || "CH GPE") + lokasi() +
+      bag("Apa yang terjadi", pilih("kategori", KATEGORI_LAIN, { multi: true }) + `<div class="lp-sub">Seberapa parah</div>` + pilih("tingkat", TINGKAT, { nilai: ["Sedang"] })) +
+      bag("Foto bukti", slotFoto("umum", "Foto kejadian", 4, true)) + catatan("contoh: hujan deras sejak 13.30, jalan mulai licin, unit pelan") + opsiTrigger();
     if (j === "logistik") {
       const minta = LAP.filter((i) => i.state === "open" && i._d?.jenis === "logistik" && i._d.status === "Permintaan");
       return bag("Jenis laporan", pilih("status", STATUS_LOG, { nilai: ["Permintaan"] }) +
@@ -144,14 +152,14 @@
   // ---------- buka form ----------
   window.ALR_lapor = function (jenis = "inspeksi", o = {}) {
     const c = JENIS[jenis] || JENIS.inspeksi;
-    st = { jenis, trigger: o.trigger ? +o.trigger : null, sta: o.sta != null && o.sta !== "" ? +o.sta : null, ll: o.ll || null, foto: { umum: [], sebelum: [], sesudah: [] } };
+    st = { jenis, no: nomorBaru(), trigger: o.trigger ? +o.trigger : null, sta: o.sta != null && o.sta !== "" ? +o.sta : null, ll: o.ll || null, foto: { umum: [], sebelum: [], sesudah: [] } };
     if (st.trigger && !st.ll) { const t = TRIG.find((i) => i.number === st.trigger); if (t?._lok) { st.ll = t._lok.ll; st.sta = st.sta ?? t._lok.sta; } }
     $("laporJudul").textContent = c.nama;
     $("laporGb").innerHTML = window.ALR_ikon3d?.(c.ikon) || ""; $("laporGb").className = "lyr-gb gb3d";
     const f = $("laporForm");
-    f.innerHTML = `<div class="lp-hero lp-${jenis}"><span>${window.ALR_ikon3d?.(c.ikon) || ""}</span><div><b>${c.nama}</b><small>${
+    f.innerHTML = `<div class="lp-hero lp-${jenis}"><span>${window.ALR_ikon3d?.(c.ikon) || ""}</span><div><b>${c.nama}</b><em class="lp-no">No. laporan ${st.no}</em><small>${
       { inspeksi: "Cek jalan rusak, licin, atau unit tertahan. Foto langsung dari kamera, jam dan lokasi tercatat otomatis.",
-        logistik: "Minta, kirim, dan terima material atau solar untuk jalan.", rm: "Catat pekerjaan perbaikan jalan hari ini, dengan foto sebelum dan sesudah." }[jenis]}</small></div></div>
+        logistik: "Minta, kirim, dan terima material atau solar untuk jalan.", lainnya: "Hujan, banjir, insiden, atau unit mogok. Foto langsung dari kamera, jam dan lokasi tercatat otomatis.", rm: "Catat pekerjaan perbaikan jalan hari ini, dengan foto sebelum dan sesudah." }[jenis]}</small></div></div>
       <div class="lp-salah" id="lpSalah" hidden></div>${formHtml(jenis)}
       <button type="submit" class="lp-kirim" id="lpKirim"><svg class="ik"><use href="#i-kirim"/></svg>Kirim laporan</button>
       <p class="lp-catat">Foto otomatis diberi cap tanggal, jam, lokasi GPS, STA, dan nama pelapor.</p>`;
@@ -234,7 +242,7 @@
     const waktu = Date.now(), l = lokasiSekarang();
     const nama = ($("lpNama")?.value || "").trim(), tim = nilai("tim")[0] || (st.jenis === "rm" ? "RM" : "");
     const baris = [
-      `ALR · ${JENIS[st.jenis].nama}${ket ? " · " + ket : ""}`,
+      `ALR · ${st.no} · ${JENIS[st.jenis].nama}${ket ? " · " + ket : ""}`,
       WIB(waktu),
       l?.lat != null ? `${l.sta != null ? "STA " + fmtSta(l.sta) + " · " : ""}${l.lat.toFixed(5)}, ${l.lon.toFixed(5)}${l.sumber === "gps" ? ` (±${l.akurasi} m)` : " (lokasi peta)"}` : "Lokasi GPS tidak tersedia",
       [nama, tim].filter(Boolean).join(" · ") || "Pelapor belum diisi",
@@ -258,7 +266,7 @@
     const l = lokasiSekarang();
     const trig = +($("lpTrig")?.value || 0) || null;
     const rid = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-    const d = { v: 1, rid, jenis: j, pelapor: nama, tim, waktu: new Date().toISOString(), trigger: trig, catatan: ($("lpCatatan")?.value || "").trim() };
+    const d = { v: 1, rid, no: st.no, jenis: j, pelapor: nama, tim, waktu: new Date().toISOString(), trigger: trig, catatan: ($("lpCatatan")?.value || "").trim() };
     if (l?.sumber === "gps") Object.assign(d, { lat: +l.lat.toFixed(6), lon: +l.lon.toFixed(6), akurasi: l.akurasi });
     else if (l?.lat != null) Object.assign(d, { lat: +l.lat.toFixed(6), lon: +l.lon.toFixed(6), lokasi_dari: l.sumber });
     let foto = [], judul = "", baris = [];
@@ -271,6 +279,13 @@
       judul = `[INSPEKSI] STA ${d.sta != null ? fmtSta(d.sta) : "?"}: ${d.kendala.join(", ")}`;
       baris = [["Kendala", d.kendala.join(", ")], ["Tingkat", d.tingkat]];
       d.tutup_trigger = !!(trig && $("lpTutup")?.checked && d.kendala.includes("Jalan normal (trigger palsu)"));
+    } else if (j === "lainnya") {
+      d.sta = angkaSta("lpSta") ?? l?.sta ?? null; d.kategori = nilai("kategori"); d.tingkat = nilai("tingkat")[0] || "";
+      if (!d.kategori.length) salah.push("Pilih minimal satu kejadian.");
+      if (!st.foto.umum.length) salah.push("Ambil minimal satu foto.");
+      foto = st.foto.umum;
+      judul = `[LAINNYA] STA ${d.sta != null ? fmtSta(d.sta) : "?"}: ${d.kategori.join(", ")}`;
+      baris = [["Kejadian", d.kategori.join(", ")], ["Tingkat", d.tingkat]];
     } else if (j === "logistik") {
       d.status = nilai("status")[0]; d.barang = barang(); d.jumlah = parseFloat(String($("lpJumlah").value).replace(",", ".")) || 0; d.satuan = $("lpSatuan").value;
       d.sta = angkaSta("lpSta") ?? l?.sta ?? null;
@@ -300,17 +315,17 @@
     const lokTeks = d.lat != null ? `${d.sta != null ? "STA " + fmtSta(d.sta) + ", " : ""}koordinat ${d.lat}, ${d.lon}${d.akurasi ? ` (GPS HP ±${d.akurasi} m)` : " (lokasi dari peta)"}` : d.sta != null ? `STA ${fmtSta(d.sta)}` : "-";
     const json = JSON.stringify(d).replace(/--/g, "\\u002d\\u002d");
     const isi = `<!-- alr ${json} -->\n### ${esc(JENIS[j].nama)}\n\n` +
-      [["Pelapor", `${nama}${tim ? " (" + tim + ")" : ""}`], ["Waktu", WIB(d.waktu)], ["Lokasi", lokTeks], ...baris, ["Catatan", d.catatan], ["Trigger", trig ? "#" + trig : ""]]
+      [["No. laporan", st.no], ["Pelapor", `${nama}${tim ? " (" + tim + ")" : ""}`], ["Waktu", WIB(d.waktu)], ["Lokasi", lokTeks], ...baris, ["Catatan", d.catatan], ["Trigger", trig ? "#" + trig : ""]]
         .filter(([, v]) => v).map(([k, v]) => `**${k}:** ${String(v).replace(/[<>]/g, "")}  `).join("\n") + "\n\n{{FOTO}}\n\n_Dikirim dari aplikasi ALR_";
     // paket: buat tiket baru, atau tambah ke permintaan logistik yang sudah ada
     const paket = { versi: 1, rid, foto: foto.map((f, i) => ({ b64: f.b64, ket: f.ket || `Foto ${i + 1}` })), komentar: [] };
     if (j === "logistik" && d.permintaan) paket.komentar.push({ nomor: d.permintaan, isi, tutup: d.status === "Diterima" });
     else paket.baru = { label: JENIS[j].label, judul: judul.slice(0, 200), isi };
     if (trig) {
-      const ringkas = { inspeksi: `Sudah dicek ${nama} (${tim})`, logistik: `${d.status} material: ${koma(d.jumlah)} ${d.satuan} ${d.barang}`, rm: `Dikerjakan RM: ${(d.kegiatan || []).join(", ")}, status ${d.status}` }[j];
+      const ringkas = { inspeksi: `Sudah dicek ${nama} (${tim})`, lainnya: `Dilaporkan ${nama} (${tim}): ${(d.kategori || []).join(", ")}`, logistik: `${d.status} material: ${koma(d.jumlah)} ${d.satuan} ${d.barang}`, rm: `Dikerjakan RM: ${(d.kegiatan || []).join(", ")}, status ${d.status}` }[j];
       paket.komentar.push({ nomor: trig, isi: `<!-- alr ${JSON.stringify({ v: 1, jenis: j, status: d.status || "", tahap: true, pelapor: nama, tim, waktu: d.waktu, laporan: paket.baru ? "{{NOMOR}}" : d.permintaan }).replace(/--/g, "\\u002d\\u002d")} -->\n**${ringkas}.** Laporan lengkap: #{{NOMOR}}\n\n{{FOTO}}`, tutup: !!d.tutup_trigger });
     }
-    return { salah, paket, judul, nama, tim };
+    return { salah, paket, judul, nama, tim, no: st.no };
   }
 
   // ---------- kirim ----------
@@ -359,7 +374,8 @@
       const sumber = p.baru?.isi || p.komentar?.[0]?.isi || "";
       const m = sumber.match(/<!-- alr (.*?) -->/s); if (!m) return;
       const d = JSON.parse(m[1]);
-      const jenis = ["inspeksi", "logistik", "rm"].includes(d.jenis) ? d.jenis : { "laporan-jalan": "inspeksi", logistik: "logistik", "pekerjaan-rm": "rm" }[p.baru?.label] || (p.baru ? "lainnya" : "logistik");
+      if (d.jenis === "keputusan") return;            // keputusan atasan hanya komentar di tiket, bukan laporan baru
+      const jenis = ["inspeksi", "logistik", "rm", "lainnya"].includes(d.jenis) ? d.jenis : { "laporan-jalan": "inspeksi", logistik: "logistik", "pekerjaan-rm": "rm" }[p.baru?.label] || (p.baru ? "lainnya" : "logistik");
       const angka = (v) => (v == null || v === "" || isNaN(+v) ? null : +v);
       window.ALR_db.aktif().then((ok) => ok && window.ALR_db.simpanLaporan({
         rid: p.rid || null, jenis, judul: (p.baru?.judul || `[LOGISTIK] Update permintaan #${d.permintaan || "?"}`).slice(0, 200),
@@ -373,6 +389,10 @@
 
   // ---------- antrean di HP (kalau belum terkirim) ----------
   const ANTRE = "alr_antrean";
+  window.ALR_kirimPaket = kirimPaket;
+  window.ALR_antre = (paket, judul) => { const a = simpan.get(ANTRE, []); a.push({ judul, waktu: Date.now(), paket }); const ok = simpan.set(ANTRE, a); tampilAntre(); return ok; };
+  // riwayat laporan dari HP ini (bukti untuk pelapor: nomor laporan + jam)
+  const catatSaya = (no, judul, status) => { const r = simpan.get("alr_lapor_saya", []); r.unshift({ no, judul, status, waktu: Date.now() }); simpan.set("alr_lapor_saya", r.slice(0, 30)); window.dispatchEvent(new CustomEvent("alr:lapor-saya")); };
   function tampilAntre() {
     const el = $("antrean"); if (!el) return;
     const a = simpan.get(ANTRE, []);
@@ -405,7 +425,7 @@
 
   $("laporForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const { salah, paket, judul, nama, tim } = susun();
+    const { salah, paket, judul, nama, tim, no: noLap } = susun();
     const box = $("lpSalah");
     if (salah.length) { box.hidden = false; box.innerHTML = `<b>Belum bisa dikirim:</b><ul>${salah.map((s) => `<li>${esc(s)}</li>`).join("")}</ul>`; box.scrollIntoView({ behavior: "smooth", block: "center" }); return; }
     box.hidden = true;
@@ -414,15 +434,16 @@
     const foto = [...st.foto.umum, ...st.foto.sebelum, ...st.foto.sesudah];
     try {
       const no = await kirimPaket(paket);
-      selesai(true, no === "antre" ? "Laporan terkirim" : `Laporan terkirim (nomor ${no})`, no === "antre" ? "Muncul di Laporan lapangan dan Kotak masuk dalam 5 sampai 15 menit." : "Sudah masuk ke Laporan lapangan dan Kotak masuk.", judul, foto);
+      catatSaya(noLap, judul, "terkirim");
+      selesai(true, `Laporan terkirim · ${noLap}`, no === "antre" ? "Muncul di Laporan lapangan dan Kotak masuk dalam 5 sampai 15 menit." : "Sudah masuk ke Laporan lapangan dan Kotak masuk.", judul, foto);
       tampilAntre();
       window.ALR_umumkan?.("ALR, laporan terkirim");
       setTimeout(() => window.ALR_muatTiket?.(), 4000);
     } catch (err) {
       const a = simpan.get(ANTRE, []); a.push({ judul, waktu: Date.now(), paket });
-      const ok = simpan.set(ANTRE, a); tampilAntre();
+      const ok = simpan.set(ANTRE, a); tampilAntre(); catatSaya(noLap, judul, "di HP");
       const sebab = err.message === "belum-ada-jalur" ? "Jalur kirim laporan belum disambungkan oleh admin." : err.message === "offline" ? "Tidak ada sinyal." : "Server belum bisa dihubungi.";
-      selesai(false, ok ? "Laporan disimpan di HP" : "Laporan belum terkirim", `${sebab} ${ok ? "Akan dikirim otomatis nanti." : "Memori HP penuh, bagikan ke WhatsApp dulu."} Bisa juga dibagikan ke grup WhatsApp sekarang.`, judul, foto);
+      selesai(false, ok ? `Laporan disimpan di HP · ${noLap}` : "Laporan belum terkirim", `${sebab} ${ok ? "Akan dikirim otomatis nanti." : "Memori HP penuh, bagikan ke WhatsApp dulu."} Bisa juga dibagikan ke grup WhatsApp sekarang.`, judul, foto);
     }
   });
   function selesai(ok, judul, isi, teks, foto) {
@@ -446,7 +467,12 @@
   }, true);
 
   // ---------- daftar laporan lapangan & trigger di aplikasi ----------
-  const IKON_J = { inspeksi: "inspeksi", logistik: "logistik", rm: "rm" };
+  const IKON_J = { inspeksi: "inspeksi", logistik: "logistik", rm: "rm", lainnya: "hujan" };
+  // keputusan atasan terakhir (Setujui / Tugaskan RM / Logistik / Tutup) di tiket ini
+  const AKSI_KEP = { setujui: "Disetujui", rm: "Ditugaskan ke RM", logistik: "Diteruskan ke Logistik", tutup: "Ditutup" };
+  const kepTerakhir = (i) => bacaData(i._teks || i.body).filter((x) => x.jenis === "keputusan").pop() || null;
+  const barisKep = (i) => { const k = kepTerakhir(i); return k ? `<p class="lp-k-kep"><svg class="ik"><use href="#i-cek"/></svg>${esc(AKSI_KEP[k.aksi] || k.aksi)} oleh ${esc(k.oleh)}, ${WIB(k.waktu)}</p>` : ""; };
+  window.ALR_kepTerakhir = kepTerakhir; window.ALR_bacaData = bacaData;
   const jenisDari = (i) => i._d?.jenis || (i.labels.some((l) => l.name === "logistik") ? "logistik" : i.labels.some((l) => l.name === "pekerjaan-rm") ? "rm" : "inspeksi");
   function statusLap(i) {
     const j = jenisDari(i), up = i._up?.length ? i._up[i._up.length - 1] : null, s = up?.status || i._d?.status;
@@ -457,6 +483,7 @@
   function isiLap(i) {
     const d = i._d; if (!d) return `<p class="lp-k-isi">${esc(i.title.replace(/^\[[A-Z ]+\]\s*/, ""))}</p>`;
     const chip = (a) => (a || []).map((x) => `<span class="lp-chip">${esc(x)}</span>`).join("");
+    if (d.jenis === "lainnya") return `<div class="lp-chips">${chip(d.kategori)}</div>${d.catatan ? `<p class="lp-k-isi">${esc(d.catatan)}</p>` : ""}`;
     if (d.jenis === "inspeksi") return `<div class="lp-chips">${chip(d.kendala)}</div>${d.catatan ? `<p class="lp-k-isi">${esc(d.catatan)}</p>` : ""}`;
     if (d.jenis === "logistik") return `<p class="lp-k-besar">${koma(d.jumlah)} ${esc(d.satuan)} <b>${esc(d.barang)}</b></p><p class="lp-k-isi">${d.sta != null ? "Ke STA " + fmtSta(d.sta) : ""}${d.kapan ? `, dibutuhkan ${esc(d.kapan.toLowerCase())}` : ""}${d.catatan ? `. ${esc(d.catatan)}` : ""}</p>${
       (i._up || []).map((u) => `<p class="lp-k-up"><svg class="ik"><use href="#i-cek"/></svg>${esc(u.status)} oleh ${esc(u.pelapor)}, ${WIB(u.waktu)}</p>`).join("")}`;
@@ -483,8 +510,8 @@
     const bisaUpdate = j === "logistik" && i.state === "open" && d;
     return `<article class="lp-kartu j-${j}" data-n="${i.number}" ${ll ? `data-ll="${ll.join(",")}"` : ""}>
       <div class="lp-k-atas"><span class="lp-k-gb">${window.ALR_ikon3d?.(IKON_J[j]) || ""}</span><div><b>${esc(JENIS[j].nama)}${lok ? " · " + esc(lok) : ""}</b>
-        <small>${d ? `${esc(d.pelapor)}${d.tim ? " (" + esc(d.tim) + ")" : ""}, ` : ""}${WIB(d?.waktu || i.created_at)}</small></div><span class="lp-status s-${w}">${esc(st1)}</span></div>
-      ${isiLap(i)}${foto ? `<div class="lp-thumbs">${foto}</div>` : ""}
+        <small>${d ? `${esc(d.pelapor)}${d.tim ? " (" + esc(d.tim) + ")" : ""}, ` : ""}${WIB(d?.waktu || i.created_at)}${d?.no ? ` · <b class="lp-k-no">${esc(d.no)}</b>` : ""}</small></div><span class="lp-status s-${w}">${esc(st1)}</span></div>
+      ${isiLap(i)}${barisKep(i)}${foto ? `<div class="lp-thumbs">${foto}</div>` : ""}
       <div class="lp-k-aksi">${ll ? `<button type="button" data-ke-peta="${ll.join(",")}"><svg class="ik"><use href="#i-peta"/></svg>Peta</button>` : ""}${
         d?.trigger ? `<span class="lp-k-trig">Trigger #${d.trigger}</span>` : ""}${
         bisaUpdate ? `<button type="button" class="utama" data-update-log="${i.number}"><svg class="ik"><use href="#i-truk"/></svg>${statusLap(i)[0] === "Dikirim" ? "Tandai diterima" : "Tandai dikirim"}</button>` : ""}</div></article>`;
@@ -534,7 +561,7 @@
     const lok = j === "rm" && d.sta1 != null ? `${fmtSta(d.sta1)}${d.sta2 != null ? " - " + fmtSta(d.sta2) : ""}` : d.sta != null ? fmtSta(d.sta) : (i._lok?.label || "").replace("STA ", "");
     return { "No": i.number, "Jenis": JENIS[j].nama, "Tanggal": w.toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", day: "2-digit", month: "2-digit", year: "numeric" }),
       "Jam (WIB)": w.toLocaleTimeString("id-ID", { timeZone: "Asia/Jakarta", hour: "2-digit", minute: "2-digit" }).replace(".", ":"), "Pelapor": d.pelapor || "", "Tim": d.tim || "", "STA": lok,
-      "Kendala / kegiatan": (d.kendala || d.kegiatan || []).join(", ") || (d.barang && j === "logistik" ? d.barang : ""), "Tingkat / status": statusLap(i)[0],
+      "No. laporan": d.no || "", "Kendala / kegiatan": (d.kendala || d.kegiatan || d.kategori || []).join(", ") || (d.barang && j === "logistik" ? d.barang : ""), "Tingkat / status": statusLap(i)[0],
       "Barang / material": d.barang || "", "Jumlah": d.jumlah ?? "", "Satuan": d.satuan || "", "Alat": (d.alat || []).join(", "), "Operator": d.operator || "",
       "Jam kerja": d.mulai || d.selesai ? `${d.mulai || "?"} - ${d.selesai || "?"}` : "", "Catatan": d.catatan || "", "Trigger": d.trigger ? "#" + d.trigger : "",
       "Update terakhir": up ? `${up.status} oleh ${up.pelapor}` : "", "Koordinat": d.lat != null ? `${d.lat}, ${d.lon}` : "", "Foto": i._gambar.join(" ") };
@@ -568,7 +595,7 @@
         await muatJs(LIB.xlsx);
         const wb = XLSX.utils.book_new(), tambah = (nama, d) => { const ws = XLSX.utils.json_to_sheet(d.map(baris)); ws["!cols"] = Object.keys(baris(d[0] || daftar[0])).map((k) => ({ wch: Math.min(40, Math.max(8, k.length + 2)) })); XLSX.utils.book_append_sheet(wb, ws, nama); };
         tambah("Semua", daftar);
-        for (const j of ["inspeksi", "logistik", "rm"]) { const d = daftar.filter((i) => jenisDari(i) === j); if (d.length) tambah(JENIS[j].nama, d); }
+        for (const j of ["inspeksi", "logistik", "rm", "lainnya"]) { const d = daftar.filter((i) => jenisDari(i) === j); if (d.length) tambah(JENIS[j].nama, d); }
         XLSX.writeFile(wb, namaFile("xlsx"));
       } else {
         const c = await gambarRekap(daftar);
@@ -610,7 +637,7 @@
       <b>${esc(i._lok?.label || i.title.replace(/^\[TRIGGER\]\s*/i, ""))}</b>${i.state === "closed" ? '<span class="status selesai">SELESAI</span>' : ""}
       <div class="baris">Trigger #${i.number}, ${WIB(i.created_at)}</div>
       ${alasan ? `<div class="baris">${esc(alasan)}</div>` : ""}${unit ? `<div class="baris"><svg class="ik"><use href="#i-truk"/></svg> ${esc(unit)}</div>` : ""}
-      <ol class="lp-tahap">${TAHAP.map(([k, t]) => `<li class="${ada.has(k) ? "ok" : ""}"><i></i>${t}</li>`).join("")}</ol>
+      ${barisKep(i)}<ol class="lp-tahap">${TAHAP.map(([k, t]) => `<li class="${ada.has(k) ? "ok" : ""}"><i></i>${t}</li>`).join("")}</ol>
       ${i._gambar.length ? `<div class="lp-thumbs">${i._gambar.slice(0, 4).map((u) => `<button type="button" class="lp-th" data-lihat-foto="${esc(u)}"><img src="${esc(u)}" loading="lazy" alt="" onerror="this.parentNode.remove()"></button>`).join("")}</div>` : ""}
       ${i.state === "open" ? `<div class="lp-trig-aksi">${btn("inspeksi", "Lapor cek")}${btn("logistik", "Minta material")}${btn("rm", "Lapor kerja")}</div>` : ""}</div></div>`;
   }

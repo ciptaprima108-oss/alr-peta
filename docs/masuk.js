@@ -37,6 +37,7 @@
         <button type="button" class="masuk-lihat" id="masukLihat" aria-label="Lihat PIN">Lihat</button></span></label>
       <p class="masuk-pesan" id="masukPesan" role="alert"></p>
       <button type="submit" class="masuk-tombol" id="masukTombol">Masuk</button>
+      <button type="button" class="masuk-pelapor" id="masukPelapor"><b>📸 Saya pelapor lapangan</b><small>Checker, operator, mandor, patroli. Tanpa No. ID, cuma untuk kirim laporan.</small></button>
       <p class="masuk-bantu">Lupa PIN atau belum punya No. ID? Hubungi Developer aplikasi (Fanza / Reza).</p>
     </form>`;
   document.body.appendChild(lapis);
@@ -105,9 +106,17 @@
     keluar(false);
   });
 
+  // ---------- mode pelapor lapangan (tanpa No. ID, hanya layar lapor) ----------
+  const keModePelapor = () => { tulis("alr_mode_pelapor", true); lapis.hidden = true; document.body.classList.remove("perlu-masuk"); document.body.classList.add("mode-pelapor");
+    window.dispatchEvent(new CustomEvent("alr:pelapor")); };
+  $("masukPelapor").onclick = keModePelapor;
+  window.ALR_keluarPelapor = () => { tulis("alr_mode_pelapor", null); document.body.classList.remove("mode-pelapor"); $("masukPesan").textContent = ""; tunjuk(); };
+
   // ---------- mulai ----------
   window.ALR_keluar = () => keluar(false);
   const s = sesi();
-  if (!s) { tulis("alr_masuk", null); tunjuk(); }
+  if (/[?&]pelapor\b/.test(location.search)) tulis("alr_mode_pelapor", true);
+  if (!s && baca("alr_mode_pelapor", false)) { lapis.hidden = true; document.body.classList.add("mode-pelapor"); }
+  else if (!s) { tulis("alr_masuk", null); tunjuk(); }
   else { tutup(); pasangOrang(s.kode, false); }
 })();

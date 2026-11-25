@@ -307,6 +307,7 @@
 
   // ---------- ikon menu 3D ----------
   const IKON3D = {
+    keputusan: ["#A5E3B5", "#1F8A4C", '<rect x="17" y="13" width="30" height="40" rx="4" fill="#fff"/><rect x="25" y="9.5" width="14" height="8" rx="3" fill="#E6F4EA" stroke="#1F8A4C" stroke-width="2"/><path d="M23.5 34.5l6 6 11-13" stroke="#1F8A4C" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'],
     trigger: ["#FF8A65", "#D32F2F", '<path d="M32 15 50 46a3 3 0 0 1-2.6 4.5H16.6A3 3 0 0 1 14 46z" fill="#fff"/><path d="M32 18.5 47.4 45.3a2 2 0 0 1-1.7 3H18.3a2 2 0 0 1-1.7-3z" fill="#FFE9E3"/><rect x="29.4" y="27" width="5.2" height="12.5" rx="2.6" fill="#D32F2F"/><circle cx="32" cy="44" r="2.8" fill="#D32F2F"/>'],
     km: ["#FFE082", "#F2A900", '<path d="M26 14h12l12 38H14z" fill="#2B3134"/><path d="M26 14h12l1 3H25z" fill="#3D4549"/><path d="M14 52 26 14M50 52 38 14" stroke="#fff" stroke-width="2.4"/><path d="M32 18v5M32 28v6M32 39v8" stroke="#FFD54F" stroke-width="3" stroke-linecap="round"/>'],
     rr: ["#7FE3A0", "#1E8E3E", '<circle cx="32" cy="33" r="17" fill="#263238"/><circle cx="32" cy="33" r="17" fill="none" stroke="#37474F" stroke-width="4" stroke-dasharray="3 3.2"/><circle cx="32" cy="33" r="9" fill="#CFD8DC"/><circle cx="32" cy="33" r="9" fill="none" stroke="#fff" stroke-width="1.5" opacity=".7"/><circle cx="32" cy="33" r="3.2" fill="#607D8B"/><path d="M8 50h48" stroke="#14532D" stroke-width="3" stroke-linecap="round" opacity=".5"/>'],
