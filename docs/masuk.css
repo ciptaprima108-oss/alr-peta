@@ -31,7 +31,3 @@ html[data-tema="gelap"] .masuk-lihat { background: rgba(59,139,246,.18); color: 
 
 /* profil: identitas dari login, pilihan nama manual disembunyikan */
 body.sudah-masuk .pf-pilih { display: none; }
-.akun-pin { display: grid; gap: 10px; padding: 12px 14px 14px; }
-.akun-pin label { display: grid; gap: 6px; font: 700 16px var(--isi); }
-.akun-pin input { height: 52px; border-radius: 14px; border: 2px solid var(--garis); background: var(--debu); color: inherit; padding: 0 14px; font: 700 20px var(--isi); letter-spacing: 2px; }
-.akun-aksi { display: flex; gap: 10px; justify-content: flex-end; }

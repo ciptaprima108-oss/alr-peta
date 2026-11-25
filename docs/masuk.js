@@ -1,44 +1,26 @@
 // Layar masuk ALR: setiap orang masuk dengan No. ID (5 angka) + PIN (6 angka).
-// Akun dibuat di Supabase Auth (supabase/pengguna_awal.sql). Alamat login = <No. ID>@alr.example (buatan, tidak dipakai kirim email).
-// Sesi disimpan di HP ini (localStorage "alr_sesi"); setelah masuk, "alr_saya" otomatis diisi No. ID supaya
-// sapaan, ID card, dan nama pelapor ikut orang yang masuk.
+// PIN tidak disimpan di aplikasi: docs/akun.json hanya berisi sidik PIN (PBKDF2-SHA256 + garam per orang),
+// dicocokkan di HP. Ini pintu masuk aplikasi, bukan pengaman data (data peta memang publik di GitHub).
+// Setelah masuk, "alr_saya" otomatis diisi No. ID supaya sapaan, ID card, dan nama pelapor ikut orang yang masuk.
 (() => {
   const $ = (id) => document.getElementById(id);
-  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const DOMAIN = "@alr.example";
   const baca = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } };
   const tulis = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch {} };
-  const sesi = () => baca("alr_sesi", null);
+  const LAMA = 30 * 864e5;                                   // tetap masuk 30 hari di HP ini
+  const sesi = () => { const s = baca("alr_masuk", null); return s && s.exp > Date.now() ? s : null; };
   const cariOrang = (kode) => (window.ALR_PENGGUNA || []).find((p) => p.id === kode);
+  const hex = (b) => [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, "0")).join("");
+  const dariHex = (h) => new Uint8Array(h.match(/../g).map((x) => parseInt(x, 16)));
 
-  async function auth(path, opsi = {}) {
-    const c = await window.ALR_db?.konfig?.();
-    if (!c?.url || !c?.key) throw new Error("Aplikasi belum tersambung ke database.");
-    let r;
-    try {
-      r = await fetch(`${c.url.replace(/\/$/, "")}/auth/v1/${path}`, { ...opsi, headers: { apikey: c.key, "Content-Type": "application/json", ...(opsi.headers || {}) } });
-    } catch { throw new Error("Tidak ada sinyal. Coba lagi sebentar."); }
-    const j = await r.json().catch(() => ({}));
-    if (!r.ok) { const e = new Error(j.error_description || j.msg || j.message || `Gagal (${r.status})`); e.status = r.status; throw e; }
-    return j;
-  }
-  function simpanSesi(j, kode) {
-    tulis("alr_sesi", { at: j.access_token, rt: j.refresh_token, exp: Date.now() + (j.expires_in || 3600) * 1000, kode });
-    jadwalPerbarui();
-  }
-  let pewaktu = 0;
-  function jadwalPerbarui() {
-    clearTimeout(pewaktu);
-    const s = sesi(); if (!s) return;
-    pewaktu = setTimeout(perbarui, Math.max(10000, s.exp - Date.now() - 120000));
-  }
-  async function perbarui() {
-    const s = sesi(); if (!s?.rt) return false;
-    try { simpanSesi(await auth("token?grant_type=refresh_token", { method: "POST", body: JSON.stringify({ refresh_token: s.rt }) }), s.kode); return true; }
-    catch (e) {
-      if (e.status >= 400 && e.status < 500) { keluar(true); return false; }   // sesi ditolak: masuk ulang
-      pewaktu = setTimeout(perbarui, 60000); return true;                       // cuma sinyal: tetap pakai sesi lama, coba lagi
-    }
+  async function cocok(kode, pin) {
+    let d;
+    try { const r = await fetch(`akun.json?t=${Date.now()}`, { cache: "no-store" }); if (!r.ok) throw 0; d = await r.json(); }
+    catch { throw new Error("Tidak ada sinyal. Coba lagi sebentar."); }
+    const a = d.akun?.[kode]; if (!a) return false;
+    if (!crypto?.subtle) throw new Error("Browser ini terlalu lama. Buka lewat aplikasi ALR atau Chrome terbaru.");
+    const k = await crypto.subtle.importKey("raw", new TextEncoder().encode(pin), "PBKDF2", false, ["deriveBits"]);
+    const b = await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt: dariHex(a.garam), iterations: d.iterasi || 150000 }, k, 256);
+    return hex(b) === a.hash;
   }
 
   // ---------- tampilan ----------
@@ -71,13 +53,13 @@
     if (pin.length < 6) { pesan.textContent = "PIN minimal 6 angka."; return $("masukPin").focus(); }
     const t = $("masukTombol"); t.disabled = true; t.textContent = "Memeriksa..."; pesan.textContent = "";
     try {
-      simpanSesi(await auth("token?grant_type=password", { method: "POST", body: JSON.stringify({ email: kode + DOMAIN, password: pin }) }), kode);
+      if (!(await cocok(kode, pin))) { pesan.textContent = "No. ID atau PIN salah."; return; }
+      tulis("alr_masuk", { kode, exp: Date.now() + LAMA });
       $("masukPin").value = "";
       pasangOrang(kode, true);
       tutup();
-    } catch (er) {
-      pesan.textContent = er.status === 400 || er.status === 401 ? "No. ID atau PIN salah." : er.message;
-    } finally { t.disabled = false; t.textContent = "Masuk"; }
+    } catch (er) { pesan.textContent = er.message; }
+    finally { t.disabled = false; t.textContent = "Masuk"; }
   };
 
   // isi identitas aplikasi dari orang yang masuk
@@ -89,10 +71,9 @@
     isiAkun();
   }
 
-  async function keluar(diam) {
-    const s = sesi();
-    tulis("alr_sesi", null); tulis("alr_saya", null); tulis("alr_lapor_nama", null); clearTimeout(pewaktu);
-    if (s?.at && !diam) auth("logout", { method: "POST", headers: { Authorization: `Bearer ${s.at}` } }).catch(() => {});
+  function keluar(diam) {
+    const s = baca("alr_masuk", null);
+    tulis("alr_masuk", null); tulis("alr_saya", null); tulis("alr_lapor_nama", null);
     if (window.ALR_PENGGUNA) window.dispatchEvent(new CustomEvent("alr:pengguna", { detail: window.ALR_PENGGUNA }));
     $("masukId").value = s?.kode || "";
     $("masukPesan").textContent = diam ? "Sesi habis. Silakan masuk lagi." : "";
@@ -104,14 +85,7 @@
   grup.innerHTML = `<h3 class="pf-judul">Akun</h3>
     <div class="pf-grup" id="pfAkun">
       <div class="pf-baris"><span class="pf-ik" style="--w:#0B4EA2"><svg class="ik"><use href="#i-orang"/></svg></span><div><b id="akunNama">-</b><small id="akunKet">-</small></div></div>
-      <div class="pf-baris"><span class="pf-ik" style="--w:#7A5AF8"><svg class="ik"><use href="#i-info"/></svg></span><div><b>Ganti PIN</b><small>Buat PIN baru 6 angka yang hanya kamu tahu.</small></div>
-        <button type="button" class="pf-tombol" id="btnGantiPin">Ganti</button></div>
-      <form class="akun-pin" id="formPin" hidden novalidate>
-        <label>PIN baru<input id="pinBaru" type="password" inputmode="numeric" autocomplete="new-password" maxlength="12" placeholder="6 angka"></label>
-        <label>Ulangi PIN baru<input id="pinUlang" type="password" inputmode="numeric" autocomplete="new-password" maxlength="12" placeholder="6 angka"></label>
-        <p class="masuk-pesan" id="pinPesan" role="alert"></p>
-        <div class="akun-aksi"><button type="button" class="pf-tombol abu" id="pinBatal">Batal</button><button type="submit" class="pf-tombol">Simpan PIN</button></div>
-      </form>
+      <div class="pf-baris"><span class="pf-ik" style="--w:#7A5AF8"><svg class="ik"><use href="#i-info"/></svg></span><div><b>Ganti PIN / lupa PIN</b><small>Hubungi Developer aplikasi (Fanza / Reza).</small></div></div>
       <div class="pf-baris"><span class="pf-ik" style="--w:#E5341F"><svg class="ik"><use href="#i-kiri"/></svg></span><div><b>Keluar</b><small>Keluar dari akun ini di HP ini.</small></div>
         <button type="button" class="pf-tombol abu" id="btnKeluarAkun">Keluar</button></div>
     </div>`;
@@ -125,21 +99,6 @@
     $("akunKet").textContent = p ? `No. ID ${s.kode} · ${p.divisi}` : "Sudah masuk";
   }
   window.addEventListener("alr:pengguna", isiAkun);
-  $("btnGantiPin") && ($("btnGantiPin").onclick = () => { $("formPin").hidden = false; $("pinPesan").textContent = ""; $("pinBaru").focus(); });
-  $("pinBatal") && ($("pinBatal").onclick = () => { $("formPin").reset(); $("formPin").hidden = true; });
-  $("formPin") && ($("formPin").onsubmit = async (e) => {
-    e.preventDefault();
-    const a = $("pinBaru").value.trim(), b = $("pinUlang").value.trim(), pesan = $("pinPesan");
-    if (!/^\d{6,12}$/.test(a)) return (pesan.textContent = "PIN harus angka, minimal 6.");
-    if (a !== b) return (pesan.textContent = "PIN yang diulang tidak sama.");
-    pesan.className = "masuk-pesan"; pesan.textContent = "Menyimpan...";
-    try {
-      if (sesi()?.exp < Date.now() + 30000) await perbarui();
-      await auth("user", { method: "PUT", headers: { Authorization: `Bearer ${sesi()?.at}` }, body: JSON.stringify({ password: a }) });
-      $("formPin").reset(); pesan.className = "masuk-pesan oke"; pesan.textContent = "PIN baru tersimpan. Pakai PIN ini saat masuk berikutnya.";
-      setTimeout(() => { $("formPin").hidden = true; }, 2500);
-    } catch (er) { pesan.textContent = /same|different/i.test(er.message) ? "PIN baru harus beda dari PIN lama." : er.message; }
-  });
   $("btnKeluarAkun") && ($("btnKeluarAkun").onclick = () => {
     const t = $("btnKeluarAkun");
     if (!t.dataset.yakin) { t.dataset.yakin = "1"; t.textContent = "Yakin keluar?"; return setTimeout(() => { delete t.dataset.yakin; t.textContent = "Keluar"; }, 4000); }
@@ -149,9 +108,6 @@
   // ---------- mulai ----------
   window.ALR_keluar = () => keluar(false);
   const s = sesi();
-  if (!s) tunjuk();
-  else {
-    tutup(); pasangOrang(s.kode, false); jadwalPerbarui();
-    if (s.exp < Date.now() + 120000) perbarui();
-  }
+  if (!s) { tulis("alr_masuk", null); tunjuk(); }
+  else { tutup(); pasangOrang(s.kode, false); }
 })();
