@@ -85,3 +85,4 @@ body.mode-pelapor #lpKeLap, body.mode-pelapor .lp-trig-aksi { display: none !imp
 .kp-kosong h3 { margin: 8px 0 4px; font: 700 26px var(--judul); }
 .kp-kosong p { margin: 0; font: 500 17px var(--isi); color: var(--pudar); }
 @media (min-width: 900px) { #listKep { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 14px; } .kp-aksi { grid-template-columns: repeat(4, 1fr); } }
+.kp-ulang { margin-top: 14px; min-height: 52px; padding: 0 26px; border-radius: 14px; background: #1556C7; color: #fff; font: 700 18px var(--isi); }

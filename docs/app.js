@@ -111,10 +111,23 @@
     if (sta != null) return { sta, ll: posisiSta(sta), label: `STA ${fmtSta(sta)}` };
     return null;
   }
+  // simpanan tiket terakhir di HP: layar Laporan / Keputusan langsung tampil walau GitHub lambat atau kena batas (60 permintaan/jam per jaringan)
+  const SIMPAN_TIKET = "alr_tiket_simpan";
+  const ringkasTiket = (i) => ({ number: i.number, title: i.title, state: i.state, body: i.body, created_at: i.created_at, comments: 0, comments_url: i.comments_url,
+    labels: i.labels.map((l) => ({ name: l.name })), _teks: i._teks, _gambar: i._gambar, _lok: i._lok });
+  let sudahDariSimpanan = false;
+  function dariSimpanan() {
+    if (sudahDariSimpanan) return; sudahDariSimpanan = true;
+    try { const c = JSON.parse(localStorage.getItem(SIMPAN_TIKET) || "null"); if (!c?.trig) return;
+      tampilTiket(c.trig, c.lap); window.dispatchEvent(new CustomEvent("alr:tiket", { detail: { trig: c.trig, lap: c.lap, simpanan: c.t } })); } catch {}
+  }
   async function ambilTiket() {
+    dariSimpanan();
     try {
-      const r = await fetch(`https://api.github.com/repos/${REPO}/issues?state=all&per_page=100&sort=created&direction=desc`);
-      if (!r.ok) throw new Error(r.status);
+      const ctl = new AbortController(), batas = setTimeout(() => ctl.abort(), 15000);
+      const r = await fetch(`https://api.github.com/repos/${REPO}/issues?state=all&per_page=100&sort=created&direction=desc`, { signal: ctl.signal });
+      clearTimeout(batas);
+      if (!r.ok) throw new Error(r.status === 403 || r.status === 429 ? "batas akses GitHub, coba lagi beberapa menit" : "server " + r.status);
       const issues = (await r.json()).filter((i) => !i.pull_request);
       const lbl = (i, n) => i.labels.some((l) => l.name === n);
       const trig = issues.filter((i) => lbl(i, ringkasan?.label_trigger || "trigger"));
@@ -130,7 +143,9 @@
       }));
       tampilTiket(trig, lap);
       window.dispatchEvent(new CustomEvent("alr:tiket", { detail: { trig, lap } }));
+      try { localStorage.setItem(SIMPAN_TIKET, JSON.stringify({ t: Date.now(), trig: trig.map(ringkasTiket), lap: lap.map(ringkasTiket) })); } catch {}
     } catch (e) {
+      window.dispatchEvent(new CustomEvent("alr:tiket-gagal", { detail: { pesan: e.name === "AbortError" ? "sinyal lambat" : e.message } }));
       $("listTrig").innerHTML = `<p class="kecil">Tiket belum bisa dimuat (${esc(e.message)}). Daftar di bawah dari hasil hitung GPS.</p>` + kartuDariRingkasan();
     }
   }
