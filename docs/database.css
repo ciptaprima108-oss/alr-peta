@@ -176,3 +176,10 @@ html[data-tema="gelap"] .db-garis .kini { fill: #FF6B6B; } html[data-tema="gelap
   .db-alat { order: -1; }
 }
 @media (min-width: 1300px) { .db { grid-template-columns: 420px minmax(0, 1fr); } }
+
+/* layar lebar: pakai seluruh lebar layar, kotak jenis satu baris */
+@media (min-width: 1000px) {
+  #lyr-database .lyr-badan { max-width: none; padding-left: 28px; padding-right: 28px; }
+  .db-kiri .db-pita { grid-template-columns: repeat(auto-fit, minmax(68px, 1fr)); }
+}
+@media (min-width: 1500px) { .db { grid-template-columns: 480px minmax(0, 1fr); } }
