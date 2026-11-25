@@ -39,8 +39,8 @@ function doGet(e) {
   if (!q.sejak) return balas_({ ok: true, pesan: 'Kotak surat laporan ALR aktif' });
   var sejak = new Date(Math.max(0, parseInt(q.sejak, 10) || 0));
   var tz = Utilities.formatDate(sejak, 'UTC', "yyyy-MM-dd'T'HH:mm:ss");
-  var it = folder_().searchFiles("createdDate > '" + tz + "' and mimeType = 'application/json'"), semua = [];
-  while (it.hasNext()) { var x = it.next(); semua.push({ t: x.getDateCreated().getTime(), f: x }); }
+  var it = folder_().searchFiles("modifiedDate > '" + tz + "' and mimeType = 'application/json'"), semua = [];
+  while (it.hasNext()) { var x = it.next(), t = x.getDateCreated().getTime(); if (t > sejak.getTime()) semua.push({ t: t, f: x }); }
   semua.sort(function (a, b) { return a.t - b.t; });
   var out = semua.slice(0, 10).map(function (s) { return { t: s.t, p: JSON.parse(s.f.getBlob().getDataAsString()) }; });
   return balas_({ ok: true, laporan: out });
