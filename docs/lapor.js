@@ -22,7 +22,7 @@
     rm: { nama: "Pekerjaan RM", label: "pekerjaan-rm", tag: "PEKERJAAN RM", ikon: "rm" },
   };
   const TIM_INSPEKSI = ["CH GPE", "WHL", "ALR", "Lainnya"];
-  const TIM_LOGISTIK = ["Logistik", "RM", "CH GPE", "WHL", "ALR"];
+  const TIM_LOGISTIK = ["Logistik", "RM", "CH GPE", "WHL", "ALR", "Lainnya"];
   const KENDALA = ["Licin / becek", "Berlubang / bergelombang", "Genangan air", "Amblas / longsor", "Tanjakan berat / unit selip",
     "Unit terjebak / tertahan", "Drainase tersumbat", "Debu tebal", "Tanggul / rambu rusak", "Jalan normal (trigger palsu)"];
   const TINGKAT = ["Ringan", "Sedang", "Berat, perlu segera"];
@@ -32,8 +32,8 @@
   const SATUAN = ["m³", "rit", "ton", "liter", "batang", "roll", "karung", "unit"];
   const KAPAN = ["Hari ini", "Besok", "Minggu ini"];
   const KEGIATAN = ["Grading / perataan", "Timbun & tambal lubang", "Pemadatan (compact)", "Bersihkan drainase / parit", "Siram jalan (water truck)",
-    "Buang lumpur", "Pasang / bersihkan gorong-gorong", "Perbaiki tanggul / safety berm", "Pasang rambu"];
-  const ALAT = ["Motor grader", "Excavator", "Vibro / compactor", "Water truck", "Dump truck", "Bulldozer", "Wheel loader"];
+    "Buang lumpur", "Pasang / bersihkan gorong-gorong", "Perbaiki tanggul / safety berm", "Pasang rambu", "Lainnya"];
+  const ALAT = ["Motor grader", "Excavator", "Vibro / compactor", "Water truck", "Dump truck", "Bulldozer", "Wheel loader", "Lainnya"];
   const STATUS_RM = ["Selesai", "Lanjut besok"];
 
   // ---------- data tiket (dari app.js) ----------
@@ -64,13 +64,22 @@
     const el = $("lpLok"); if (!el || !st) return;
     const l = lokasiSekarang();
     let h;
-    if (l?.sumber === "gps") h = `<b>${l.sta != null ? "STA " + fmtSta(l.sta) : "Di luar jalur ALR"}</b><span>GPS HP, akurat ${l.akurasi} m</span>`;
+    if (l?.sumber === "gps") h = `<b>${l.sta != null ? "HP di STA " + fmtSta(l.sta) : "HP di luar jalur ALR"}</b><span>Posisi GPS HP sekarang, akurat ${l.akurasi} m</span>`;
     else if (l) h = `<b>${l.sta != null ? "STA " + fmtSta(l.sta) : "Lokasi dari peta"}</b><span>${gps?.gagal ? "GPS HP mati, pakai lokasi " : "Mencari GPS HP... sementara pakai lokasi "}${l.sumber === "trigger" ? "trigger" : "yang dipilih"}</span>`;
     else h = `<b>${gps?.gagal ? "GPS HP belum aktif" : "Mencari GPS..."}</b><span>${gps?.gagal ? "Izinkan lokasi di pengaturan HP, atau isi STA di bawah." : "Tunggu sebentar di luar ruangan."}</span>`;
     el.innerHTML = `<svg class="ik"><use href="#i-peta"/></svg><div>${h}</div>`;
     el.classList.toggle("oke", l?.sumber === "gps");
     // isi STA otomatis kalau masih kosong
     if (l?.sta != null) ["lpSta", "lpSta1"].forEach((id) => { const i = $(id); if (i && !i.value && !i.dataset.diubah) i.value = (Math.round(l.sta * 10) / 10).toFixed(1); });
+    cekBeda();
+  }
+  // kalau STA yang diisi beda jauh dari posisi HP, beri tahu dan tawarkan pakai posisi HP
+  function cekBeda() {
+    const l = lokasiSekarang(), inp = $("lpSta") || $("lpSta1"), el = $("lpBeda"); if (!el || !inp) return;
+    const v = parseFloat(String(inp.value).replace(",", "."));
+    const beda = l?.sumber === "gps" && l.sta != null && isFinite(v) && Math.abs(v - l.sta) >= 0.2;
+    el.hidden = !beda;
+    if (beda) el.innerHTML = `Laporan dicatat di <b>STA ${fmtSta(v)}</b>, bukan di posisi HP. <button type="button" id="lpPakaiHp">Pakai STA ${fmtSta(l.sta)}</button>`;
   }
 
   // ---------- potongan form ----------
@@ -92,11 +101,11 @@
     const nama = simpan.get("alr_lapor_nama", "") || saya?.nama || "";
     const daftar = (window.ALR_PENGGUNA || []).map((p) => `<option value="${esc(p.nama)}">`).join("");
     return bag("Siapa yang lapor", `<input id="lpNama" class="lp-input" list="lpNamaList" placeholder="Nama kamu" value="${esc(nama)}" autocomplete="name"><datalist id="lpNamaList">${daftar}</datalist>
-      ${timList ? `<div class="lp-sub">Tim</div>${pilih("tim", timList, { nilai: [timAwal] })}` : ""}`);
+      ${timList ? `<div class="lp-sub">Tim</div>${pilih("tim", timList, { nilai: [timList.includes(timAwal) ? timAwal : "Lainnya"] })}<input id="lpTimLain" class="lp-input lp-lain" placeholder="Tulis nama tim" value="${esc(timList.includes(timAwal) || !timAwal ? "" : timAwal)}" hidden>` : ""}`);
   }
   const lokasi = (dua) => bag("Lokasi", `<div class="lp-lokasi" id="lpLok"></div>
     ${dua ? `<div class="lp-dua"><label>Dari STA<input id="lpSta1" class="lp-input" inputmode="decimal" placeholder="16.0"></label><label>Sampai STA<input id="lpSta2" class="lp-input" inputmode="decimal" placeholder="16.8"></label></div>`
-      : `<label class="lp-kecil-l">STA (boleh diubah)<input id="lpSta" class="lp-input" inputmode="decimal" placeholder="contoh 16.5"></label>`}`);
+      : `<label class="lp-kecil-l">STA lokasi kejadian (km, boleh diubah)<input id="lpSta" class="lp-input" inputmode="decimal" placeholder="contoh 16.5"></label>`}<p class="lp-beda" id="lpBeda" hidden></p>`);
   const catatan = (ph) => bag("Catatan", `<textarea id="lpCatatan" class="lp-input" rows="3" placeholder="${esc(ph)}"></textarea>`);
 
   function formHtml(j) {
@@ -121,8 +130,8 @@
     }
     return siapa(null) + `<input type="hidden" id="lpOperatorTim" value="RM">` +
       bag("Operator", `<input id="lpOperator" class="lp-input" placeholder="Nama operator, contoh: Joko (grader)">`) + lokasi(true) +
-      bag("Kegiatan", pilih("kegiatan", KEGIATAN, { multi: true })) +
-      bag("Alat yang dipakai", pilih("alat", ALAT, { multi: true })) +
+      bag("Kegiatan", pilih("kegiatan", KEGIATAN, { multi: true }) + `<input id="lpKegLain" class="lp-input lp-lain" placeholder="Tulis kegiatan lain" hidden>`) +
+      bag("Alat yang dipakai", pilih("alat", ALAT, { multi: true }) + `<div id="lpAlatNo" class="lp-alat-no"></div>`) +
       bag("Jam kerja", `<div class="lp-dua"><label>Mulai<input id="lpMulai" type="time" class="lp-input"></label><label>Selesai<input id="lpSelesai" type="time" class="lp-input"></label></div>`) +
       bag("Material yang dipakai", pilih("barang", ["Tidak pakai", ...Object.keys(BARANG).filter((b) => !["Solar", "Oli / pelumas"].includes(b))], { nilai: ["Tidak pakai"] }) +
         `<input id="lpBarangLain" class="lp-input" placeholder="Nama material lain" hidden>
@@ -156,6 +165,7 @@
 
   // ---------- isi form: pilihan, foto ----------
   const nilai = (f) => [...$("laporForm").querySelectorAll(`.pilih[data-f="${f}"] button.aktif`)].map((b) => b.dataset.v);
+  const kodeAlat = (a) => ({ "Motor grader": "MG", "Excavator": "EX", "Vibro / compactor": "VB", "Water truck": "WT", "Dump truck": "DT", "Bulldozer": "BD", "Wheel loader": "WL" }[a] || "XX");
   function aturTampil() {
     const f = $("laporForm"); if (!f || !st) return;
     const status = nilai("status")[0] || "";
@@ -163,6 +173,13 @@
     const b = nilai("barang")[0];
     if ($("lpBarangLain")) $("lpBarangLain").hidden = b !== "Lainnya";
     if ($("lpJumlahWrap")) $("lpJumlahWrap").hidden = !b || b === "Tidak pakai";
+    if ($("lpTimLain")) $("lpTimLain").hidden = nilai("tim")[0] !== "Lainnya";
+    if ($("lpKegLain")) $("lpKegLain").hidden = !nilai("kegiatan").includes("Lainnya");
+    const an = $("lpAlatNo");
+    if (an) {
+      const lama = {}; an.querySelectorAll("[data-alat]").forEach((x) => { lama[x.dataset.alat] = x.querySelector(".lp-no")?.value || ""; lama[x.dataset.alat + "#"] = x.querySelector(".lp-nama")?.value || ""; });
+      an.innerHTML = nilai("alat").map((a) => `<label class="lp-alat" data-alat="${esc(a)}"><span>${a === "Lainnya" ? "Alat lain" : esc(a)}</span>${a === "Lainnya" ? `<input class="lp-input lp-nama" placeholder="Nama alat" value="${esc(lama[a + "#"] || "")}">` : ""}<input class="lp-input lp-no" placeholder="No. lambung, contoh ${kodeAlat(a)}-001" autocapitalize="characters" value="${esc(lama[a] || "")}"></label>`).join("");
+    }
     const trig = +($("lpTrig")?.value || 0);
     const tw = $("lpTutupWrap");
     if (tw) tw.hidden = !trig || (st.jenis === "inspeksi" ? !nilai("kendala").includes("Jalan normal (trigger palsu)") : status !== "Selesai");
@@ -178,9 +195,14 @@
     if (g.dataset.f === "barang" && BARANG[b.dataset.v] && $("lpSatuan")) $("lpSatuan").value = BARANG[b.dataset.v];
     aturTampil();
   });
+  document.addEventListener("click", (e) => {
+    if (e.target.id !== "lpPakaiHp") return;
+    const l = lokasiSekarang(), inp = $("lpSta") || $("lpSta1"); if (!l?.sta || !inp) return;
+    klik(); inp.value = (Math.round(l.sta * 10) / 10).toFixed(1); cekBeda();
+  });
   document.addEventListener("change", (e) => {
     if (e.target.id === "lpTrig") aturTampil();
-    if (["lpSta", "lpSta1", "lpSta2"].includes(e.target.id)) e.target.dataset.diubah = "1";
+    if (["lpSta", "lpSta1", "lpSta2"].includes(e.target.id)) { e.target.dataset.diubah = "1"; cekBeda(); }
     const inp = e.target.closest("#laporForm .lp-kamera input"); if (!inp || !inp.files?.[0]) return;
     const slot = inp.closest(".lp-foto"), nama = slot.dataset.slot, file = inp.files[0]; inp.value = "";
     if (st.foto[nama].length >= +slot.dataset.maks) return toast("ALR: Foto sudah penuh", `Paling banyak ${slot.dataset.maks} foto.`);
@@ -231,7 +253,8 @@
   function susun() {
     const j = st.jenis, salah = [];
     const nama = ($("lpNama")?.value || "").trim(); if (!nama) salah.push("Isi nama pelapor.");
-    const tim = j === "rm" ? "RM" : nilai("tim")[0] || "";
+    let tim = j === "rm" ? "RM" : nilai("tim")[0] || "";
+    if (tim === "Lainnya") { tim = ($("lpTimLain")?.value || "").trim(); if (!tim) salah.push("Tulis nama tim."); }
     const l = lokasiSekarang();
     const trig = +($("lpTrig")?.value || 0) || null;
     const rid = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -259,7 +282,9 @@
       baris = [["Status", d.status], ["Barang", `${koma(d.jumlah)} ${d.satuan} ${d.barang}`], ["Dibutuhkan", d.kapan], ["Pengantar", d.pengantar], ["Untuk permintaan", d.permintaan ? "#" + d.permintaan : ""]];
     } else {
       d.sta1 = angkaSta("lpSta1") ?? l?.sta ?? null; d.sta2 = angkaSta("lpSta2"); d.sta = d.sta1;
-      d.operator = ($("lpOperator")?.value || "").trim(); d.kegiatan = nilai("kegiatan"); d.alat = nilai("alat");
+      d.operator = ($("lpOperator")?.value || "").trim(); d.kegiatan = nilai("kegiatan").map((k) => k === "Lainnya" ? ($("lpKegLain")?.value || "").trim() : k).filter(Boolean);
+      if (nilai("kegiatan").includes("Lainnya") && !($("lpKegLain")?.value || "").trim()) salah.push("Tulis kegiatan lainnya.");
+      d.alat = [...document.querySelectorAll("#lpAlatNo [data-alat]")].map((x) => { const nm = x.dataset.alat === "Lainnya" ? (x.querySelector(".lp-nama")?.value || "").trim() || "Alat lain" : x.dataset.alat; const no = (x.querySelector(".lp-no")?.value || "").trim().toUpperCase(); return no ? `${nm} ${no}` : nm; });
       d.mulai = $("lpMulai").value; d.selesai = $("lpSelesai").value; d.status = nilai("status")[0] || "";
       const b = barang(); if (b && b !== "Tidak pakai") { d.barang = b; d.jumlah = parseFloat(String($("lpJumlah").value).replace(",", ".")) || 0; d.satuan = $("lpSatuan").value; }
       if (!d.kegiatan.length) salah.push("Pilih minimal satu kegiatan.");

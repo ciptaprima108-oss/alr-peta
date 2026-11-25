@@ -42,7 +42,7 @@ button.btn.merah { background: var(--merah); color: #fff; }
 .lp-input:focus { outline: none; border-color: var(--rb-biru2); box-shadow: 0 0 0 3px rgba(21,101,192,.2); }
 textarea.lp-input { resize: vertical; min-height: 90px; }
 .lp-besar { font: 700 26px var(--judul); }
-.lp-dua { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.lp-dua { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 10px; margin-top: 10px; }
 .lp-dua label, .lp-kecil-l { display: flex; flex-direction: column; gap: 6px; font: 600 15px var(--isi); color: var(--pudar); }
 .lp-kecil-l { margin-top: 10px; }
 .pilih { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -193,3 +193,16 @@ textarea.lp-input { resize: vertical; min-height: 90px; }
 .rekap th, .rekap td { text-align: left !important; white-space: normal !important; word-wrap: break-word; }
 .rekap th:nth-child(1) { width: 112px; } .rekap th:nth-child(2) { width: 92px; } .rekap th:nth-child(3) { width: 100px; } .rekap th:nth-child(4) { width: 96px; }
 .rekap th:nth-child(6) { width: 120px; } .rekap th:nth-child(7) { width: 90px; }
+
+/* jam kerja: iOS input time jangan melebar keluar kartu */
+.lp-dua > label { min-width: 0; }
+.lp-dua input { min-width: 0; max-width: 100%; }
+input[type="time"].lp-input { -webkit-appearance: none; appearance: none; min-height: 54px; text-align: left; }
+input[type="time"].lp-input::-webkit-date-and-time-value { text-align: left; }
+.lp-lain { margin-top: 10px; }
+.lp-alat-no { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.lp-alat-no:empty { display: none; }
+.lp-alat { display: flex; flex-direction: column; gap: 6px; font: 700 16px var(--isi); color: var(--tinta); padding: 10px 12px; border-radius: 12px; background: var(--debu); }
+.lp-alat .lp-input { background: var(--kertas); }
+.lp-beda { margin: 10px 0 0; padding: 10px 12px; border-radius: 12px; background: #fff4e0; color: #7a4b00; font: 500 15px/1.4 var(--isi); }
+.lp-beda button { display: block; margin-top: 8px; padding: 9px 14px; border-radius: 10px; border: 0; background: var(--rb-biru2); color: #fff; font: 700 15px var(--isi); }
