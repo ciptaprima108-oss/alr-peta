@@ -95,10 +95,10 @@
   },
   "pengguna": [
     {
-      "id": "ALR-001",
-      "nama": "Fanza",
+      "id": "01001",
+      "nama": "Sutrisno W",
       "divisi": "Pimpinan",
-      "jabatan": "Pimpinan WHL",
+      "jabatan": "Owner / Pimpinan",
       "username": "",
       "akses": [
         "lihat",
@@ -107,58 +107,10 @@
       ]
     },
     {
-      "id": "ALR-002",
-      "nama": "Reza",
-      "divisi": "Pimpinan",
-      "jabatan": "Pimpinan WHL",
-      "username": "",
-      "akses": [
-        "lihat",
-        "lapor",
-        "kelola"
-      ]
-    },
-    {
-      "id": "ALR-003",
-      "nama": "Sunggu",
-      "divisi": "Pimpinan",
-      "jabatan": "Pimpinan GPE",
-      "username": "",
-      "akses": [
-        "lihat",
-        "lapor",
-        "kelola"
-      ]
-    },
-    {
-      "id": "ALR-004",
-      "nama": "Zaki D",
-      "divisi": "Pimpinan",
-      "jabatan": "Direksi",
-      "username": "",
-      "akses": [
-        "lihat",
-        "lapor",
-        "kelola"
-      ]
-    },
-    {
-      "id": "ALR-005",
-      "nama": "Irham",
-      "divisi": "Pimpinan",
-      "jabatan": "Pimpinan ALR",
-      "username": "",
-      "akses": [
-        "lihat",
-        "lapor",
-        "kelola"
-      ]
-    },
-    {
-      "id": "ALR-006",
+      "id": "01002",
       "nama": "Bambang S",
       "divisi": "Pimpinan",
-      "jabatan": "Pimpinan ALR",
+      "jabatan": "Owner / Pimpinan",
       "username": "",
       "akses": [
         "lihat",
@@ -167,10 +119,10 @@
       ]
     },
     {
-      "id": "ALR-007",
-      "nama": "Roby",
-      "divisi": "Pimpinan",
-      "jabatan": "Pimpinan BSR",
+      "id": "01003",
+      "nama": "Zaki D",
+      "divisi": "PJO",
+      "jabatan": "PJO",
       "username": "",
       "akses": [
         "lihat",
@@ -179,10 +131,22 @@
       ]
     },
     {
-      "id": "ALR-008",
+      "id": "01004",
+      "nama": "Sunggu",
+      "divisi": "CH",
+      "jabatan": "CH",
+      "username": "",
+      "akses": [
+        "lihat",
+        "lapor",
+        "kelola"
+      ]
+    },
+    {
+      "id": "01005",
       "nama": "Wicak",
-      "divisi": "Pimpinan",
-      "jabatan": "GPE",
+      "divisi": "CH",
+      "jabatan": "CH",
       "username": "Wicak",
       "akses": [
         "lihat",
@@ -191,10 +155,82 @@
       ]
     },
     {
-      "id": "ALR-009",
-      "nama": "Andri S",
-      "divisi": "Pimpinan",
-      "jabatan": "Pimpinan WHL",
+      "id": "01006",
+      "nama": "Jufri",
+      "divisi": "Road Maintenance",
+      "jabatan": "Road Maintenance",
+      "username": "",
+      "akses": [
+        "lihat",
+        "lapor",
+        "kelola"
+      ]
+    },
+    {
+      "id": "01007",
+      "nama": "Robby",
+      "divisi": "Logistik",
+      "jabatan": "Logistik",
+      "username": "",
+      "akses": [
+        "lihat",
+        "lapor",
+        "kelola"
+      ]
+    },
+    {
+      "id": "01008",
+      "nama": "Julian",
+      "divisi": "Safety",
+      "jabatan": "Safety",
+      "username": "",
+      "akses": [
+        "lihat",
+        "lapor",
+        "kelola"
+      ]
+    },
+    {
+      "id": "01009",
+      "nama": "Doni",
+      "divisi": "Engineering",
+      "jabatan": "Engineering",
+      "username": "",
+      "akses": [
+        "lihat",
+        "lapor",
+        "kelola"
+      ]
+    },
+    {
+      "id": "01010",
+      "nama": "Muskarel",
+      "divisi": "Security",
+      "jabatan": "Security",
+      "username": "",
+      "akses": [
+        "lihat",
+        "lapor",
+        "kelola"
+      ]
+    },
+    {
+      "id": "01011",
+      "nama": "Fanza",
+      "divisi": "Developer",
+      "jabatan": "Developer aplikasi",
+      "username": "",
+      "akses": [
+        "lihat",
+        "lapor",
+        "kelola"
+      ]
+    },
+    {
+      "id": "01012",
+      "nama": "Reza",
+      "divisi": "Developer",
+      "jabatan": "Developer aplikasi",
       "username": "",
       "akses": [
         "lihat",

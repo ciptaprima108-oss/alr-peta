@@ -1,0 +1,37 @@
+/* Layar masuk ALR: huruf besar, satu kartu di tengah, gaya biru-merah ALR. */
+.masuk { position: fixed; inset: 0; z-index: 9000; display: grid; place-items: center; padding: 20px 16px; overflow-y: auto;
+  background: radial-gradient(120% 80% at 100% 0%, rgba(229,52,31,.28) 0%, rgba(229,52,31,0) 55%), linear-gradient(165deg, #0B4EA2 0%, #0A2E63 55%, #081B3A 100%); }
+.masuk[hidden] { display: none; }
+body.perlu-masuk { overflow: hidden; }
+body.perlu-masuk .tabbar { visibility: hidden; }
+.masuk-kartu { width: 100%; max-width: 400px; background: var(--kertas, #fff); color: var(--tinta, #15191A); border-radius: 26px; padding: 26px 22px 20px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.4); display: grid; gap: 14px; text-align: left; position: relative; }
+.masuk-kartu::before { content: ""; position: absolute; left: 22px; right: 22px; top: 0; height: 5px; border-radius: 0 0 6px 6px; background: linear-gradient(90deg, #E5341F 50%, #fff 50%); box-shadow: 0 1px 0 rgba(0,0,0,.06); }
+.masuk-logo { width: 74px; height: 74px; border-radius: 50%; background: #fff; object-fit: contain; padding: 8px; margin: 0 auto; box-shadow: 0 0 0 3px #E5341F, 0 8px 20px rgba(11,78,162,.25); }
+.masuk h1 { margin: 2px 0 0; text-align: center; font: 700 32px/1.1 var(--judul, "Barlow Condensed", sans-serif); letter-spacing: .3px; }
+.masuk-sub { margin: -8px 0 4px; text-align: center; font: 500 16px var(--isi, Barlow, sans-serif); color: var(--pudar, #5E6A6E); }
+.masuk label { display: grid; gap: 6px; font: 700 17px var(--isi, Barlow, sans-serif); }
+.masuk input { width: 100%; height: 58px; border-radius: 16px; border: 2px solid var(--garis, #D8DEE4); background: var(--debu, #F3F5F7); color: inherit;
+  padding: 0 16px; font: 700 24px var(--isi, Barlow, sans-serif); letter-spacing: 2px; outline: none; }
+.masuk input::placeholder { font-weight: 500; font-size: 18px; letter-spacing: 0; color: #98A4AE; }
+.masuk input:focus { border-color: #0B4EA2; box-shadow: 0 0 0 4px rgba(11,78,162,.18); background: var(--kertas, #fff); }
+.masuk-pin { position: relative; display: block; }
+.masuk-pin input { padding-right: 86px; }
+.masuk-lihat { position: absolute; right: 8px; top: 8px; height: 42px; padding: 0 14px; border-radius: 12px; background: rgba(11,78,162,.1); color: #0B4EA2; font: 700 15px var(--isi, Barlow, sans-serif); }
+.masuk-pesan { margin: 0; min-height: 22px; font: 600 16px/1.35 var(--isi, Barlow, sans-serif); color: #D32F2F; }
+.masuk-pesan.oke { color: #2E7D32; }
+.masuk-tombol { height: 60px; border-radius: 18px; background: linear-gradient(180deg, #1A66C9, #0B4EA2); color: #fff; font: 700 21px var(--isi, Barlow, sans-serif);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 8px 18px rgba(11,78,162,.35); transition: transform .12s; }
+.masuk-tombol:active { transform: scale(.98); }
+.masuk-tombol:disabled { opacity: .7; }
+.masuk-bantu { margin: 0; text-align: center; font: 500 15px/1.4 var(--isi, Barlow, sans-serif); color: var(--pudar, #5E6A6E); }
+html[data-tema="gelap"] .masuk-kartu { background: #131E2A; color: #EEF3F8; }
+html[data-tema="gelap"] .masuk input { background: #0B131C; border-color: #2A3B50; }
+html[data-tema="gelap"] .masuk-lihat { background: rgba(59,139,246,.18); color: #8DB8FF; }
+
+/* profil: identitas dari login, pilihan nama manual disembunyikan */
+body.sudah-masuk .pf-pilih { display: none; }
+.akun-pin { display: grid; gap: 10px; padding: 12px 14px 14px; }
+.akun-pin label { display: grid; gap: 6px; font: 700 16px var(--isi); }
+.akun-pin input { height: 52px; border-radius: 14px; border: 2px solid var(--garis); background: var(--debu); color: inherit; padding: 0 14px; font: 700 20px var(--isi); letter-spacing: 2px; }
+.akun-aksi { display: flex; gap: 10px; justify-content: flex-end; }

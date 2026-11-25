@@ -30,9 +30,9 @@ def field(judul):
     return "" if v == "_No response_" else v
 
 
-DIVISI = ["Pimpinan", "Road Maintenance", "Logistik"]
+DIVISI = ["Pimpinan", "PJO", "CH", "Road Maintenance", "Logistik", "Safety", "Engineering", "Security", "Developer"]
 AKSES = {"lihat", "lapor", "kelola"}
-AKSES_BAWAAN = {"Pimpinan": ["lihat", "lapor", "kelola"], "Road Maintenance": ["lihat", "lapor"], "Logistik": ["lihat"]}
+AKSES_BAWAAN = {d: ["lihat", "lapor", "kelola"] for d in DIVISI}  # semua pengguna boleh buka seluruh aplikasi
 
 
 def cek_username(user):
@@ -68,8 +68,8 @@ def main():
     for i, p in enumerate(daftar):
         p.setdefault("id", "")
     def id_baru():
-        n = max([int(p["id"][4:]) for p in daftar if re.fullmatch(r"ALR-\d+", p.get("id", ""))] or [0]) + 1
-        return f"ALR-{n:03d}"
+        n = max([int(p["id"]) for p in daftar if re.fullmatch(r"\d{5}", p.get("id", ""))] or [1000]) + 1
+        return f"{n:05d}"
     for p in daftar:
         if not p["id"]:
             p["id"] = id_baru()
