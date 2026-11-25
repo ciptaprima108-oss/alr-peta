@@ -119,7 +119,7 @@ def temuan(g, d, on, off, ruas, rit, batas_lambat):
 def halaman_ringkasan(pdf, tgl, g, rit, tem, laporan, trigger, batas_lambat, mulai, akhir):
     fig = plt.figure(figsize=(8.27, 11.69), dpi=150)
     fig.patches.append(plt.Rectangle((0, 0.87), 1, 0.13, transform=fig.transFigure, color=GELAP, zorder=0))
-    fig.text(0.06, 0.965, "LAPORAN HARIAN JALAN ALR", fontsize=13, color="#facc15", fontweight="bold", va="top")
+    fig.text(0.06, 0.965, "LAPORAN HARIAN JALAN ALR - KETERANGAN", fontsize=13, color="#facc15", fontweight="bold", va="top")
     fig.text(0.06, 0.94, tgl_id(tgl), fontsize=24, color="white", fontweight="bold", va="top")
     fig.text(0.06, 0.895, "Kecepatan, titik berhenti & ritase unit WHL  (BSR STA 29  >  107 STA 0)", fontsize=11, color="#e5e7eb", va="top")
     fig.text(0.06, 0.855, f"Periode {mulai:%d/%m %H:%M} - {akhir:%d/%m %H:%M} WIB. Sumber: GPS TrackSolid (per jam), Ritase GPS, laporan lapangan aplikasi ALR. "
@@ -157,9 +157,9 @@ def halaman_ringkasan(pdf, tgl, g, rit, tem, laporan, trigger, batas_lambat, mul
         fig.text(0.07, y, f"• {l.get('waktu', '')}  {l.get('judul', '')}  {l.get('tim', '')}", fontsize=9, va="top"); y -= 0.019
     if not laporan:
         fig.text(0.07, y, "• Belum ada laporan lapangan (CH GPE / WHL) di tanggal ini.", fontsize=9, color="#b45309", va="top"); y -= 0.019
-    fig.text(0.06, 0.035, "Catatan: GPS 1 titik per jam, posisi STA bisa meleset ±1 km. Hal. 2 = skema STA + jalan per KM, Hal. 3 = rit per unit.",
+    fig.text(0.06, 0.035, "Catatan: GPS 1 titik per jam, posisi STA bisa meleset ±1 km. Hal. 1 = skema STA + jalan per KM, Hal. 3 = titik berhenti, Hal. 4 = rit per unit.",
              fontsize=7.5, color="#666")
-    fig.text(0.94, 0.035, "Hal. 1", fontsize=8, color="#666", ha="right")
+    fig.text(0.94, 0.035, "Hal. 2", fontsize=8, color="#666", ha="right")
     pdf.savefig(fig); return fig
 
 
@@ -169,8 +169,9 @@ def halaman_peta(pdf, tgl, g, hal):
     j = ht.baca_jalur()
     at = lambda s: (float(np.interp(s, j.sta, j.lat)), float(np.interp(s, j.sta, j.lon)))
     fig = plt.figure(figsize=(8.27, 11.69), dpi=150)
-    fig.text(0.06, 0.965, f"Skema STA Jalan ALR - {tgl_id(tgl, False)}", fontsize=16, fontweight="bold")
-    fig.text(0.06, 0.945, "Warna = kecepatan rata-rata unit WHL yang jalan per 1 KM. Bintang = titik paling lama unit berhenti. STA 0 = 107, STA 29 = BSR.", fontsize=7.5, color="#555")
+    fig.text(0.06, 0.975, "LAPORAN HARIAN JALAN ALR", fontsize=10, fontweight="bold", color="#b45309")
+    fig.text(0.06, 0.955, f"Skema STA Jalan ALR - {tgl_id(tgl)}", fontsize=16, fontweight="bold")
+    fig.text(0.06, 0.937, "Warna = kecepatan rata-rata unit WHL yang jalan per 1 KM. Bintang = titik paling lama unit berhenti. STA 0 = 107, STA 29 = BSR.", fontsize=7.5, color="#555")
     ax = fig.add_axes([0.04, 0.33, 0.92, 0.6]); ax.set_aspect("equal"); ax.axis("off")
     ax.plot(j.lon, j.lat, color="#374151", lw=11, solid_capstyle="round", zorder=1)
     km_v = {}
@@ -274,6 +275,35 @@ def pita_km(fig, rect, g):
     plt.rcParams["hatch.color"] = "#7A8183"
 
 
+def halaman_berhenti(pdf, tgl, on, off, hal):
+    """Titik berhenti per STA (1 KM): jam unit berhenti, merah = mesin hidup, abu = mesin mati. Area parkir 107 tidak dihitung."""
+    fig = plt.figure(figsize=(8.27, 11.69), dpi=150)
+    fig.text(0.06, 0.96, f"Titik berhenti per STA - {tgl_id(tgl, False)}", fontsize=16, fontweight="bold")
+    fig.text(0.06, 0.94, "1 titik GPS diam = ±1 jam unit berhenti. Merah = mesin hidup (antre/tertahan), abu = mesin mati (parkir). Parkir 107 tidak dihitung.",
+             fontsize=7.5, color="#555")
+    ax = fig.add_axes([0.09, 0.45, 0.86, 0.46]); x = np.arange(STA_BSR) + 0.5
+    ax.bar(x, on, 0.8, color=MERAH, label="Berhenti, mesin HIDUP (antre/tertahan)")
+    ax.bar(x, off, 0.8, bottom=on, color=ABU, label="Parkir, mesin MATI (menginap/istirahat)")
+    for xi, a, b in zip(x, on, off):
+        if a + b: ax.text(xi, a + b + 0.3, str(a + b), ha="center", fontsize=9, fontweight="bold")
+    ax.set_xlim(STA_BSR, 0); ax.set_xticks(range(0, STA_BSR + 1)); ax.tick_params(labelsize=7.5)
+    ax.set_xlabel("STA (km)    BSR = STA 29  >>>  107 = STA 0", fontsize=10); ax.set_ylabel("Jam unit berhenti", fontsize=10)
+    ax.spines[["top", "right"]].set_visible(False); ax.legend(frameon=False, fontsize=9.5, loc="upper center")
+    ax.set_ylim(0, max(1, (on + off).max()) * 1.3)
+    # tabel 5 STA terlama
+    tot = (on + off).sort_values(ascending=False)
+    tot = tot[tot > 0].head(6)
+    y = 0.37
+    fig.text(0.06, y, "STA paling lama dipakai berhenti", fontsize=13, fontweight="bold"); y -= 0.035
+    for seg, n in tot.items():
+        fig.text(0.08, y, f"STA {seg}-{seg + 1}", fontsize=11, fontweight="bold")
+        fig.text(0.25, y, f"{n} jam   (mesin hidup {on[seg]} jam, mesin mati {off[seg]} jam)", fontsize=10.5)
+        y -= 0.03
+    fig.text(0.06, 0.06, "Mesin hidup lama = antre / tertahan / jalan jelek.\nMesin mati lama di badan jalan = unit parkir menginap, perlu dicek kenapa.",
+             fontsize=8.5, color="#b45309", fontweight="bold")
+    fig.text(0.94, 0.025, f"Hal. {hal}", fontsize=8, color="#666", ha="right"); pdf.savefig(fig); return fig
+
+
 def halaman_rit(pdf, tgl, rit, batas_lambat, mulai, akhir):
     fig = plt.figure(figsize=(8.27, 11.69), dpi=150)
     fig.text(0.06, 0.96, f"Rit muatan BSR > 107 per unit ({tgl_id(tgl, False)})", fontsize=16, fontweight="bold")
@@ -295,7 +325,7 @@ def halaman_rit(pdf, tgl, rit, batas_lambat, mulai, akhir):
         fig.text(0.06, 0.105, f"Rit lambat (> {batas_lambat:.0f} menit): {len(rit) - len(n)} rit.  Waktu di lokasi muat (median): {rit.muat.median():.0f} menit.", fontsize=9.5)
     else:
         fig.text(0.06, 0.13, "Tidak ada rit muatan BSR > 107 di tanggal ini.", fontsize=10, fontweight="bold")
-    fig.text(0.94, 0.035, "Hal. 3", fontsize=8, color="#666", ha="right"); pdf.savefig(fig); return fig
+    fig.text(0.94, 0.035, "Hal. 4", fontsize=8, color="#666", ha="right"); pdf.savefig(fig); return fig
 
 
 def main():
@@ -320,8 +350,11 @@ def main():
     nama = f"Laporan_Harian_ALR_{tgl.day:02d}{BULAN[tgl.month - 1]}{tgl.year}"
     pdfp = os.path.join(a.out, nama + ".pdf")
     with PdfPages(pdfp) as pdf:
-        figs = [halaman_ringkasan(pdf, tgl, g, rit, tem, laporan, trigger, batas, mulai, akhir),
-                halaman_peta(pdf, tgl, g, 2), halaman_rit(pdf, tgl, rit, batas, mulai, akhir)]
+        f_peta = halaman_peta(pdf, tgl, g, 1)
+        f_ket = halaman_ringkasan(pdf, tgl, g, rit, tem, laporan, trigger, batas, mulai, akhir)
+        f_brh = halaman_berhenti(pdf, tgl, on, off, 3)
+        f_rit = halaman_rit(pdf, tgl, rit, batas, mulai, akhir)
+        figs = [f_peta, f_ket, f_brh, f_rit]
     for i, f in enumerate(figs, 1):
         f.savefig(os.path.join(a.out, f"{nama}_hal{i}.jpg"), dpi=130, pil_kwargs={"quality": 90})
     print(pdfp, f"{g.unit.nunique()} unit, {len(g)} titik, {len(rit)} rit, {len(tem)} temuan")
