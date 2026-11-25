@@ -83,15 +83,15 @@
     const hit = { semua: st.data.length }; st.data.forEach((r) => hit[r.jenis] = (hit[r.jenis] || 0) + 1);
     const tab = ["semua", "inspeksi", "logistik", "rm", ...Object.keys(hit).filter((k) => !["semua", "inspeksi", "logistik", "rm"].includes(k))];
     const rows = tersaring(), nTindak = st.data.filter(perluTindak).length;
-    window.ALR_DB_RINGKAS = st.muat ? "Memuat..." : st.salah ? st.salah : `${st.data.length} laporan di rentang ini${nTindak ? `, ${nTindak} perlu tindak lanjut` : ", semua beres"}.`;
+    window.ALR_DB_RINGKAS = st.muat ? "Memuat..." : st.salah ? st.salah : `${st.data.length} laporan ${{ "1": "hari ini", "7": "dalam 7 hari terakhir", "30": "dalam 30 hari terakhir", semua: "tersimpan" }[st.periode]}.`;
     window.ALR_isiHero?.("database");
-    el.innerHTML = (st.data.length && !st.muat ? grafik() : "") + `
+    el.innerHTML = `
       <div class="db-pita" role="group" aria-label="Jenis laporan">${tab.map((k) => `<button type="button" data-db-jenis="${k}" class="${st.jenis === k ? "aktif" : ""}" style="--w:${k === "semua" ? "var(--rb-biru)" : (JENIS[k]?.w || "#5B6B80")}">
         <b>${hit[k] || 0}</b><span>${k === "semua" ? "Semua" : k === "rm" ? "RM" : esc(JENIS[k]?.n || k)}</span></button>`).join("")}</div>
       <div class="db-alat">
         <div class="db-periode" role="group" aria-label="Rentang waktu">${PERIODE.map(([v, n]) => `<button type="button" data-db-per="${v}" class="${st.periode === v ? "aktif" : ""}">${n}</button>`).join("")}</div>
         <label class="db-cari"><svg class="ik"><use href="#i-cari"/></svg><input type="search" id="dbCari" placeholder="Cari nama, STA, barang, kegiatan" value="${esc(st.cari)}"></label>
-        <div class="db-baris2">${st.tindak ? `<button type="button" class="db-tindak aktif" data-db-aksi="tindak" aria-pressed="true">Hanya yang perlu tindak lanjut ✕</button>` : `<span class="db-beres"></span>`}
+        <div class="db-baris2"><button type="button" class="db-tindak${st.tindak ? " aktif" : ""}" data-db-aksi="tindak" aria-pressed="${st.tindak}">${st.tindak ? "Tampilkan semua laporan" : "Hanya yang perlu tindak lanjut"}</button>
           <div class="db-mode" role="group" aria-label="Tampilan"><button type="button" data-db-mode="kartu" class="${st.mode === "kartu" ? "aktif" : ""}">Kartu</button><button type="button" data-db-mode="tabel" class="${st.mode === "tabel" ? "aktif" : ""}">Tabel</button></div></div>
         <div class="db-tombol"><span>${rows.length} laporan</span><button type="button" data-db-aksi="muat">Muat ulang</button><button type="button" data-db-aksi="csv" ${rows.length ? "" : "disabled"}><b class="xl">X</b>Unduh Excel</button></div>
       </div>
