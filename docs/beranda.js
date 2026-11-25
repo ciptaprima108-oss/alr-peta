@@ -208,7 +208,7 @@
   const MENU = [
     { n: "Trigger jalan merah", b: "trigger" }, { n: "Jalan per KM", b: "km" }, { n: "Per 200 meter, titik berhenti", b: "km", p: "200" },
     { n: "RR dan traksi, rawan selip", b: "rr" }, { n: "Hujan di jalan, cuaca", b: "hujan" }, { n: "Nilai jalan dan grafik", b: "grafik" },
-    { n: "Laporan lapangan, foto", b: "laporan" }, { n: "Pengguna dan ID card", b: "pengguna" }, { n: "Kotak masuk, pesan", t: "kotak" },
+    { n: "Laporan lapangan, foto", b: "laporan" }, { n: "Database laporan, Supabase, Excel", b: "database" }, { n: "Pengguna dan ID card", b: "pengguna" }, { n: "Kotak masuk, pesan", t: "kotak" },
     { n: "Forum", t: "forum" }, { n: "Akun, notifikasi, suara", t: "akun" }, { n: "Peta layar penuh", t: "peta" }];
   const inp = $("cariInput"), hasil = $("cariHasil");
   function bukaKm(km) {

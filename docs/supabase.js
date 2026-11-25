@@ -15,6 +15,7 @@
     const t = await r.text(); return t ? JSON.parse(t) : null;
   }
   window.ALR_db = {
+    minta,
     aktif: async () => !!(await muat())?.url,
     // simpan 1 laporan; rid sama tidak akan dobel
     simpanLaporan: (baris) => minta("laporan?on_conflict=rid", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates,return=minimal" }, body: JSON.stringify(baris) }),
