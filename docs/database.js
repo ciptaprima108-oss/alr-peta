@@ -55,14 +55,16 @@
   const berjalan = (r) => (r.jenis === "logistik" && ["Permintaan", "Dikirim"].includes(r.status)) || (r.jenis === "rm" && r.status === "Lanjut besok");
   const mendesak = (r) => r.jenis === "inspeksi" && /berat/i.test(r.data?.tingkat || "");
   function grafik() {
-    // satu baris angka kecil, sisanya langsung daftar laporan
-    const d = st.data, hariIni = tglKey(Date.now());
-    const nHari = d.filter((r) => tglKey(r.waktu) === hariIni).length, nT = d.filter(perluTindak).length, nB = d.filter(beres).length;
-    const nama = { "1": "Hari ini", "7": "7 hari", "30": "30 hari", semua: "Total" }[st.periode];
-    return `<div class="db-strip">
-      <div><b>${nHari}</b><span>Hari ini</span></div>
-      <button type="button" data-db-aksi="tindak" class="${st.tindak ? "aktif" : ""}" aria-pressed="${st.tindak}"><b class="${nT ? "db-naik" : ""}">${nT}</b><span>Perlu tindak lanjut</span></button>
-      <div><b class="db-turun">${nB}</b><span>Beres</span></div></div>`;
+    // grafik sederhana: 1 batang per hari, angka di atas, hari ini merah
+    if (st.periode === "1") return "";
+    const n = 7, hari = [...Array(n)].map((_, i) => tglKey(Date.now() - (n - 1 - i) * 864e5));
+    const hit = Object.fromEntries(hari.map((h) => [h, 0]));
+    tersaring().forEach((r) => { const k = tglKey(r.waktu); if (k in hit) hit[k]++; });
+    const maks = Math.max(1, ...Object.values(hit)), kini = hari[n - 1];
+    const nama = (h) => h === kini ? "Hari ini" : new Date(h + "T12:00:00+07:00").toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", weekday: "short" });
+    const tgl = (h) => new Date(h + "T12:00:00+07:00").toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", day: "numeric", month: "short" });
+    return `<div class="db-grafik"><div class="db-g-kepala"><b>Laporan per hari, 7 hari terakhir</b></div>
+      <div class="db-batang" style="--n:${n}">${hari.map((h) => `<div class="db-bt${h === kini ? " kini" : ""}"><small>${hit[h]}</small><div class="db-tumpuk" style="--t:${hit[h] / maks}"></div><span>${nama(h)}</span><em>${tgl(h)}</em></div>`).join("")}</div></div>`;
   }
   function kelompok(rows) {
     if (st.urut !== "waktu") return rows.map(baris).join("");
@@ -88,6 +90,7 @@
     el.innerHTML = `
       <div class="db-pita" role="group" aria-label="Jenis laporan">${tab.map((k) => `<button type="button" data-db-jenis="${k}" class="${st.jenis === k ? "aktif" : ""}" style="--w:${k === "semua" ? "var(--rb-biru)" : (JENIS[k]?.w || "#5B6B80")}">
         <b>${hit[k] || 0}</b><span>${k === "semua" ? "Semua" : k === "rm" ? "RM" : esc(JENIS[k]?.n || k)}</span></button>`).join("")}</div>
+      ${st.data.length && !st.muat ? grafik() : ""}
       <div class="db-alat">
         <div class="db-periode" role="group" aria-label="Rentang waktu">${PERIODE.map(([v, n]) => `<button type="button" data-db-per="${v}" class="${st.periode === v ? "aktif" : ""}">${n}</button>`).join("")}</div>
         <label class="db-cari"><svg class="ik"><use href="#i-cari"/></svg><input type="search" id="dbCari" placeholder="Cari nama, STA, barang, kegiatan" value="${esc(st.cari)}"></label>
