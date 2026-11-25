@@ -163,31 +163,43 @@ def halaman_ringkasan(pdf, tgl, g, rit, tem, laporan, trigger, batas_lambat, mul
     pdf.savefig(fig); return fig
 
 
-def halaman_sta(pdf, tgl, on, off, ruas):
+def halaman_sta(pdf, tgl, g, ruas):
+    """Pita per 200 m seperti di aplikasi (grafik.js): tiap baris = 1 KM, 5 kotak @200 m.
+    Angka besar = jam unit berhenti (mesin hidup + mati), bawah = rata-rata km/jam unit yang jalan."""
+    from matplotlib.patches import FancyBboxPatch
     fig = plt.figure(figsize=(8.27, 11.69), dpi=150)
-    fig.text(0.06, 0.96, f"Di STA berapa unit berhenti? ({tgl_id(tgl, False)})", fontsize=16, fontweight="bold")
-    fig.text(0.06, 0.94, "1 titik GPS diam = ±1 jam unit berhenti. Merah = mesin hidup, abu = mesin mati. Parkir 107 tidak dihitung.", fontsize=8.5, color="#555")
-    ax = fig.add_axes([0.09, 0.5, 0.86, 0.41]); x = np.arange(STA_BSR) + 0.5
-    ax.bar(x, on, 0.8, color=MERAH, label="Berhenti, mesin HIDUP"); ax.bar(x, off, 0.8, bottom=on, color=ABU, label="Parkir, mesin MATI")
-    for xi, a, b in zip(x, on, off):
-        if a + b: ax.text(xi, a + b + 0.3, str(a + b), ha="center", fontsize=8, fontweight="bold")
-    ax.set_xlim(STA_BSR, 0); ax.set_xticks(range(0, STA_BSR + 1)); ax.tick_params(labelsize=7)
-    ax.set_xlabel("STA (km)    BSR = STA 29  >>>  107 = STA 0", fontsize=9); ax.set_ylabel("Jam unit berhenti", fontsize=9)
-    ax.spines[["top", "right"]].set_visible(False); ax.legend(frameon=False, fontsize=9, loc="upper center"); ax.set_ylim(0, max(1, (on + off).max()) * 1.25)
-    fig.text(0.06, 0.42, "Kecepatan unit yang jalan, per 3 STA", fontsize=14, fontweight="bold")
-    a2 = fig.add_axes([0.05, 0.22, 0.9, 0.17]); a2.set_xlim(STA_BSR + 1.5, -1.5); a2.set_ylim(-2, 1.5); a2.axis("off")
-    for a_, b_, v, n in ruas:
-        a2.plot([a_, b_], [0, 0], color=wr(v) if v else "#d1d5db", lw=18, solid_capstyle="butt")
-        a2.text((a_ + b_) / 2, -1.2, f"{v:.0f} km/j" if v else "data\nkurang", ha="center", fontsize=8, color=wr(v) if v else "#888", fontweight="bold")
-    for s in range(0, STA_BSR + 1):
-        a2.plot([s, s], [-0.3, 0.3], color="white", lw=1.5); a2.text(s, -0.6, str(s), ha="center", fontsize=7)
-    a2.text(STA_BSR + 1.3, 0, "BSR", ha="left", va="center", fontsize=11, fontweight="bold"); a2.text(-1.3, 0, "107", ha="right", va="center", fontsize=11, fontweight="bold")
-    a2.annotate("", xy=(3, 1.1), xytext=(26, 1.1), arrowprops=dict(arrowstyle="-|>", lw=2, color=MERAH))
-    a2.text(14.5, 1.3, "arah MUATAN", ha="center", fontsize=9, color=MERAH, fontweight="bold")
-    for i, (c, l) in enumerate([(HIJAU, "Lancar > 17 km/jam"), (ORANYE, "Agak pelan 14-17"), (MERAH, "Pelan / jelek <= 13")]):
-        fig.patches.append(plt.Rectangle((0.08 + i * 0.3, 0.17), 0.03, 0.012, transform=fig.transFigure, color=c))
-        fig.text(0.12 + i * 0.3, 0.176, l, fontsize=9, va="center")
-    fig.text(0.94, 0.035, "Hal. 2", fontsize=8, color="#666", ha="right"); pdf.savefig(fig); return fig
+    fig.text(0.06, 0.965, f"Jalan ALR per 200 meter ({tgl_id(tgl, False)})", fontsize=16, fontweight="bold")
+    fig.text(0.06, 0.945, "Angka besar = jam unit berhenti di kotak itu (1 titik GPS diam = ±1 jam). Bawah = kecepatan rata-rata unit yang jalan.", fontsize=8, color="#555")
+    n = int(round(STA_BSR / 0.2)); seg = np.clip(np.floor(g.sta / 0.2 + 1e-9).astype(int), 0, n - 1) if len(g) else []
+    g = g.assign(seg=seg)
+    diam = g[g.speed <= 3].groupby("seg").size().reindex(range(n), fill_value=0)
+    jalan = g[g.speed > 3].groupby("seg").speed.mean().reindex(range(n))
+    zona = [ht.zona_bukan_jalan(i * 0.2 + 0.1) for i in range(n)]
+    maks = max(3, max(int(diam[i]) for i in range(n) if not zona[i]))
+    WK = {"h": "#3FA34D", "k": "#F2B705", "m": "#E5341F"}; TK = {"h": "white", "k": "#23282A", "m": "white"}
+    kelas = lambda j: "m" if j >= maks * 0.6 else "k" if j >= maks * 0.25 else "h"
+    ax = fig.add_axes([0.04, 0.07, 0.92, 0.86]); ax.axis("off")
+    kol = [(range(STA_BSR - 1, 14, -1), 0.0), (range(14, -1, -1), 0.5)]
+    for kms, x0 in kol:
+        for r, km in enumerate(kms):
+            y = 1 - (r + 1) * (1 / 15.3)
+            ax.text(x0 + 0.005, y + 0.028, f"KM\n{km + 1}-{km}", fontsize=7.5, fontweight="bold", va="center", ha="left", transform=ax.transAxes, color="#333")
+            for c, i in enumerate(range(km * 5 + 4, km * 5 - 1, -1)):
+                bx = x0 + 0.075 + c * 0.081; bw, bh = 0.075, 0.058
+                z = zona[i]; j = int(diam[i]); v = jalan[i]
+                fc = "#9ca3af" if z else WK[kelas(j)]; tc = "white" if z else TK[kelas(j)]
+                ax.add_patch(FancyBboxPatch((bx, y), bw, bh, boxstyle="round,pad=0,rounding_size=0.008", fc=fc, ec="none", transform=ax.transAxes))
+                sta = i * 0.2; lab = f"{int(sta)}+{int(round((sta % 1) * 1000)):03d}"
+                ax.text(bx + bw / 2, y + bh - 0.009, lab, fontsize=5.8, ha="center", va="top", color=tc, transform=ax.transAxes, fontweight="bold")
+                if z:
+                    ax.text(bx + bw / 2, y + bh * 0.42, "zona\nparkir", fontsize=5.5, ha="center", va="center", color="white", transform=ax.transAxes); continue
+                ax.text(bx + bw / 2, y + bh * 0.47, str(j), fontsize=11, ha="center", va="center", color=tc, transform=ax.transAxes, fontweight="bold")
+                ax.text(bx + bw / 2, y + 0.006, f"{v:.0f} km/j" if v == v else "-", fontsize=5.8, ha="center", va="bottom", color=tc, transform=ax.transAxes)
+    for k, (c, l) in enumerate([("#3FA34D", "Sedikit berhenti"), ("#F2B705", "Sedang"), ("#E5341F", "Lama berhenti"), ("#9ca3af", "Zona parkir/antrean (tidak dihitung)")]):
+        fig.patches.append(plt.Rectangle((0.06 + k * 0.2, 0.045), 0.02, 0.01, transform=fig.transFigure, color=c))
+        fig.text(0.085 + k * 0.2, 0.05, l, fontsize=7.5, va="center")
+    fig.text(0.06, 0.025, f"Urutan BSR (KM 29, kiri atas) ke 107 (KM 0, kanan bawah). Merah = >= {maks * 0.6:.0f} jam, kuning = >= {maks * 0.25:.0f} jam.", fontsize=7, color="#666")
+    fig.text(0.94, 0.025, "Hal. 2", fontsize=8, color="#666", ha="right"); pdf.savefig(fig); return fig
 
 
 def halaman_rit(pdf, tgl, rit, batas_lambat, mulai, akhir):
@@ -237,7 +249,7 @@ def main():
     pdfp = os.path.join(a.out, nama + ".pdf")
     with PdfPages(pdfp) as pdf:
         figs = [halaman_ringkasan(pdf, tgl, g, rit, tem, laporan, trigger, batas, mulai, akhir),
-                halaman_sta(pdf, tgl, on, off, ruas), halaman_rit(pdf, tgl, rit, batas, mulai, akhir)]
+                halaman_sta(pdf, tgl, g, ruas), halaman_rit(pdf, tgl, rit, batas, mulai, akhir)]
     for i, f in enumerate(figs, 1):
         f.savefig(os.path.join(a.out, f"{nama}_hal{i}.jpg"), dpi=130, pil_kwargs={"quality": 90})
     print(pdfp, f"{g.unit.nunique()} unit, {len(g)} titik, {len(rit)} rit, {len(tem)} temuan")
