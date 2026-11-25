@@ -19,6 +19,7 @@
   const fmtPanjang = (d) => `${d.getDate()} ${BULAN[d.getMonth()]} ${d.getFullYear()}`;
   const senin = (d) => tambah(d, -((d.getDay() + 6) % 7));
   const jamMenit = (m) => { if (m == null) return "-"; m = Math.round(m); const j = Math.floor(m / 60), s = m % 60; return j ? `${j} jam${s ? " " + s + " mnt" : ""}` : `${s} mnt`; };
+  const r1 = (x) => Math.round(x * 10) / 10;   // jam tertahan 1 desimal (data GPS per menit sejak 25 Nov 2026)
   const rata = (a) => { const v = a.filter((x) => x != null); return v.length ? v.reduce((s, x) => s + x, 0) / v.length : null; };
   const rataBobot = (a, w) => { let s = 0, n = 0; a.forEach((x, i) => { if (x != null && w[i]) { s += x * w[i]; n += w[i]; } }); return n ? s / n : rata(a); };
   const kodeStatus = (i) => i == null ? "KOSONG" : i >= (KL.batas_layak ?? 75) ? "LAYAK" : i >= (KL.batas_perhatian ?? 50) ? "KURANG" : "TIDAK";
@@ -186,6 +187,7 @@
       const h = src[iso(d)]; if (!h) continue;
       for (const k in h) { const t = tot[k], v = h[k]; for (let i = 0; i < 5; i++) t[i] += v[i]; v[5].forEach((u) => t[5].add(u)); }
     }
+    tot.forEach((t) => { t[1] = r1(t[1]); t[2] = r1(t[2]); });
     return tot;
   }
   document.querySelectorAll("[data-a]").forEach((b) => b.onclick = () => {
@@ -202,7 +204,7 @@
     const semuaUrut = [...daftar].reverse();                     // BSR (KM 28-29) di kiri, 107 di kanan = arah muatan
     const urut = semuaUrut.filter((k) => !k.zona);                // zona antre/parkir tidak digambar di grafik (bukan masalah jalan)
     const zonaJam = {};
-    semuaUrut.filter((k) => k.zona).forEach((k) => { const t = totSemua[k.km]; zonaJam[k.zona] = (zonaJam[k.zona] || 0) + t[1] + t[2]; });
+    semuaUrut.filter((k) => k.zona).forEach((k) => { const t = totSemua[k.km]; zonaJam[k.zona] = r1((zonaJam[k.zona] || 0) + t[1] + t[2]); });
     for (let d = new Date(dari); d <= sampai; d = tambah(d, 1)) { const z = KM.zona_hari?.[iso(d)]; if (z) for (const n in z) { const nm = n.replace(/ \(STA.*\)$/, ""); zonaJam[nm] = (zonaJam[nm] || 0) + z[n]; } }
     const L = urut.map((k) => String(k.km)), T = urut.map((k) => tot[k.km]);
     const speed = T.map((t) => t[4] ? s1(t[3] / t[4]) : null);
@@ -222,8 +224,8 @@
     strip(semuaUrut, totM, totK, totSemua);
     document.querySelectorAll(".nArah").forEach((e) => e.textContent = NAMA_ARAH[ARAH]);
     // KM paling bermasalah (bukan zona antre/parkir)
-    const skor = daftar.filter((k) => !k.zona).map((k) => { const t = totSemua[k.km]; return { k, jam: t[1] + t[2], hidup: t[1], sp: t[4] ? t[3] / t[4] : null, unit: t[5].size,
-        m: totM ? totM[k.km][1] + totM[k.km][2] : null, ks: totK ? totK[k.km][1] + totK[k.km][2] : null }; })
+    const skor = daftar.filter((k) => !k.zona).map((k) => { const t = totSemua[k.km]; return { k, jam: r1(t[1] + t[2]), hidup: r1(t[1]), sp: t[4] ? t[3] / t[4] : null, unit: t[5].size,
+        m: totM ? r1(totM[k.km][1] + totM[k.km][2]) : null, ks: totK ? r1(totK[k.km][1] + totK[k.km][2]) : null }; })
       .filter((x) => x.jam > 0 || (x.sp != null && x.sp <= 13)).sort((a, b) => b.jam - a.jam).slice(0, 3);
     $("topKm").innerHTML = skor.length ? `<div class="top">${skor.map((x, i) => `<div class="it" data-km="${x.k.km}"><div class="rambu"><svg viewBox="0 0 38 34" aria-hidden="true"><path d="M19 2 36 32H2z" fill="#F2B705" stroke="#23282A" stroke-width="2.5" stroke-linejoin="round"/><path d="M19 12v9M19 25v1" stroke="#23282A" stroke-width="3.5" stroke-linecap="round"/></svg><b class="km">${x.k.label}</b></div>
         <b>${x.jam} jam</b> DT berhenti di KM ini, ${x.hidup} jam di antaranya mesin hidup.${x.m != null ? `<br>Arah muatan ${x.m} jam, arah kosongan ${x.ks} jam.` : ""}<br>Kecepatan ${x.sp != null ? Math.round(x.sp) + " km/jam" : "belum ada data"}, ${x.unit} unit lewat.<span class="rr-isi"></span></div>`).join("")}</div>`
@@ -239,7 +241,7 @@
     const per = [];  // per periode: jam tertahan per km
     for (const p of P) {
       const a = Array(n).fill(null);
-      p.tgl.forEach((t) => { const h = sumber(ARAH)[t]; if (!h) return; for (const k in h) a[k] = (a[k] || 0) + h[k][1] + h[k][2]; });
+      p.tgl.forEach((t) => { const h = sumber(ARAH)[t]; if (!h) return; for (const k in h) a[k] = r1((a[k] || 0) + h[k][1] + h[k][2]); });
       per.push(a);
     }
     const maks = Math.max(1, ...per.flatMap((a) => urut.map((k) => a[k.km] || 0)));
@@ -281,7 +283,7 @@
       LT = totM ? [{ tot: totM, nama: "muatan" }, { tot: totK, nama: "kosongan" }] : [{ tot: totSemua, nama: "semua" }];
     }
     const per200 = PITA === "200";
-    const jamOf = (t, u) => u.zona ? 0 : t[u.key][1] + t[u.key][2];
+    const jamOf = (t, u) => u.zona ? 0 : r1(t[u.key][1] + t[u.key][2]);
     const maks = Math.max(per200 ? 3 : 6, ...LT.flatMap((l) => units.map((u) => jamOf(l.tot, u))));
     // tiga warna tegas: hijau sedikit berhenti, kuning sedang, merah lama
     const kelas = (u, j) => u.zona ? "z" : j >= maks * 0.6 ? "m" : j >= maks * 0.25 ? "k" : "h";
@@ -422,7 +424,7 @@
     let kmTop = null;
     if (km && km.hari) {
       const tg = Object.keys(km.hari).sort().pop(), h = km.hari[tg] || {};
-      const daftar = km.km.filter((k) => !k.zona).map((k) => { const v = h[k.km]; return { label: k.label, km: k.km, jam: v ? v[1] + v[2] : 0 }; }).sort((a, b) => b.jam - a.jam);
+      const daftar = km.km.filter((k) => !k.zona).map((k) => { const v = h[k.km]; return { label: k.label, km: k.km, jam: v ? r1(v[1] + v[2]) : 0 }; }).sort((a, b) => b.jam - a.jam);
       if (daftar.length && daftar[0].jam) kmTop = { ...daftar[0], tanggal: tg };
     }
     window.ALR_HARIAN = { hari: hari.slice(-14), kmTop, telat: TELAT };

@@ -18,6 +18,11 @@ Isi file:
   - 3 hari terakhir: semua titik, maks 1 titik / menit / unit
   - lebih lama (sampai 60 hari): 1 titik / jam / unit (sama seperti export per jam)
 Hanya titik di sekitar koridor ALR yang disimpan.
+
+GPS RAPAT (per menit, sejak 25 Nov 2026): Apps Script "Tracking GPS WHL" (GpsRapatAlr.gs) menarik
+jimi.device.track.list tiap 15 menit ke tab GPS ALR RAPAT di sheet data ban (48 jam terakhir).
+tarik_rapat() membacanya lewat gviz (TS_SHEET_ID) dan menyimpan arsip per hari WIB di
+data/gps/rapat/YYYY-MM-DD.csv.gz (kolom unit, waktu, lat, lon, speed, acc, area).
 """
 import csv, hashlib, json, os, sys, time, urllib.parse, urllib.request
 from datetime import datetime, timedelta, timezone
@@ -133,6 +138,69 @@ def tarik_sheet(sejak):
     return out
 
 
+RAPAT_DIR = P("data", "gps", "rapat")
+RAPAT_KOLOM = ["unit", "waktu", "lat", "lon", "speed", "acc", "area"]
+
+
+def baca_rapat_lokal():
+    import glob
+    fs = sorted(glob.glob(os.path.join(RAPAT_DIR, "*.csv.gz")))
+    return pd.concat([pd.read_csv(f, dtype=str) for f in fs[-3:]]) if fs else pd.DataFrame(columns=RAPAT_KOLOM)
+
+
+def tarik_rapat():
+    """Titik per menit dari tab GPS ALR RAPAT -> data/gps/rapat/<tgl>.csv.gz. Return jumlah baris baru."""
+    sid = os.environ.get("TS_SHEET_ID", "")
+    if not sid:
+        print("GPS rapat: TS_SHEET_ID kosong, lewati"); return 0
+    lama = baca_rapat_lokal()
+    sekarang = datetime.now(ZONA).replace(tzinfo=None)
+    sejak = sekarang - timedelta(hours=47)
+    if len(lama):
+        sejak = max(sejak, datetime.strptime(lama.waktu.max(), "%Y-%m-%d %H:%M:%S") - timedelta(hours=2))
+    q = "select A,B,C,D,E,F,H where A > datetime '" + sejak.strftime("%Y-%m-%d %H:%M:%S") + "'"
+    url = (f"https://docs.google.com/spreadsheets/d/{sid}/gviz/tq?tqx=out:csv&sheet="
+           + urllib.parse.quote("GPS ALR RAPAT") + "&tq=" + urllib.parse.quote(q))
+    try:
+        with urllib.request.urlopen(url, timeout=180) as r:
+            rows = list(csv.reader(r.read().decode("utf-8-sig").splitlines()))
+    except Exception as ex:
+        print(f"GPS rapat: gagal baca sheet ({ex})"); return 0
+    out = []
+    for x in rows[1:]:
+        if len(x) < 6: continue
+        w = x[0].strip()
+        for fmt in ("%Y-%m-%d %H:%M:%S", "%d/%m/%Y %H:%M:%S", "%d/%m/%Y %H:%M"):
+            try: t = datetime.strptime(w, fmt); break
+            except ValueError: t = None
+        if t is None: continue
+        area = (x[6] if len(x) > 6 else "").strip()
+        area = area[:-2] if area.endswith(",0") or area.endswith(".0") else area
+        out.append([x[1].strip(), t.strftime("%Y-%m-%d %H:%M:%S"), angka(x[2].replace(",", ".")), angka(x[3].replace(",", ".")),
+                    angka(x[4].replace(",", ".")), x[5].strip().upper(), area])
+    baru = pd.DataFrame(out, columns=RAPAT_KOLOM)
+    print(f"GPS rapat: {len(baru)} baris dari sheet sejak {sejak:%Y-%m-%d %H:%M} WIB")
+    if baru.empty:
+        return 0
+    os.makedirs(RAPAT_DIR, exist_ok=True)
+    baru["tg"] = baru.waktu.str[:10]
+    n_baru = 0
+    for tg, x in baru.groupby("tg"):
+        f = os.path.join(RAPAT_DIR, f"{tg}.csv.gz")
+        ada = pd.read_csv(f, dtype=str) if os.path.exists(f) else pd.DataFrame(columns=RAPAT_KOLOM)
+        g = pd.concat([ada, x[RAPAT_KOLOM].astype(str)], ignore_index=True)
+        g = g.drop_duplicates(["unit", "waktu"], keep="last").sort_values(["waktu", "unit"])
+        n_baru += len(g) - len(ada)
+        g.to_csv(f, index=False, compression={"method": "gzip", "mtime": 0})
+    # arsip lebih dari simpan_hari dibuang
+    import glob
+    batas = (sekarang - timedelta(days=CFG.get("simpan_hari", 60))).strftime("%Y-%m-%d")
+    for f in glob.glob(os.path.join(RAPAT_DIR, "*.csv.gz")):
+        if os.path.basename(f)[:10] < batas: os.remove(f)
+    print(f"GPS rapat: {n_baru} baris baru, arsip {sorted(baru.tg.unique())}")
+    return n_baru
+
+
 def simpan(lama, baru):
     la0, la1, lo0, lo1 = koridor()
     df = pd.DataFrame(baru, columns=["unit", "waktu", "lat", "lon", "speed", "acc"])
@@ -156,6 +224,7 @@ def simpan(lama, baru):
 
 def main():
     lama = pd.read_csv(OUT, dtype=str) if os.path.exists(OUT) else pd.DataFrame(columns=["unit", "waktu", "lat", "lon", "speed", "acc"])
+    tarik_rapat()
     if not (KEY and SECRET and AKUN):
         jam = CFG.get("tarik_awal_jam", 24) if lama.empty else 6
         baru = tarik_sheet(datetime.now(ZONA).replace(tzinfo=None) - timedelta(hours=jam))
