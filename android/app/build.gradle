@@ -1,0 +1,43 @@
+plugins { id "com.android.application" }
+
+// Tanda tangan APK: kalau ALR_KEYSTORE (path) + ALR_KS_PASS ada, APK langsung ditandatangani.
+// Kalau tidak ada (di GitHub Actions), hasilnya APK belum bertanda tangan,
+// lalu ditandatangani terpisah pakai kunci ALR yang disimpan privat.
+def ks = System.getenv("ALR_KEYSTORE")
+
+android {
+    namespace "id.alr.app"
+    compileSdk 35
+    defaultConfig {
+        applicationId "id.alr.app"
+        minSdk 24
+        targetSdk 35
+        versionCode 1
+        versionName "1.0"
+    }
+    if (ks) {
+        signingConfigs {
+            release {
+                storeFile file(ks)
+                storePassword System.getenv("ALR_KS_PASS")
+                keyAlias "alr"
+                keyPassword System.getenv("ALR_KS_PASS")
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            if (ks) signingConfig signingConfigs.release
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation "androidx.core:core:1.13.1"
+    implementation "androidx.webkit:webkit:1.12.1"
+}

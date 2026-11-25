@@ -1,0 +1,84 @@
+name: APK Android ALR
+
+# 1) build: kalau folder android/ berubah, bikin APK (belum bertanda tangan) dan taruh di
+#    pre-release "apk-build". APK itu lalu ditandatangani pakai kunci ALR yang disimpan privat.
+# 2) rilis: kalau APK bertanda tangan masuk ke docs/apk/, bikin GitHub Release "apk-vX" berisi APK itu.
+on:
+  push:
+    paths: ["android/**", "docs/apk/**", ".github/workflows/apk.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+      - name: Build APK
+        working-directory: android
+        run: gradle --no-daemon assembleRelease
+      - name: Siapkan file
+        run: |
+          mkdir -p out
+          cp android/app/build/outputs/apk/release/app-release-unsigned.apk out/ALR-App-unsigned.apk
+          ls -la out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ALR-App-unsigned
+          path: out/ALR-App-unsigned.apk
+      - name: Taruh di pre-release apk-build
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-build
+          target_commitish: ${{ github.sha }}
+          name: "APK ALR (bahan, belum bertanda tangan)"
+          prerelease: true
+          make_latest: "false"
+          overwrite_files: true
+          files: out/ALR-App-unsigned.apk
+          body: Bahan APK, bukan untuk dipasang. Pakai rilis "Aplikasi ALR Android" yang terbaru.
+
+  rilis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cari APK bertanda tangan
+        id: v
+        run: |
+          F=$(ls docs/apk/ALR-App-v*.apk 2>/dev/null | sort -V | tail -1 || true)
+          if [ -z "$F" ]; then echo "ada=0" >> "$GITHUB_OUTPUT"; exit 0; fi
+          VER=$(basename "$F" .apk | sed 's/ALR-App-v//')
+          echo "ada=1" >> "$GITHUB_OUTPUT"; echo "ver=$VER" >> "$GITHUB_OUTPUT"; echo "file=$F" >> "$GITHUB_OUTPUT"
+          mkdir -p out && cp "$F" out/ && cp "$F" out/ALR-App.apk
+      - name: Bikin Release
+        if: steps.v.outputs.ada == '1'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-v${{ steps.v.outputs.ver }}
+          target_commitish: ${{ github.sha }}
+          name: Aplikasi ALR Android v${{ steps.v.outputs.ver }}
+          make_latest: "true"
+          overwrite_files: true
+          files: |
+            out/ALR-App-v${{ steps.v.outputs.ver }}.apk
+            out/ALR-App.apk
+          body: |
+            Aplikasi ALR untuk HP Android.
+
+            Cara pasang:
+            1. Download file **ALR-App-v${{ steps.v.outputs.ver }}.apk** di bawah.
+            2. Buka filenya. Kalau muncul peringatan, pilih **Setelan** lalu nyalakan **Izinkan dari sumber ini**.
+            3. Tekan **Instal**, lalu **Buka**.
+            4. Izinkan **Lokasi**, **Kamera**, dan **Notifikasi** waktu diminta.
+
+            Isi aplikasi selalu ikut versi web terbaru, tidak perlu install ulang.
