@@ -199,11 +199,11 @@ body.peta-penuh main#petaArea { position: fixed; inset: 0 0 calc(var(--tabh) + e
 
 /* ---------- laptop / layar lebar: peta besar di kiri, kartu di kanan ---------- */
 @media (min-width: 1000px) {
-  .beranda { max-width: 1320px; padding: 0 24px 24px; }
+  .beranda { max-width: none; padding: 0 28px 24px; }
   .atas-ber { border-radius: 0 0 30px 30px; padding-left: 28px; padding-right: 28px; }
   .atas-ber .cari { max-width: 640px; }
   .atas-ber::before { right: 0; border-radius: 0 0 30px 50%; }
-  .isi-beranda { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(360px, 1fr); gap: 18px; padding: 0; margin-top: 18px; align-items: start; }
+  .isi-beranda { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(400px, 1fr); gap: 18px; padding: 0; margin-top: 18px; align-items: start; }
   .isi-beranda > .kartu-peta { grid-column: 1; grid-row: 1 / span 3; }
   .isi-beranda > .segar { grid-column: 1; grid-row: 4; }
   .isi-beranda > .kartu-hari { grid-column: 2; grid-row: 1; }
