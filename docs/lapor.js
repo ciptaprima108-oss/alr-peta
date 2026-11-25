@@ -345,9 +345,30 @@
   async function kirimPaket(p) {
     if (!navigator.onLine) throw new Error("offline");
     const cfg = await muatCfg();
-    if (window.ALR_adaToken?.()) { try { return await lewatToken(p); } catch (e) { if (!cfg.relay) throw e; } }
-    if (cfg.relay) return lewatRelay(cfg.relay, p);
-    throw new Error("belum-ada-jalur");
+    let hasil;
+    if (window.ALR_adaToken?.()) { try { hasil = await lewatToken(p); } catch (e) { if (!cfg.relay) throw e; } }
+    if (hasil === undefined && cfg.relay) hasil = await lewatRelay(cfg.relay, p);
+    if (hasil === undefined) throw new Error("belum-ada-jalur");
+    keDatabase(p, hasil); // salinan ke Supabase; "antre" juga berarti relay sudah terima
+    return hasil;
+  }
+  // Tahap 1 Supabase: salin laporan ke tabel "laporan". Gagal di sini tidak membatalkan laporan.
+  function keDatabase(p, nomor) {
+    if (!window.ALR_db) return;
+    try {
+      const sumber = p.baru?.isi || p.komentar?.[0]?.isi || "";
+      const m = sumber.match(/<!-- alr (.*?) -->/s); if (!m) return;
+      const d = JSON.parse(m[1]);
+      const jenis = ["inspeksi", "logistik", "rm"].includes(d.jenis) ? d.jenis : { "laporan-jalan": "inspeksi", logistik: "logistik", "pekerjaan-rm": "rm" }[p.baru?.label] || (p.baru ? "lainnya" : "logistik");
+      const angka = (v) => (v == null || v === "" || isNaN(+v) ? null : +v);
+      window.ALR_db.aktif().then((ok) => ok && window.ALR_db.simpanLaporan({
+        rid: p.rid || null, jenis, judul: (p.baru?.judul || `[LOGISTIK] Update permintaan #${d.permintaan || "?"}`).slice(0, 200),
+        pelapor: (d.pelapor || d.nama || "").slice(0, 80) || null, tim: (d.tim || "").slice(0, 60) || null,
+        sta: angka(d.sta), lat: angka(d.lat), lon: angka(d.lon), status: d.status || null,
+        trigger_no: angka(d.trigger), tiket_no: typeof nomor === "number" ? nomor : angka(d.permintaan),
+        sumber: "aplikasi", waktu: d.waktu ? new Date(d.waktu).toISOString() : new Date().toISOString(), data: d,
+      })).catch((e) => console.warn("ALR db:", e.message));
+    } catch (e) { console.warn("ALR db:", e.message); }
   }
 
   // ---------- antrean di HP (kalau belum terkirim) ----------
