@@ -1,13 +1,13 @@
 {
  "nama_jalan": "ALR (BSR - 107)",
- "data_dari": "2026-11-24 23:13:00",
- "data_sampai": "2026-11-25 23:13:00",
+ "data_dari": "2026-11-24 23:38:00",
+ "data_sampai": "2026-11-25 23:38:00",
  "n_unit": 47,
- "n_titik": 2612,
+ "n_titik": 2566,
  "jumlah_segmen": {
-  "hijau": 81,
+  "hijau": 82,
   "abu": 26,
-  "kuning": 25,
+  "kuning": 24,
   "merah": 11,
   "kosong": 2
  },
@@ -122,8 +122,8 @@
     "WHL 035",
     "WHL 041"
    ],
-   "alasan": "2 unit melambat/tertahan, kecepatan paling pelan 21 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
-   "speed_terendah": 21.0,
+   "alasan": "2 unit melambat/tertahan, kecepatan paling pelan 22.6 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
+   "speed_terendah": 22.6,
    "sta_tengah": 16.5,
    "lat": -3.680652,
    "lon": 103.650901,
@@ -133,5 +133,5 @@
  ],
  "label_trigger": "trigger",
  "label_laporan": "laporan-jalan",
- "dibuat": "2026-11-25 23:48 WIB"
+ "dibuat": "2026-11-25 23:51 WIB"
 }
