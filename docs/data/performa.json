@@ -2182,17 +2182,17 @@
     "berhenti": 95.0,
     "km_lambat": 100.0,
     "hujan": 41.0,
-    "trigger": 33.0
+    "trigger": 42.0
    },
-   "indeks": 74,
-   "status": "Perlu perhatian",
+   "indeks": 76,
+   "status": "Kondisi baik",
    "hujan_mm": 14.7,
    "hujan_malam_mm": 10.1,
    "km_lambat": 0,
    "yakin": "sedang",
    "alasan": [
     "Hujan 15 mm, 10 mm semalam",
-    "8 titik jalan merah masih terbuka"
+    "7 titik jalan merah masih terbuka"
    ],
    "kurang": [
     "data rit belum masuk"
