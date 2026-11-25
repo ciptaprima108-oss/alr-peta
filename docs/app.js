@@ -124,17 +124,25 @@
   async function ambilTiket() {
     dariSimpanan();
     try {
-      const ctl = new AbortController(), batas = setTimeout(() => ctl.abort(), 15000);
-      const r = await fetch(`https://api.github.com/repos/${REPO}/issues?state=all&per_page=100&sort=created&direction=desc`, { signal: ctl.signal });
-      clearTimeout(batas);
-      if (!r.ok) throw new Error(r.status === 403 || r.status === 429 ? "batas akses GitHub, coba lagi beberapa menit" : "server " + r.status);
-      const issues = (await r.json()).filter((i) => !i.pull_request);
       const lbl = (i, n) => i.labels.some((l) => l.name === n);
-      const trig = issues.filter((i) => lbl(i, ringkasan?.label_trigger || "trigger"));
-      const lap = issues.filter((i) => ["laporan-jalan", "logistik", "pekerjaan-rm"].some((n) => lbl(i, n)));
+      const pilah = (issues) => [issues.filter((i) => lbl(i, ringkasan?.label_trigger || "trigger")), issues.filter((i) => ["laporan-jalan", "logistik", "pekerjaan-rm"].some((n) => lbl(i, n)))];
+      const ambilBatas = async (url, ms) => { const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), ms); try { return await fetch(url, { signal: ctl.signal, cache: "no-store" }); } finally { clearTimeout(t); } };
+      let trig, lap;
+      // 1) tiket.json di cabang laporan-foto (ditulis Action tiap ~5 menit, sudah termasuk komentar): tidak kena batas 60/jam GitHub API
+      try {
+        const r = await ambilBatas(`https://raw.githubusercontent.com/${REPO}/laporan-foto/tiket.json?t=${Math.floor(Date.now() / 6e4)}`, 10000);
+        if (!r.ok) throw new Error(r.status);
+        [trig, lap] = pilah((await r.json()).tiket || []);
+      } catch (e) { trig = null; }
+      // 2) cadangan: GitHub API langsung
+      if (!trig) {
+      const r = await ambilBatas(`https://api.github.com/repos/${REPO}/issues?state=all&per_page=100&sort=created&direction=desc`, 15000);
+      if (!r.ok) throw new Error(r.status === 403 || r.status === 429 ? "batas akses GitHub, coba lagi beberapa menit" : "server " + r.status);
+      [trig, lap] = pilah((await r.json()).filter((i) => !i.pull_request));
+      }
       // ambil komentar (foto pengawas biasanya di komentar) untuk tiket yang punya komentar
       await Promise.all([...trig, ...lap].slice(0, 40).map(async (i) => {
-        i._teks = i.body || "";
+        i._teks = i._teks ?? i.body ?? "";
         if (i.comments > 0) {
           try { const c = await (await fetch(i.comments_url + "?per_page=100")).json(); i._teks += "\n" + c.map((x) => x.body).join("\n"); } catch (e) {}
         }
