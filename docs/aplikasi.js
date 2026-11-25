@@ -4,6 +4,7 @@
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const simpan = { get: (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
                    set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
+  const r1 = (x) => Math.round(x * 10) / 10;   // jam tertahan 1 desimal (data GPS per menit sejak 25 Nov 2026)
   const koma = (v) => String(v).replace(".", ",");
   const fmtSta = (s) => { let km = Math.floor(s + 1e-9), m = Math.round((s - km) * 1000); if (m === 1000) { km++; m = 0; } return `${km}+${String(m).padStart(3, "0")}`; };
 
@@ -130,8 +131,8 @@
   document.addEventListener("click", (e) => {
     const r = e.target.closest("rect.kotak-km"); if (!r || !window.ALR_KM_DATA) return;
     const km = +r.dataset.km, D = window.ALR_KM_DATA, k = D.km[km], rr = window.ALR_RR?.km?.[km];
-    const baris = (nama, t) => { if (!t) return ""; const v = t[km], jam = v[1] + v[2], sp = v[4] ? Math.round(v[3] / v[4]) : null;
-      return `<div class="sh-lajur"><b>${nama}</b><div><span class="angka">${jam}</span> jam berhenti<br><small>${v[1]} jam mesin hidup, ${v[2]} jam mesin mati</small></div>
+    const baris = (nama, t) => { if (!t) return ""; const v = t[km], jam = r1(v[1] + v[2]), sp = v[4] ? Math.round(v[3] / v[4]) : null;
+      return `<div class="sh-lajur"><b>${nama}</b><div><span class="angka">${jam}</span> jam berhenti<br><small>${r1(v[1])} jam mesin hidup, ${r1(v[2])} jam mesin mati</small></div>
         <div><span class="angka">${sp ?? "-"}</span> km/jam<br><small>${sp ? `kira-kira ${Math.max(1, Math.round(60 / sp))} menit lewat 1 KM` : "belum ada data jalan"}</small></div></div>`; };
     const tengah = k.km + 0.5;
     const html = `<h3 id="sheetJudul">${esc(k.label)}${k.zona ? `<small>${esc(k.zona)}, tidak dihitung sebagai jalan rusak</small>` : ""}</h3>
@@ -142,7 +143,7 @@
         <button type="button" class="abu" id="shLapor" data-lapor="inspeksi" data-sta="${tengah}"><svg class="ik"><use href="#i-kamera"/></svg>Lapor KM ini</button>
         <button type="button" class="abu" data-tutup-sheet>Tutup</button></div>`;
     const v = D.totSemua[km];
-    bukaSheet(html, `ALR. ${k.label.replace("-", " sampai ")}. ${v[1] + v[2]} jam DT berhenti.`);
+    bukaSheet(html, `ALR. ${k.label.replace("-", " sampai ")}. ${r1(v[1] + v[2])} jam DT berhenti.`);
     $("shPeta").onclick = () => { closeSheet(true); history.state?.lyr ? history.back() : tutup(); setTimeout(() => { window.ALR_keSta?.(tengah, 15); window.scrollTo({ top: 0, behavior: "smooth" }); }, 340); };
     const ll = window.ALR_posisiSta?.(tengah);
     if (ll) $("shLapor").dataset.ll = ll.join(",");
@@ -166,11 +167,11 @@
     const segKm = d.seg.filter((s) => Math.floor(s.sta_awal + 1e-9) === km).reverse();      // BSR di kiri seperti pita
     const kelas = (j, maks) => j >= maks * 0.6 ? "m" : j >= maks * 0.25 ? "k" : "h";
     el.innerHTML = `<h4>Per 200 meter</h4>
-      <p class="kecil">Ketuk kotak untuk lihat titiknya di peta. Data GPS tercatat per jam, jadi angka ini menunjukkan di mana DT paling sering berhenti, bukan menit yang tepat.</p>` +
+      <p class="kecil">Ketuk kotak untuk lihat titiknya di peta. Sejak 25 Nov GPS tercatat per menit, jadi jam berhenti di sini sudah tepat. Hari-hari sebelumnya GPS per jam, angkanya hanya petunjuk lokasi.</p>` +
       lajur.map(([nama, tot]) => {
         const maks = Math.max(3, ...d.seg.filter((s) => !s.zona).map((s) => tot[s.i][1] + tot[s.i][2]));
         return `<div class="m200-lajur"><b>${nama}</b><div class="m200-grid">${segKm.map((s) => {
-          const t = tot[s.i], j = t[1] + t[2], sp = t[4] ? Math.round(t[3] / t[4]) : null, c = s.zona ? "z" : kelas(j, maks);
+          const t = tot[s.i], j = r1(t[1] + t[2]), sp = t[4] ? Math.round(t[3] / t[4]) : null, c = s.zona ? "z" : kelas(j, maks);
           return `<button type="button" class="m200-kotak ${c}${staDiketuk != null && Math.abs(+staDiketuk - s.sta_awal) < 1e-6 && (nama.includes(lajurDiketuk) || !D.totM) ? " pilih" : ""}" data-sta="${s.sta_awal}" title="STA ${fmtSta(s.sta_awal)} - ${fmtSta(s.sta_awal + 0.2)}">
             <small>${fmtSta(s.sta_awal)}</small><span class="j">${s.zona ? "parkir" : j}</span><span class="s">${s.zona ? "" : "jam"}</span>
             <span class="v">${!s.zona && sp ? sp + " km/j" : "&nbsp;"}</span></button>`; }).join("")}</div></div>`;

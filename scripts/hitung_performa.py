@@ -82,6 +82,12 @@ def baca_rit():
     return pd.concat(harian).drop_duplicates("tanggal", keep="last")
 
 
+def pct_berhenti(x):
+    """% waktu mesin hidup yang berhenti, ditimbang bobot_jam (data per menit & per jam bisa campur di hari yang sama)."""
+    b = x.bobot_jam if "bobot_jam" in x else pd.Series(1.0, index=x.index)
+    return round(float(b[x.speed == 0].sum() / b.sum() * 100), 1) if b.sum() else None
+
+
 def baca_gps_harian():
     try:
         jalur = ht.baca_jalur(); g = ht.proyeksi(ht.baca_gps(), jalur)
@@ -93,7 +99,7 @@ def baca_gps_harian():
     out = g.groupby("tanggal").apply(lambda x: pd.Series(dict(
         gps_unit=x.unit.nunique(), gps_titik=len(x),
         gps_speed=round(float(x[x.speed > 0].speed.mean()), 1) if (x.speed > 0).any() else None,
-        gps_pct_berhenti=round(float((x.speed == 0).mean() * 100), 1))), include_groups=False).reset_index()
+        gps_pct_berhenti=pct_berhenti(x))), include_groups=False).reset_index()
     # per jam (untuk grafik 1 hari = 24 batang)
     g["jam"] = g.waktu.dt.hour
     jam = {}
@@ -101,7 +107,7 @@ def baca_gps_harian():
         jalan = x[x.speed > 0]
         jam.setdefault(tg.strftime("%Y-%m-%d"), []).append([int(j),
             round(float(jalan.speed.mean()), 1) if len(jalan) else None,
-            round(float((x.speed == 0).mean() * 100), 1), int(len(x)), int(x.unit.nunique())])
+            pct_berhenti(x), int(len(x)), int(x.unit.nunique())])
     out.attrs["jam"] = jam
     return out
 
@@ -159,9 +165,24 @@ def arah_gps(g):
     u = g.groupby("unit")
     dn = u.sta.shift(-1) - g.sta
     jam = (u.waktu.shift(-1) - g.waktu).dt.total_seconds() / 3600
+    # data per menit: bandingkan dengan posisi unit ~10 menit kemudian (per menit geraknya terlalu kecil)
+    if "bobot_jam" in g and (g.bobot_jam < 1).any():
+        r = g[g.bobot_jam < 1]
+        dep = pd.merge_asof(r[["waktu", "unit", "sta"]].assign(t2=r.waktu + pd.Timedelta(minutes=10)).sort_values("t2").reset_index(),
+                            r[["waktu", "unit", "sta"]].rename(columns={"waktu": "t2", "sta": "sta2"}).sort_values("t2"),
+                            on="t2", by="unit", direction="forward", tolerance=pd.Timedelta(minutes=20)).set_index("index")
+        dn.loc[dep.index] = dep.sta2 - dep.sta
+        jam.loc[dep.index] = np.where(dep.sta2.notna(), 0.2, np.nan)
     gerak = pd.Series(np.where(jam <= 3, np.where(dn <= -0.3, "m", np.where(dn >= 0.3, "k", None)), None), index=g.index)
-    g["arah"] = gerak.groupby(g.unit).bfill(limit=24).groupby(g.unit).ffill(limit=24)
+    batas = 24 if "bobot_jam" not in g or (g.bobot_jam >= 1).all() else 24 * 60
+    g["arah"] = gerak.groupby(g.unit).bfill(limit=batas).groupby(g.unit).ffill(limit=batas)
     return g
+
+
+def jam(x):
+    """Jam unit tertahan: data per jam = 1 jam per titik, data per menit = 1/60 jam per titik. Bulat 1 desimal (0.0 -> 0)."""
+    v = round(float(x.bobot_jam.sum() if "bobot_jam" in x else len(x)), 1)
+    return int(v) if v == int(v) else v
 
 
 def per_km():
@@ -180,14 +201,14 @@ def per_km():
     lepas = g[g.zp.notna() & ~g.km.isin(km_zona)]
     zona_hari = {}
     for (tg, z), x in lepas[lepas.speed == 0].groupby(["tg", "zp"]):
-        zona_hari.setdefault(tg, {})[z] = int(len(x))
+        zona_hari.setdefault(tg, {})[z] = jam(x)
     g = g.drop(lepas.index)
 
     def kumpul(x0):
         hari = {}
         for (tg, km), x in x0.groupby(["tg", "km"]):
             jalan = x[x.speed > 0]
-            hari.setdefault(tg, {})[int(km)] = [int(len(x)), int(((x.speed == 0) & x.acc).sum()), int(((x.speed == 0) & ~x.acc).sum()),
+            hari.setdefault(tg, {})[int(km)] = [int(len(x)), jam(x[(x.speed == 0) & x.acc]), jam(x[(x.speed == 0) & ~x.acc]),
                                                 round(float(jalan.speed.sum()), 1), int(len(jalan)), sorted(x.unit.unique().tolist())]
         return hari
     km = [dict(km=k, label=f"KM {k}-{k + 1}", zona=ht.zona_bukan_jalan(k + 0.5)) for k in range(nkm)]
@@ -196,7 +217,7 @@ def per_km():
     json.dump(dict(keterangan="hari[tanggal][km] = [titik GPS, jam berhenti mesin hidup, jam berhenti mesin mati, jumlah speed jalan, titik jalan, unit]; "
                               "arah.muatan = BSR->107, arah.kosongan = 107->BSR (ditebak dari gerak unit)",
                    km=km, hari=hari, arah=arah, zona_hari=zona_hari), open(P("docs", "data", "per_km.json"), "w"), separators=(",", ":"))
-    # per 200 m (dibuka saat KM diketuk). Titik GPS per jam, jadi ini petunjuk lokasi, bukan hitungan menit yang tepat
+    # per 200 m (dibuka saat KM diketuk). Data per menit (sejak 25 Nov 2026) = hitungan jam yang tepat; data lama per jam = petunjuk lokasi
     g2 = pd.concat([g, lepas])
     nseg = int(round(jalur.sta.max() / 0.2))
     g2["seg"] = (g2.sta / 0.2).astype(int).clip(upper=nseg - 1)
@@ -204,7 +225,7 @@ def per_km():
         out = {}
         for (tg, sg), x in x0.groupby(["tg", "seg"]):
             jalan = x[x.speed > 0]
-            out.setdefault(tg, {})[int(sg)] = [int(len(x)), int(((x.speed == 0) & x.acc).sum()), int(((x.speed == 0) & ~x.acc).sum()),
+            out.setdefault(tg, {})[int(sg)] = [int(len(x)), jam(x[(x.speed == 0) & x.acc]), jam(x[(x.speed == 0) & ~x.acc]),
                                                round(float(jalan.speed.sum()), 1), int(len(jalan))]
         return out
     seg = [dict(i=i, sta_awal=round(i * 0.2, 1), zona=ht.zona_bukan_jalan(i * 0.2 + 0.1)) for i in range(nseg)]

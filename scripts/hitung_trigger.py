@@ -82,19 +82,38 @@ def rapikan_kolom(df):
 
 
 def baca_gps():
+    """Semua titik GPS. Kolom bobot_jam = berapa jam diwakili 1 titik: 1 untuk data per jam (LOG TRACKSOLID / export),
+    1/60 untuk data per menit (data/gps/rapat/*.csv.gz). Jam-unit yang sudah ada data per menitnya, titik per jamnya dibuang
+    supaya tidak dihitung dobel."""
     fs = sorted(glob.glob(P("data", "gps", "*.csv")) + glob.glob(P("data", "gps", "*.xlsx")) + glob.glob(P("data", "gps", "*.xls")))
-    if not fs:
+    fr = sorted(glob.glob(P("data", "gps", "rapat", "*.csv.gz")))
+    if not fs and not fr:
         sys.exit("Belum ada file GPS di data/gps/")
-    semua = []
-    for f in fs:
+    semua, rapat = [], []
+    for f in fs + fr:
         try:
-            df = pd.read_excel(f) if f.endswith(("xlsx", "xls")) else pd.read_csv(f, sep=None, engine="python")
-            semua.append(rapikan_kolom(df)); print(f"  baca {os.path.basename(f)}: {len(semua[-1])} titik")
+            df = pd.read_excel(f) if f.endswith(("xlsx", "xls")) else pd.read_csv(f, sep=None if not f.endswith(".gz") else ",", engine="python")
+            x = rapikan_kolom(df)
+            if f in fr:
+                x["area"] = df.loc[x.index, "area"].fillna("").astype(str).values if "area" in df else ""
+                rapat.append(x)
+            else:
+                semua.append(x)
         except Exception as e:
             print(f"  LEWATI {os.path.basename(f)}: {e}")
-    if not semua:
+    if not semua and not rapat:
         sys.exit("Tidak ada file GPS yang bisa dibaca")
-    return pd.concat(semua).drop_duplicates(["unit", "waktu"])
+    jam = pd.concat(semua).drop_duplicates(["unit", "waktu"]) if semua else pd.DataFrame(columns=["unit", "waktu", "lat", "lon", "speed", "acc"])
+    jam["bobot_jam"] = 1.0
+    if rapat:
+        r = pd.concat(rapat).drop_duplicates(["unit", "waktu"])
+        r["bobot_jam"] = 1 / 60
+        sudah = set(zip(r.unit, r.waktu.dt.floor("h")))
+        buang = [(u, t) in sudah for u, t in zip(jam.unit, pd.to_datetime(jam.waktu).dt.floor("h"))]
+        jam = jam[~np.array(buang, dtype=bool)] if len(jam) else jam
+        print(f"  GPS per menit: {len(r)} titik ({r.unit.nunique()} unit), {sum(buang)} titik per jam diganti")
+        jam = pd.concat([jam, r], ignore_index=True)
+    return jam.reset_index(drop=True)
 
 
 def proyeksi(g, jalur):
@@ -110,6 +129,16 @@ def proyeksi(g, jalur):
 
 
 # ---------- status per segmen ----------
+def unit_cukup_lama(x):
+    """Unit yang lambat/berhenti cukup lama di segmen ini. Data per jam: 1 titik sudah dihitung (sama seperti dulu).
+    Data per menit: minimal batas.min_menit_tertahan menit (default 5), supaya pelan sebentar di tikungan tidak jadi merah."""
+    if x.empty:
+        return []
+    menit = x.groupby("unit").bobot_jam.sum() * 60 if "bobot_jam" in x else x.groupby("unit").size() * 60
+    return sorted(menit[menit >= CFG["batas"].get("min_menit_tertahan", 5) - 1e-9].index.tolist())
+
+
+
 def zona_bukan_jalan(sta):
     for z in CFG["zona_bukan_jalan"]:
         if z["sta_awal"] <= sta <= z["sta_akhir"]:
@@ -134,7 +163,7 @@ def hitung(g, jalur):
         p = dict(seg=i, sta_awal=a, sta_akhir=b, label=f"STA {fmt_sta(a)} - {fmt_sta(b)}",
                  n_titik=int(len(x)), n_unit=int(x.unit.nunique()),
                  speed_median=None if jalan.empty else round(float(jalan.speed.median()), 1),
-                 unit_lambat=sorted(lambat.unit.unique().tolist()), unit_tertahan=sorted(tertahan.unit.unique().tolist()))
+                 unit_lambat=unit_cukup_lama(lambat), unit_tertahan=unit_cukup_lama(tertahan))
         if zona:
             p.update(status="abu", alasan=f"Zona {zona} (antre/parkir, tidak dihitung trigger)")
         elif len(x) < B["min_titik_segmen"]:
