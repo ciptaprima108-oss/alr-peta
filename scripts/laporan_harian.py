@@ -157,7 +157,7 @@ def halaman_ringkasan(pdf, tgl, g, rit, tem, laporan, trigger, batas_lambat, mul
         fig.text(0.07, y, f"• {l.get('waktu', '')}  {l.get('judul', '')}  {l.get('tim', '')}", fontsize=9, va="top"); y -= 0.019
     if not laporan:
         fig.text(0.07, y, "• Belum ada laporan lapangan (CH GPE / WHL) di tanggal ini.", fontsize=9, color="#b45309", va="top"); y -= 0.019
-    fig.text(0.06, 0.035, "Catatan: GPS 1 titik per jam, posisi STA bisa meleset ±1 km. Hal. 1 = skema STA + jalan per KM, Hal. 3 = titik berhenti, Hal. 4 = rit per unit.",
+    fig.text(0.06, 0.035, "Catatan: GPS 1 titik per jam, posisi STA bisa meleset ±1 km. Hal. 1 = skema STA + jalan per KM, Hal. 3 = titik berhenti per STA.",
              fontsize=7.5, color="#666")
     fig.text(0.94, 0.035, "Hal. 2", fontsize=8, color="#666", ha="right")
     pdf.savefig(fig); return fig
@@ -353,8 +353,7 @@ def main():
         f_peta = halaman_peta(pdf, tgl, g, 1)
         f_ket = halaman_ringkasan(pdf, tgl, g, rit, tem, laporan, trigger, batas, mulai, akhir)
         f_brh = halaman_berhenti(pdf, tgl, on, off, 3)
-        f_rit = halaman_rit(pdf, tgl, rit, batas, mulai, akhir)
-        figs = [f_peta, f_ket, f_brh, f_rit]
+        figs = [f_peta, f_ket, f_brh]  # rit per unit (halaman_rit) tidak dipakai lagi (permintaan 25 Nov)
     for i, f in enumerate(figs, 1):
         f.savefig(os.path.join(a.out, f"{nama}_hal{i}.jpg"), dpi=130, pil_kwargs={"quality": 90})
     print(pdfp, f"{g.unit.nunique()} unit, {len(g)} titik, {len(rit)} rit, {len(tem)} temuan")
