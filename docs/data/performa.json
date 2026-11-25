@@ -2171,7 +2171,7 @@
    "pct_lambat": null,
    "gps_speed": null,
    "gps_pct_berhenti": null,
-   "gps_unit": 2,
+   "gps_unit": 4,
    "kosong_menit": null,
    "muat_bsr_menit": null,
    "bongkar_107_menit": null,
