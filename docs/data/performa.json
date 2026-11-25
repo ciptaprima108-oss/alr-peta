@@ -2181,17 +2181,17 @@
     "speed": null,
     "berhenti": null,
     "km_lambat": null,
-    "hujan": 32.0,
+    "hujan": 39.0,
     "trigger": 50.0
    },
-   "indeks": 41,
+   "indeks": 45,
    "status": "Perlu perbaikan",
-   "hujan_mm": 17.1,
-   "hujan_malam_mm": 8.3,
+   "hujan_mm": 15.2,
+   "hujan_malam_mm": 10.1,
    "km_lambat": null,
    "yakin": "rendah",
    "alasan": [
-    "Hujan 17 mm, 8 mm semalam",
+    "Hujan 15 mm, 10 mm semalam",
     "6 titik jalan merah masih terbuka"
    ],
    "kurang": [
