@@ -3,6 +3,7 @@
 //   1. Laporan sopir / pengawas (2 jam terakhir)  -> paling akurat, langsung dari lapangan
 //   2. Satelit Himawari (awan dingin = awan hujan), tiap 10 menit, telat ~40 menit, resolusi ~2 km
 //   3. Model cuaca Open-Meteo (sekarang + 6 jam ke depan), resolusi ~10 km
+//   4. Cek silang 5 model cuaca dunia (Eropa, Jerman, Inggris, Amerika, Jepang): berapa yang setuju akan hujan
 (function () {
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -31,7 +32,34 @@
   const jam = (d) => d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta" }).replace(".", ":");
 
   let titik = [];                 // [{km, lat, lon}]
-  let model = null, satelit = null, laporan = [];
+  let model = null, satelit = null, laporan = [], multi = null;
+
+  // ---------- 4. cek silang 5 model dunia (1 titik di tengah tiap section) ----------
+  // hasil cek 24-25 Nov: model bawaan kadang meleset jam-nya 3-4 jam, model lain + satelit lebih cocok.
+  // jadi tiap jam dihitung berapa model yang bilang hujan (>= 0,3 mm), makin banyak yang setuju makin bisa dipercaya.
+  const MODEL5 = [["ecmwf_ifs025", "Eropa"], ["icon_global", "Jerman"], ["ukmo_global_deterministic_10km", "Inggris"], ["gfs_global", "Amerika"], ["jma_gsm", "Jepang"]];
+  async function ambilMulti() {
+    const pt = ZONA.map(([a, b]) => titik.find((t) => t.km === Math.round((a + b) / 2)) || titik[0]);
+    const q = new URLSearchParams({
+      latitude: pt.map((t) => t.lat).join(","), longitude: pt.map((t) => t.lon).join(","),
+      hourly: "precipitation", models: MODEL5.map((m) => m[0]).join(","), forecast_hours: "7", timezone: "Asia/Jakarta",
+    });
+    const r = await fetch("https://api.open-meteo.com/v1/forecast?" + q);
+    if (!r.ok) throw new Error("open-meteo multi " + r.status);
+    const j = await r.json();
+    return (Array.isArray(j) ? j : [j]).map((x) => ({
+      time: x.hourly.time,
+      // per jam: [mm model 1..5] (null = model tidak ada data jam itu)
+      mm: x.hourly.time.map((_, i) => MODEL5.map(([k]) => x.hourly["precipitation_" + k]?.[i] ?? null)),
+    }));
+  }
+  function setujuHujan(zi, jamTxt) {   // {ya, ada, nama[]} untuk section zi pada jam "HH:MM"
+    const z = multi?.[zi]; if (!z) return null;
+    const i = z.time.findIndex((t) => t.slice(11, 16) === jamTxt); if (i < 0) return null;
+    const v = z.mm[i], ada = v.filter((x) => x != null).length;
+    const ya = MODEL5.filter((_, k) => v[k] != null && v[k] >= 0.3).map((m) => m[1]);
+    return ada ? { ya: ya.length, ada, nama: ya } : null;
+  }
   let lapisKm = null, lapisAwan = null;
 
   // ---------- 1. model Open-Meteo ----------
@@ -176,10 +204,14 @@
     // 3 kartu section: sekarang + 6 jam ke depan
     $("cuacaZona").innerHTML = sek.map((z, zi) => {
       const T = TINGKAT[z.tingkat], r = rm?.zona[zi];
-      const baris = r ? r.jam.map((j, k) => `<div class="cj"><small>${rm.jam[k]}</small><span class="tetes" style="--p:${j.p}">${j.p}%</span>${j.mm >= 0.1 ? `<em>${j.mm.toFixed(1)} mm</em>` : "<em>&nbsp;</em>"}</div>`).join("") : '<p class="kecil">Ramalan belum termuat.</p>';
+      const baris = r ? r.jam.map((j, k) => { const c = setujuHujan(zi, rm.jam[k]);
+        return `<div class="cj"><small>${rm.jam[k]}</small><span class="tetes" style="--p:${j.p}">${j.p}%</span>${j.mm >= 0.1 ? `<em>${j.mm.toFixed(1)} mm</em>` : "<em>&nbsp;</em>"}${c ? `<i class="cm${c.ya >= 3 ? " kuat" : ""}" title="${c.ya ? "Bilang hujan: " + c.nama.join(", ") : "Semua bilang tidak hujan"}">${c.ya}/${c.ada}</i>` : ""}</div>`; }).join("") : '<p class="kecil">Ramalan belum termuat.</p>';
+      const c3 = r ? rm.jam.slice(0, 3).map((t) => setujuHujan(zi, t)).filter(Boolean) : [];
+      const yaMax = c3.length ? Math.max(...c3.map((c) => c.ya)) : null;
+      const cek = yaMax == null ? "" : `<p class="cz-cek${yaMax >= 3 ? " kuat" : ""}">Cek 5 model dunia: <b>${yaMax} dari ${c3[0].ada}</b> bilang hujan 3 jam ke depan${yaMax >= 3 ? " (cukup yakin)" : yaMax ? " (belum pasti)" : ""}</p>`;
       const dari = z.sumber === "laporan" ? `Laporan lapangan KM ${z.lap.km}, jam ${jam(z.lap.waktu)}` : z.sumber === "satelit" ? "Dari foto awan satelit" : "Dari model cuaca";
       return `<div class="cz"><div class="cz-atas" style="background:${T.warna};color:${T.tinta}">${ikon(z.tingkat, "sedang")}<div><b>${esc(z.nama)}</b><span>KM ${z.a}-${z.b} · ${esc(z.ket)}</span></div><strong class="cz-st">${T.nama}</strong></div>
-        <p class="cz-dari">${dari}</p><div class="cz-jam">${baris}</div></div>`;
+        <p class="cz-dari">${dari}</p>${cek}<div class="cz-jam">${baris}</div></div>`;
     }).join("");
 
     // laporan
@@ -218,7 +250,8 @@
   async function segarkan() {
     if (Date.now() - terakhir < 3 * 60000) return;
     terakhir = Date.now();
-    const [m, s, l] = await Promise.allSettled([ambilModel(), ambilSatelit(), ambilLaporan()]);
+    const [m, s, l, mm] = await Promise.allSettled([ambilModel(), ambilSatelit(), ambilLaporan(), ambilMulti()]);
+    if (mm.status === "fulfilled") multi = mm.value; else console.warn("cuaca 5 model", mm.reason);
     if (m.status === "fulfilled") model = m.value; else console.warn("cuaca model", m.reason);
     if (s.status === "fulfilled" && s.value) satelit = s.value; else if (s.status === "rejected") console.warn("cuaca satelit", s.reason);
     if (l.status === "fulfilled") laporan = l.value;

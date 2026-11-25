@@ -52,3 +52,9 @@
   .cuaca-banner b { font-size: 25px; }
   .cuaca-banner span { font-size: 16px; }
 }
+
+/* cek silang 5 model dunia */
+.cz-cek { margin: 4px 14px 0; font-size: 14px; color: var(--pudar); }
+.cz-cek.kuat { color: var(--biru); font-weight: 600; }
+.cj .cm { display: block; margin-top: 2px; font-size: 12px; font-style: normal; font-weight: 700; color: var(--pudar); }
+.cj .cm.kuat { color: var(--biru); }
