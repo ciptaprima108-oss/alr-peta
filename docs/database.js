@@ -47,17 +47,19 @@
   }
   // grafik batang laporan per hari (paling banyak 14 hari terakhir)
   function grafik() {
-    const n = st.periode === "1" ? 1 : st.periode === "7" ? 7 : 14;
+    // satu warna, angka langsung di atas batang, nama hari jelas: mudah dibaca
+    const n = st.periode === "1" ? 1 : 7;
     const hari = [...Array(n)].map((_, i) => tglKey(Date.now() - (n - 1 - i) * 864e5));
-    const hit = Object.fromEntries(hari.map((h) => [h, {}]));
-    st.data.forEach((r) => { const h = hit[tglKey(r.waktu)]; if (h) h[r.jenis] = (h[r.jenis] || 0) + 1; });
-    const maks = Math.max(1, ...hari.map((h) => Object.values(hit[h]).reduce((a, b) => a + b, 0)));
-    const label = (h) => new Date(h + "T12:00:00+07:00").toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", day: "numeric", month: n > 7 ? "numeric" : "short" });
-    return `<div class="db-grafik"><div class="db-g-kepala"><b>Laporan masuk per hari</b><span>${n === 1 ? "hari ini" : n + " hari terakhir"}</span></div>
-      <div class="db-batang" style="--n:${n}">${hari.map((h) => { const t = Object.values(hit[h]).reduce((a, b) => a + b, 0);
-        return `<div class="db-bt" title="${label(h)}: ${t} laporan"><small>${t || ""}</small><div class="db-tumpuk" style="--t:${t / maks}">${["inspeksi", "logistik", "rm"].concat(Object.keys(hit[h]).filter((k) => !["inspeksi", "logistik", "rm"].includes(k)))
-          .filter((k) => hit[h][k]).map((k) => `<i style="--w:${JENIS[k]?.w || "#5B6B80"};flex:${hit[h][k]}"></i>`).join("")}</div><span>${label(h)}</span></div>`; }).join("")}</div>
-      <div class="db-legenda">${["inspeksi", "logistik", "rm"].map((k) => `<span style="--w:${JENIS[k].w}"><i></i>${JENIS[k].n}</span>`).join("")}</div></div>`;
+    const hit = Object.fromEntries(hari.map((h) => [h, 0]));
+    st.data.forEach((r) => { const k = tglKey(r.waktu); if (k in hit) hit[k]++; });
+    const maks = Math.max(1, ...Object.values(hit)), hariIni = hari[hari.length - 1];
+    const nama = (h) => h === hariIni ? "Hari ini" : new Date(h + "T12:00:00+07:00").toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", weekday: "short" });
+    const tgl = (h) => new Date(h + "T12:00:00+07:00").toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", day: "numeric", month: "short" });
+    const total = Object.values(hit).reduce((a, b) => a + b, 0), top = hari.reduce((a, h) => hit[h] > hit[a] ? h : a, hari[0]);
+    const kalimat = n === 1 ? `Hari ini masuk ${total} laporan.` : total ? `Total ${total} laporan dalam 7 hari. Paling banyak ${nama(top) === "Hari ini" ? "hari ini" : new Date(top + "T12:00:00+07:00").toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", weekday: "long", day: "numeric", month: "long" })} (${hit[top]} laporan).` : "Belum ada laporan dalam 7 hari ini.";
+    return `<div class="db-grafik"><div class="db-g-kepala"><b>Jumlah laporan per hari</b></div><p class="db-g-kal">${kalimat}</p>
+      ${n === 1 ? "" : `<div class="db-batang" style="--n:${n}">${hari.map((h) => `<div class="db-bt${h === hariIni ? " kini" : ""}" title="${tgl(h)}: ${hit[h]} laporan">
+        <small>${hit[h]}</small><div class="db-tumpuk" style="--t:${hit[h] / maks}"></div><span>${nama(h)}</span><em>${tgl(h)}</em></div>`).join("")}</div>`}</div>`;
   }
   function kelompok(rows) {
     if (st.urut !== "waktu") return rows.map(baris).join("");
