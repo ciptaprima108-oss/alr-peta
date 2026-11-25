@@ -90,7 +90,15 @@
     putuskan(+b.dataset.n, b.dataset.kep, b);
   });
 
+  // belum ada data: jangan "Memuat..." selamanya
+  let adaData = false;
+  const pesanGagal = (teks) => { const el = $("listKep"); if (!el || adaData) return;
+    el.innerHTML = `<div class="kp-kosong"><span>📶</span><h3>Data belum bisa dimuat</h3><p>${esc(teks)}</p><button type="button" class="kp-ulang" id="kepUlang">Coba lagi</button></div>`; };
+  setTimeout(() => pesanGagal("Sinyal lambat atau server sibuk."), 12000);
+  window.addEventListener("alr:tiket-gagal", (e) => pesanGagal(`Penyebab: ${e.detail?.pesan || "tidak diketahui"}.`));
+  document.addEventListener("click", (e) => { if (!e.target.closest("#kepUlang")) return; klik(); $("listKep").innerHTML = '<p class="kecil">Memuat...</p>'; window.ALR_muatTiket?.(); setTimeout(() => pesanGagal("Masih belum bisa. Coba beberapa menit lagi."), 15000); });
   window.addEventListener("alr:tiket", (e) => {
+    adaData = true;
     TRIG = e.detail.trig || []; LAP = e.detail.lap || [];
     // buang catatan lokal yang sudah tercatat di tiket (atau lebih dari 2 hari)
     const p = baca(PROSES, {});
