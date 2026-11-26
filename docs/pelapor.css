@@ -136,3 +136,5 @@ body.mode-pelapor #lpKeLap, body.mode-pelapor .lp-trig-aksi { display: none !imp
 .ts-angka span { font: 600 15px var(--isi); }
 .ts-angka .t-merah b { color: #D62828; } .ts-angka .t-biru b { color: #1556C7; } .ts-angka .t-kuning b { color: #B86E00; } .ts-angka .t-hijau b { color: #1F8A4C; }
 .ts-buka { min-height: 52px; border-radius: 16px; background: linear-gradient(180deg, #1A66C9, #0B4EA2); color: #fff; font: 700 18px var(--isi); }
+.ts-status { margin: 0; font: 500 14px/1.4 var(--isi); color: var(--pudar); }
+.ts-segar { padding: 0; background: none; color: var(--biru); font: 700 14px var(--isi); text-decoration: underline; }
