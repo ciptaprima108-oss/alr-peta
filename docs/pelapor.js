@@ -201,11 +201,16 @@
   }
   kotak.addEventListener("click", (e) => {
     const pu = e.target.closest("[data-peran-uji]");
-    if (pu) { klik(); tulis("alr_peran_uji", pu.dataset.peranUji); tulis("alr_alur_lihat_" + pu.dataset.peranUji, null); gambarTugas(); return; }
+    if (pu) { klik(); tulis("alr_peran_uji", pu.dataset.peranUji); tulis("alr_alur_lihat_" + pu.dataset.peranUji, null); gambarTugas(); segarkan(true); return; }
     const bk = e.target.closest("[data-buka]");
     if (bk) { klik(); window.ALR_buka?.(bk.dataset.buka); return; }
     aksiAlur(e);
   });
+  // ambil daftar tiket terbaru saat aplikasi dibuka lagi / ganti peran (selain tiap 2 menit)
+  let terakhirMuat = 0;
+  function segarkan(paksa) { if (!paksa && Date.now() - terakhirMuat < 30000) return; terakhirMuat = Date.now(); window.ALR_muatTiket?.(); }
+  document.addEventListener("visibilitychange", () => document.visibilityState === "visible" && segarkan());
+  window.addEventListener("pageshow", () => segarkan());
   window.addEventListener("alr:pengguna", gambarTugas);
   window.addEventListener("alr:pelapor", gambarTugas);
   window.addEventListener("alr:lapor-saya", gambarTugas);
