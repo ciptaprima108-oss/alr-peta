@@ -60,15 +60,16 @@
     setTimeout(() => !p.nama && $("plNama")?.focus(), 80);
   }
 
-  el.addEventListener("click", (e) => {
+  // tombol alur dipakai di layar pelapor dan di kartu "Tugas saya" di Beranda
+  function aksiAlur(e) {
     const kr = e.target.closest("[data-kerja]");
     if (kr) { klik(); window.ALR_lapor?.("rm", { trigger: kr.dataset.kerja, sta: kr.dataset.sta }); return; }
     const mt = e.target.closest("[data-minta]");
-    if (mt) { klik(); window.ALR_lapor?.("logistik", { trigger: mt.dataset.minta, sta: mt.dataset.sta }); return; }
+    if (mt) { klik(); tulis("alr_lapor_tim_logistik", "RM"); window.ALR_lapor?.("logistik", { trigger: mt.dataset.minta, sta: mt.dataset.sta }); return; }
     const kc = e.target.closest("[data-cek]");
     if (kc) { klik(); window.ALR_lapor?.("inspeksi", { trigger: kc.dataset.cek, sta: kc.dataset.sta }); return; }
     const ki = e.target.closest("[data-kirim]");
-    if (ki) { klik(); window.ALR_lapor?.("logistik", { permintaan: ki.dataset.kirim, status: "Dikirim" }); return; }
+    if (ki) { klik(); tulis("alr_lapor_tim_logistik", "Logistik"); window.ALR_lapor?.("logistik", { permintaan: ki.dataset.kirim, status: "Dikirim" }); return; }
     const vl = e.target.closest("[data-valid]");
     if (vl) { klik(); kirimValidasi(+vl.dataset.valid, "valid", "", vl); return; }
     const ul = e.target.closest("[data-ulang]");
@@ -80,7 +81,11 @@
       uk.parentNode.hidden = true; kirimValidasi(+uk.dataset.ulangKirim, "ulang", c, uk); return; }
     const lf = e.target.closest("[data-lihat-foto]");
     if (lf) { klik(); const v = document.createElement("div"); v.className = "lp-penampil"; v.innerHTML = `<img src="${esc(lf.dataset.lihatFoto)}" alt="Foto"><button type="button" aria-label="Tutup">×</button>`;
-      v.onclick = () => { v.classList.remove("tampil"); setTimeout(() => v.remove(), 250); }; document.body.appendChild(v); requestAnimationFrame(() => v.classList.add("tampil")); return; }
+      v.onclick = () => { v.classList.remove("tampil"); setTimeout(() => v.remove(), 250); }; document.body.appendChild(v); requestAnimationFrame(() => v.classList.add("tampil")); return true; }
+    return !!(kr || mt || kc || ki || vl || ul || uk);
+  }
+  el.addEventListener("click", (e) => {
+    if (aksiAlur(e)) return;
     const b = e.target.closest("[data-pl]");
     if (b) { klik(); window.ALR_lapor?.(b.dataset.pl); return; }
     const t = e.target.closest("[data-tim]");
@@ -89,10 +94,10 @@
     if (e.target.closest("#plMasuk")) { klik(); el.hidden = true; window.ALR_keluarPelapor?.(); }
   });
   async function kirimValidasi(nomor, hasil, catatan, tombol) {
-    const p = saya(); tombol.disabled = true;
-    const ok = await window.ALR_alur.validasi(nomor, hasil, catatan, { nama: p.nama, tim: p.tim }).catch(() => false);
+    const p = el.hidden ? pengguna() : saya(); tombol.disabled = true;
+    const ok = await window.ALR_alur.validasi(nomor, hasil, catatan, { nama: p?.nama || "Tim inspeksi", tim: p?.tim || "" }).catch(() => false);
     window.ALR_toast?.(hasil === "valid" ? "ALR: Temuan divalidasi" : "ALR: Dikembalikan ke RM", ok ? `#${nomor} terkirim.` : `#${nomor} disimpan di HP, terkirim begitu ada sinyal.`);
-    gambarIsi();
+    if (el.hidden) gambarTugas(); else gambarIsi();
   }
   el.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -150,15 +155,60 @@
     return ku.map((t) => t.nomor + ":" + t.s);
   }
   function cekBaru() {
-    const p = saya(); if (!p || el.hidden) return;
-    const peran = p.tim === "RM" ? "rm" : p.tim === "Logistik" ? "logistik" : "inspeksi";
-    const k = kunciTugas(peran), lama = baca("alr_alur_lihat", null), baru = lama ? k.filter((x) => !lama.includes(x)) : [];
-    tulis("alr_alur_lihat", k);
+    let peran;
+    if (!el.hidden) { const p = saya(); if (!p) return; peran = p.tim === "RM" ? "rm" : p.tim === "Logistik" ? "logistik" : "inspeksi"; }
+    else { const u = pengguna(); if (!u || u.peran === "pantau") return; peran = u.peran; }
+    const kunci = "alr_alur_lihat_" + peran;
+    const k = kunciTugas(peran), lama = baca(kunci, null), baru = lama ? k.filter((x) => !lama.includes(x)) : [];
+    tulis(kunci, k);
     if (!baru.length) return;
     const teks = { rm: "Ada tugas baru untuk RM", logistik: "Ada permintaan material", inspeksi: "Ada pekerjaan RM yang perlu divalidasi" }[peran];
     window.ALR_toast?.(`ALR: ${teks}`, `${baru.length} baru`); window.ALR_umumkan?.(`ALR, ${teks.toLowerCase()}`);
   }
-  window.addEventListener("alr:alur", () => { if (!el.hidden && saya() && !el.querySelector(".pl-ulang-isi:not([hidden])")) { gambarIsi(); cekBaru(); } });
+  window.addEventListener("alr:alur", () => {
+    if (!el.hidden) { if (saya() && !el.querySelector(".pl-ulang-isi:not([hidden])")) { gambarIsi(); cekBaru(); } }
+    else if (!kotak.querySelector(".pl-ulang-isi:not([hidden])")) { gambarTugas(); cekBaru(); }
+  });
+
+  // ---------- "Tugas saya" di Beranda aplikasi utama: isi sesuai peran orang yang masuk ----------
+  // Road Maintenance = RM, Logistik = Logistik, Pimpinan/PJO = pantau alur, divisi lain (CH, Safety, ...) = tim inspeksi.
+  // Developer (uji coba) bisa pindah peran: RM / Logistik / Inspeksi / Pimpinan.
+  const PERAN_NAMA = { rm: "RM", logistik: "Logistik", inspeksi: "Inspeksi", pantau: "Pimpinan" };
+  function pengguna() {
+    const id = baca("alr_saya", ""), u = (window.ALR_PENGGUNA || []).find((x) => x.id === id);
+    if (!u) return null;
+    const dv = u.divisi || "", uji = dv === "Developer";
+    const peran = uji ? baca("alr_peran_uji", "rm") : dv === "Road Maintenance" ? "rm" : dv === "Logistik" ? "logistik" : ["Pimpinan", "PJO"].includes(dv) ? "pantau" : "inspeksi";
+    return { nama: u.nama, tim: uji ? PERAN_NAMA[peran] : dv, peran, uji };
+  }
+  const kotak = document.createElement("section");
+  kotak.className = "blok tugas-saya"; kotak.id = "tugasSaya"; kotak.hidden = true;
+  (document.querySelector("#beranda .isi-beranda") || document.body).prepend(kotak);
+  function gambarTugas() {
+    const u = pengguna();
+    if (!u || document.body.classList.contains("mode-pelapor") || !A()) { kotak.hidden = true; return; }
+    const pilih = u.uji ? `<div class="ts-peran"><span>Uji coba sebagai:</span>${Object.entries(PERAN_NAMA).map(([k, t]) => `<button type="button" data-peran-uji="${k}" class="${u.peran === k ? "aktif" : ""}">${t}</button>`).join("")}</div>` : "";
+    let isi;
+    if (u.peran === "pantau") {
+      const semua = A().temuan(), hit = (f) => semua.filter(f).length, T = A().TAHAP;
+      const baris = [["Perlu dicek inspeksi", hit((t) => t.s === "cek"), "merah"], ["Di RM", hit((t) => T[t.s]?.siapa === "rm"), "biru"],
+        ["Tunggu material", hit((t) => t.s === "minta") + "", "kuning"], ["Tunggu validasi", hit((t) => t.s === "validasi"), "hijau"]];
+      isi = `<h3 class="pl-sub">Alur temuan jalan</h3><div class="ts-angka">${baris.map(([t, n, w]) => `<div class="t-${w}"><b>${n}</b><span>${t}</span></div>`).join("")}</div>
+        <button type="button" class="ts-buka" data-buka="keputusan">Lihat semua temuan</button>`;
+    } else isi = bagianAlur(u.peran);
+    kotak.innerHTML = `<div class="ki-kepala"><b>Tugas saya · ${esc(PERAN_NAMA[u.peran])}</b><small>${esc(u.nama)}</small></div>${pilih}<div class="ts-isi">${isi}</div>`;
+    kotak.hidden = false;
+  }
+  kotak.addEventListener("click", (e) => {
+    const pu = e.target.closest("[data-peran-uji]");
+    if (pu) { klik(); tulis("alr_peran_uji", pu.dataset.peranUji); tulis("alr_alur_lihat_" + pu.dataset.peranUji, null); gambarTugas(); return; }
+    const bk = e.target.closest("[data-buka]");
+    if (bk) { klik(); window.ALR_buka?.(bk.dataset.buka); return; }
+    aksiAlur(e);
+  });
+  window.addEventListener("alr:pengguna", gambarTugas);
+  window.addEventListener("alr:pelapor", gambarTugas);
+  window.addEventListener("alr:lapor-saya", gambarTugas);
 
   function tampil() {
     if (!document.body.classList.contains("mode-pelapor")) { el.hidden = true; return; }
