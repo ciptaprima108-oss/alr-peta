@@ -4,7 +4,7 @@ Aplikasi membaca file ini lewat raw.githubusercontent.com, yang tidak kena batas
 seperti GitHub API tanpa login. Jalan di Action "Ambil laporan" (tiap ~5 menit), sesudah ambil_laporan.py,
 memakai token Action (batas 5000/jam). File hanya ditulis ulang kalau isinya berubah.
 """
-import base64, json, os, sys, urllib.error
+import base64, json, os, sys, time, urllib.error
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from ambil_laporan import gh, REPO, TOKEN, CABANG
 
@@ -15,7 +15,20 @@ NAMA = "tiket.json"
 def main():
     if not (REPO and TOKEN):
         print("token belum ada, lewati"); return
+    # Daftar issue GitHub telat beberapa detik setelah issue baru dibuat; tunggu sebentar
+    # dan tambahkan issue terbaru yang belum muncul di daftar (cek nomor satu per satu).
+    time.sleep(10)
     issues = [i for i in gh("GET", "/issues?state=all&per_page=100&sort=created&direction=desc") if "pull_request" not in i]
+    ada = {i["number"] for i in issues}
+    n = (max(ada) if ada else 0) + 1
+    while True:
+        try:
+            i = gh("GET", f"/issues/{n}")
+        except urllib.error.HTTPError:
+            break
+        if "pull_request" not in i and n not in ada:
+            issues.insert(0, i)
+        n += 1
     out = []
     for i in issues:
         lbl = [l["name"] for l in i.get("labels", [])]
