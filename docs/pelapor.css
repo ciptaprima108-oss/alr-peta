@@ -116,3 +116,23 @@ body.mode-pelapor #lpKeLap, body.mode-pelapor .lp-trig-aksi { display: none !imp
 .pl-jalan summary { padding: 12px 4px; font: 700 19px var(--isi); color: var(--pudar); cursor: pointer; }
 .kp-alur { margin: 8px 0 0; padding: 8px 10px; border-radius: 12px; background: var(--debu); font: 600 15px/1.3 var(--isi); }
 .kp-alur.t-merah b { color: #D62828; } .kp-alur.t-kuning b { color: #B86E00; } .kp-alur.t-biru b { color: #1556C7; } .kp-alur.t-hijau b { color: #1F8A4C; }
+
+/* ---------- "Tugas saya" di Beranda (sesuai peran yang masuk) ---------- */
+.tugas-saya { background: var(--kertas); border-radius: 22px; padding: 14px; box-shadow: var(--bayang); display: grid; gap: 12px; }
+.tugas-saya .ki-kepala { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.tugas-saya .ki-kepala b { font: 700 22px var(--judul); }
+.tugas-saya .ki-kepala small { font: 600 15px var(--isi); color: var(--pudar); }
+.tugas-saya .ts-isi { display: grid; gap: 12px; }
+.tugas-saya .pl-sub { margin: 0; }
+.tugas-saya .pl-temuan { background: var(--debu); box-shadow: none; }
+.tugas-saya .pl-info { background: var(--biru-muda); }
+.ts-peran { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 10px; border-radius: 14px; background: var(--amber-muda); }
+.ts-peran span { font: 700 15px var(--isi); margin-right: 4px; }
+.ts-peran button { min-height: 40px; padding: 0 12px; border-radius: 99px; border: 2px solid var(--garis); background: var(--kertas); color: inherit; font: 700 15px var(--isi); }
+.ts-peran button.aktif { background: var(--tinta); color: var(--kertas); border-color: var(--tinta); }
+.ts-angka { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ts-angka div { padding: 12px; border-radius: 16px; background: var(--debu); display: grid; }
+.ts-angka b { font: 700 30px var(--judul); }
+.ts-angka span { font: 600 15px var(--isi); }
+.ts-angka .t-merah b { color: #D62828; } .ts-angka .t-biru b { color: #1556C7; } .ts-angka .t-kuning b { color: #B86E00; } .ts-angka .t-hijau b { color: #1F8A4C; }
+.ts-buka { min-height: 52px; border-radius: 16px; background: linear-gradient(180deg, #1A66C9, #0B4EA2); color: #fff; font: 700 18px var(--isi); }
