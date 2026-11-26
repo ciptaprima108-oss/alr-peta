@@ -88,6 +88,37 @@ def proses(p):
     return nomor
 
 
+def ganti_pin(p):
+    """Paket ganti PIN dari aplikasi (bukan laporan). Isinya: kode, bukti = PBKDF2(PIN lama) hex,
+    garam + cek untuk PIN baru. Diterima kalau sha256(bukti) sama dengan cek di docs/akun.json."""
+    import hashlib
+    x = p.get("pin") or {}
+    kode, bukti, garam, cek = (str(x.get(k, "")) for k in ("kode", "bukti", "garam", "cek"))
+    if not (re.fullmatch(r"\d{5}", kode) and re.fullmatch(r"[0-9a-f]{64}", bukti)
+            and re.fullmatch(r"[0-9a-f]{32}", garam) and re.fullmatch(r"[0-9a-f]{64}", cek)):
+        raise ValueError("paket PIN tidak sah")
+    for _ in range(3):                                   # ambil versi terbaru, ulang kalau bentrok dengan commit lain
+        f = gh("GET", "/contents/docs/akun.json?ref=main")
+        d = json.loads(base64.b64decode(f["content"]))
+        a = d.get("akun", {}).get(kode)
+        if not a:
+            raise ValueError("No. ID tidak dikenal")
+        if hashlib.sha256(bytes.fromhex(bukti)).hexdigest() != a.get("cek"):
+            raise ValueError("bukti PIN lama tidak cocok")
+        d["akun"][kode] = dict(garam=garam, cek=cek, awal=False)
+        isi = json.dumps(d, indent=1, ensure_ascii=False) + "\n"
+        try:
+            gh("PUT", "/contents/docs/akun.json", dict(message=f"Ganti PIN {kode}", branch="main", sha=f["sha"],
+                                                       content=base64.b64encode(isi.encode()).decode()))
+            break
+        except urllib.error.HTTPError as e:
+            if e.code != 409: raise
+            time.sleep(3)
+    else:
+        raise ValueError("akun.json sibuk, coba lagi")
+    return kode
+
+
 def main():
     if not (RELAY and TOKEN and REPO):
         print("relay belum diatur, lewati"); return
@@ -97,12 +128,20 @@ def main():
     ids = st.get("ids", [])
     sejak = st.get("sejak") or int((time.time() - 3 * 86400) * 1000)
     baru = 0
+    pin_baru = []
     for _ in range(20):
         daftar = json.loads(ambil(f"{RELAY}?sejak={sejak}")).get("laporan", [])
         for x in daftar:
             p, rid = x["p"], str(x["p"].get("rid", ""))
             sejak = max(sejak, int(x["t"]))
             if rid in ids:
+                continue
+            if (p.get("baru") or {}).get("label") == "ganti-pin":      # bukan laporan: jangan jadi tiket
+                try:
+                    pin_baru.append(ganti_pin(p)); print(f"  PIN {rid} diganti")
+                except Exception as e:
+                    print(f"  PIN {rid} ditolak: {e}")
+                ids.append(rid)
                 continue
             try:
                 no = proses(p); baru += 1
@@ -112,8 +151,13 @@ def main():
             ids.append(rid)
         if len(daftar) < 10:
             break
-    if baru or sejak != st.get("sejak"):
+    if baru or pin_baru or sejak != st.get("sejak"):
         simpan_status(dict(ids=ids[-1000:], sejak=sejak), sha)
+    if pin_baru:                                          # tayangkan akun.json baru (commit dari Action tidak memicu Pages)
+        try:
+            gh("POST", "/actions/workflows/peta.yml/dispatches", dict(ref="main"))
+        except urllib.error.HTTPError as e:
+            print(f"  gagal memicu peta.yml: {e.code}")
     print(f"Laporan baru: {baru}")
 
 

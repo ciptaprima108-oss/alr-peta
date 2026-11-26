@@ -31,3 +31,10 @@ html[data-tema="gelap"] .masuk-lihat { background: rgba(59,139,246,.18); color: 
 
 /* profil: identitas dari login, pilihan nama manual disembunyikan */
 body.sudah-masuk .pf-pilih { display: none; }
+.masuk-info { margin: -4px 0 2px; font: 500 16px/1.45 var(--isi, Barlow, sans-serif); color: var(--tinta, #15191A); background: rgba(11,78,162,.08); border-radius: 14px; padding: 10px 14px; }
+.masuk-batal { height: 48px; border-radius: 14px; background: none; color: var(--pudar, #5E6A6E); font: 700 17px var(--isi, Barlow, sans-serif); }
+html[data-tema="gelap"] .masuk-info { color: #EEF3F8; background: rgba(59,139,246,.14); }
+.akun-pin { display: grid; gap: 10px; padding: 12px 14px 14px; }
+.akun-pin label { display: grid; gap: 6px; font: 700 16px var(--isi); }
+.akun-pin input { height: 52px; border-radius: 14px; border: 2px solid var(--garis); background: var(--debu); color: inherit; padding: 0 14px; font: 700 20px var(--isi); letter-spacing: 2px; }
+.akun-aksi { display: flex; gap: 10px; justify-content: flex-end; }

@@ -2182,17 +2182,53 @@
     "berhenti": 95.0,
     "km_lambat": 100.0,
     "hujan": 41.0,
-    "trigger": 42.0
+    "trigger": null
    },
-   "indeks": 76,
+   "indeks": 84,
    "status": "Kondisi baik",
    "hujan_mm": 14.7,
    "hujan_malam_mm": 10.1,
    "km_lambat": 0,
    "yakin": "sedang",
    "alasan": [
-    "Hujan 15 mm, 10 mm semalam",
-    "7 titik jalan merah masih terbuka"
+    "Hujan 15 mm, 10 mm semalam"
+   ],
+   "kurang": [
+    "data rit belum masuk"
+   ]
+  },
+  {
+   "tanggal": "2026-11-26",
+   "n_trip": null,
+   "median_menit": null,
+   "p90_menit": null,
+   "median_km": null,
+   "n_lambat": null,
+   "pct_lambat": null,
+   "gps_speed": 21.9,
+   "gps_pct_berhenti": 0.5,
+   "gps_unit": 9,
+   "kosong_menit": null,
+   "muat_bsr_menit": null,
+   "bongkar_107_menit": null,
+   "skor": {
+    "durasi": null,
+    "rit_lambat": null,
+    "speed": 100.0,
+    "berhenti": 99.0,
+    "km_lambat": 100.0,
+    "hujan": 0.0,
+    "trigger": 50.0
+   },
+   "indeks": 70,
+   "status": "Perlu perhatian",
+   "hujan_mm": 24.9,
+   "hujan_malam_mm": 9.6,
+   "km_lambat": 0,
+   "yakin": "sedang",
+   "alasan": [
+    "Hujan 25 mm, 10 mm semalam",
+    "6 titik jalan merah masih terbuka"
    ],
    "kurang": [
     "data rit belum masuk"
@@ -6227,6 +6263,96 @@
     0.0,
     72,
     2
+   ],
+   [
+    23,
+    100,
+    20.4,
+    0.0,
+    18,
+    3
+   ]
+  ],
+  "2026-11-26": [
+   [
+    0,
+    100,
+    21.1,
+    0.0,
+    136,
+    4
+   ],
+   [
+    1,
+    97,
+    22.0,
+    2.2,
+    46,
+    3
+   ],
+   [
+    2,
+    99,
+    20.9,
+    0.8,
+    130,
+    4
+   ],
+   [
+    3,
+    100,
+    22.1,
+    0.0,
+    36,
+    2
+   ],
+   [
+    5,
+    100,
+    21.1,
+    0.0,
+    10,
+    1
+   ],
+   [
+    6,
+    100,
+    28.5,
+    0.0,
+    36,
+    1
+   ],
+   [
+    8,
+    70,
+    12.7,
+    0.0,
+    5,
+    1
+   ],
+   [
+    9,
+    95,
+    18.7,
+    0.0,
+    31,
+    4
+   ],
+   [
+    10,
+    99,
+    20.7,
+    1.0,
+    195,
+    6
+   ],
+   [
+    11,
+    100,
+    24.1,
+    0.0,
+    153,
+    7
    ]
   ]
  },
