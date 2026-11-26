@@ -243,19 +243,17 @@
     "rit_lambat": 21.0,
     "speed": 100.0,
     "berhenti": 72.0,
-    "km_lambat": 80.0,
+    "km_lambat": 100.0,
     "hujan": 100.0,
     "trigger": null
    },
-   "indeks": 78,
+   "indeks": 81,
    "status": "Kondisi baik",
    "hujan_mm": 0.0,
    "hujan_malam_mm": 0.0,
-   "km_lambat": 1,
+   "km_lambat": 0,
    "yakin": "tinggi",
-   "alasan": [
-    "1 KM DT jalan pelan (13 km/jam ke bawah)"
-   ],
+   "alasan": [],
    "kurang": []
   },
   {
@@ -277,11 +275,11 @@
     "rit_lambat": 20.0,
     "speed": 100.0,
     "berhenti": 72.0,
-    "km_lambat": 17.0,
+    "km_lambat": 26.0,
     "hujan": 91.0,
     "trigger": null
    },
-   "indeks": 67,
+   "indeks": 68,
    "status": "Perlu perhatian",
    "hujan_mm": 2.2,
    "hujan_malam_mm": 0.1,
@@ -312,11 +310,11 @@
     "rit_lambat": 20.0,
     "speed": null,
     "berhenti": null,
-    "km_lambat": 5.0,
+    "km_lambat": 17.0,
     "hujan": 94.0,
     "trigger": null
    },
-   "indeks": 55,
+   "indeks": 58,
    "status": "Perlu perhatian",
    "hujan_mm": 1.4,
    "hujan_malam_mm": 1.2,
@@ -380,11 +378,11 @@
     "rit_lambat": 42.0,
     "speed": 100.0,
     "berhenti": 85.0,
-    "km_lambat": 86.0,
+    "km_lambat": 85.0,
     "hujan": 89.0,
     "trigger": null
    },
-   "indeks": 84,
+   "indeks": 83,
    "status": "Kondisi baik",
    "hujan_mm": 2.8,
    "hujan_malam_mm": 2.6,
@@ -415,18 +413,18 @@
     "rit_lambat": 59.0,
     "speed": 100.0,
     "berhenti": 75.0,
-    "km_lambat": 58.0,
+    "km_lambat": 71.0,
     "hujan": 99.0,
     "trigger": null
    },
-   "indeks": 82,
+   "indeks": 84,
    "status": "Kondisi baik",
    "hujan_mm": 0.2,
    "hujan_malam_mm": 0.1,
-   "km_lambat": 3,
+   "km_lambat": 2,
    "yakin": "tinggi",
    "alasan": [
-    "3 KM DT jalan pelan (13 km/jam ke bawah)"
+    "2 KM DT jalan pelan (13 km/jam ke bawah)"
    ],
    "kurang": []
   },
@@ -449,18 +447,18 @@
     "rit_lambat": 11.0,
     "speed": 94.0,
     "berhenti": 47.0,
-    "km_lambat": 57.0,
+    "km_lambat": 42.0,
     "hujan": 100.0,
     "trigger": null
    },
-   "indeks": 65,
+   "indeks": 63,
    "status": "Perlu perhatian",
    "hujan_mm": 0.0,
    "hujan_malam_mm": 0.0,
-   "km_lambat": 3,
+   "km_lambat": 4,
    "yakin": "tinggi",
    "alasan": [
-    "3 KM DT jalan pelan (13 km/jam ke bawah)",
+    "4 KM DT jalan pelan (13 km/jam ke bawah)",
     "DT berhenti 21% waktu"
    ],
    "kurang": []
@@ -484,7 +482,7 @@
     "rit_lambat": 18.0,
     "speed": 86.0,
     "berhenti": 84.0,
-    "km_lambat": 85.0,
+    "km_lambat": 86.0,
     "hujan": 96.0,
     "trigger": null
    },
@@ -552,18 +550,18 @@
     "rit_lambat": 9.0,
     "speed": 85.0,
     "berhenti": 65.0,
-    "km_lambat": 44.0,
+    "km_lambat": 58.0,
     "hujan": 94.0,
     "trigger": null
    },
-   "indeks": 62,
+   "indeks": 64,
    "status": "Perlu perhatian",
    "hujan_mm": 1.6,
    "hujan_malam_mm": 0.3,
-   "km_lambat": 4,
+   "km_lambat": 3,
    "yakin": "tinggi",
    "alasan": [
-    "4 KM DT jalan pelan (13 km/jam ke bawah)"
+    "3 KM DT jalan pelan (13 km/jam ke bawah)"
    ],
    "kurang": []
   },
@@ -586,18 +584,18 @@
     "rit_lambat": 0.0,
     "speed": 81.0,
     "berhenti": 68.0,
-    "km_lambat": 55.0,
+    "km_lambat": 70.0,
     "hujan": 94.0,
     "trigger": null
    },
-   "indeks": 64,
+   "indeks": 66,
    "status": "Perlu perhatian",
    "hujan_mm": 1.5,
    "hujan_malam_mm": 0.1,
-   "km_lambat": 3,
+   "km_lambat": 2,
    "yakin": "tinggi",
    "alasan": [
-    "3 KM DT jalan pelan (13 km/jam ke bawah)"
+    "2 KM DT jalan pelan (13 km/jam ke bawah)"
    ],
    "kurang": []
   },
@@ -620,19 +618,19 @@
     "rit_lambat": 0.0,
     "speed": 82.0,
     "berhenti": 62.0,
-    "km_lambat": 17.0,
+    "km_lambat": 26.0,
     "hujan": 78.0,
     "trigger": null
    },
-   "indeks": 51,
+   "indeks": 52,
    "status": "Perlu perhatian",
    "hujan_mm": 5.6,
    "hujan_malam_mm": 4.9,
-   "km_lambat": 5,
+   "km_lambat": 4,
    "yakin": "tinggi",
    "alasan": [
     "Hujan 6 mm, 5 mm semalam",
-    "5 KM DT jalan pelan (13 km/jam ke bawah)"
+    "4 KM DT jalan pelan (13 km/jam ke bawah)"
    ],
    "kurang": []
   },
@@ -655,18 +653,18 @@
     "rit_lambat": 26.0,
     "speed": 100.0,
     "berhenti": 78.0,
-    "km_lambat": 82.0,
+    "km_lambat": 33.0,
     "hujan": 98.0,
     "trigger": null
    },
-   "indeks": 79,
-   "status": "Kondisi baik",
+   "indeks": 71,
+   "status": "Perlu perhatian",
    "hujan_mm": 0.4,
    "hujan_malam_mm": 0.4,
-   "km_lambat": 1,
+   "km_lambat": 3,
    "yakin": "tinggi",
    "alasan": [
-    "1 KM DT jalan pelan (13 km/jam ke bawah)"
+    "3 KM DT jalan pelan (13 km/jam ke bawah)"
    ],
    "kurang": []
   },
@@ -689,19 +687,19 @@
     "rit_lambat": 23.0,
     "speed": 88.0,
     "berhenti": 63.0,
-    "km_lambat": 68.0,
+    "km_lambat": 57.0,
     "hujan": 79.0,
     "trigger": null
    },
-   "indeks": 66,
+   "indeks": 64,
    "status": "Perlu perhatian",
    "hujan_mm": 5.2,
    "hujan_malam_mm": 5.2,
-   "km_lambat": 2,
+   "km_lambat": 3,
    "yakin": "tinggi",
    "alasan": [
     "Hujan 5 mm, 5 mm semalam",
-    "2 KM DT jalan pelan (13 km/jam ke bawah)"
+    "3 KM DT jalan pelan (13 km/jam ke bawah)"
    ],
    "kurang": []
   },
@@ -714,7 +712,7 @@
    "n_lambat": 10,
    "pct_lambat": 55.6,
    "gps_speed": 17.1,
-   "gps_pct_berhenti": 10.8,
+   "gps_pct_berhenti": 8.3,
    "gps_unit": 20,
    "kosong_menit": 170.0,
    "muat_bsr_menit": 15.1,
@@ -723,19 +721,19 @@
     "durasi": 0.0,
     "rit_lambat": 0.0,
     "speed": 76.0,
-    "berhenti": 73.0,
-    "km_lambat": 0.0,
+    "berhenti": 79.0,
+    "km_lambat": 17.0,
     "hujan": 96.0,
     "trigger": null
    },
-   "indeks": 41,
+   "indeks": 45,
    "status": "Perlu perbaikan",
    "hujan_mm": 0.9,
    "hujan_malam_mm": 0.8,
-   "km_lambat": 3,
+   "km_lambat": 2,
    "yakin": "tinggi",
    "alasan": [
-    "3 KM DT jalan pelan (13 km/jam ke bawah)",
+    "2 KM DT jalan pelan (13 km/jam ke bawah)",
     "1 rit rata-rata 7 jam 37 mnt"
    ],
    "kurang": []
@@ -1098,7 +1096,7 @@
    "pct_lambat": 83.7,
    "gps_speed": null,
    "gps_pct_berhenti": null,
-   "gps_unit": 12,
+   "gps_unit": 13,
    "kosong_menit": 120.0,
    "muat_bsr_menit": 37.6,
    "bongkar_107_menit": 23.8,
@@ -1313,7 +1311,7 @@
    "n_lambat": 10,
    "pct_lambat": 20.0,
    "gps_speed": 19.1,
-   "gps_pct_berhenti": 15.5,
+   "gps_pct_berhenti": 15.4,
    "gps_unit": 27,
    "kosong_menit": 90.0,
    "muat_bsr_menit": 50.0,
@@ -1322,19 +1320,19 @@
     "durasi": 90.0,
     "rit_lambat": 50.0,
     "speed": 93.0,
-    "berhenti": 61.0,
-    "km_lambat": 80.0,
+    "berhenti": 62.0,
+    "km_lambat": 67.0,
     "hujan": 94.0,
     "trigger": null
    },
-   "indeks": 78,
+   "indeks": 76,
    "status": "Kondisi baik",
    "hujan_mm": 1.5,
    "hujan_malam_mm": 0.2,
-   "km_lambat": 1,
+   "km_lambat": 2,
    "yakin": "tinggi",
    "alasan": [
-    "1 KM DT jalan pelan (13 km/jam ke bawah)"
+    "2 KM DT jalan pelan (13 km/jam ke bawah)"
    ],
    "kurang": []
   },
@@ -1402,11 +1400,11 @@
    "status": "Perlu perhatian",
    "hujan_mm": 6.5,
    "hujan_malam_mm": 5.2,
-   "km_lambat": 5,
+   "km_lambat": 4,
    "yakin": "tinggi",
    "alasan": [
     "Hujan 6 mm, 5 mm semalam",
-    "5 KM DT jalan pelan (13 km/jam ke bawah)"
+    "4 KM DT jalan pelan (13 km/jam ke bawah)"
    ],
    "kurang": []
   },
@@ -1429,12 +1427,12 @@
     "rit_lambat": 79.0,
     "speed": null,
     "berhenti": null,
-    "km_lambat": 58.0,
+    "km_lambat": 52.0,
     "hujan": 62.0,
     "trigger": null
    },
-   "indeks": 75,
-   "status": "Kondisi baik",
+   "indeks": 73,
+   "status": "Perlu perhatian",
    "hujan_mm": 9.6,
    "hujan_malam_mm": 2.5,
    "km_lambat": 1,
@@ -1456,7 +1454,7 @@
    "n_lambat": 5,
    "pct_lambat": 11.9,
    "gps_speed": 20.5,
-   "gps_pct_berhenti": 5.8,
+   "gps_pct_berhenti": 5.7,
    "gps_unit": 30,
    "kosong_menit": 100.0,
    "muat_bsr_menit": 95.0,
@@ -1466,18 +1464,19 @@
     "rit_lambat": 70.0,
     "speed": 100.0,
     "berhenti": 86.0,
-    "km_lambat": 100.0,
+    "km_lambat": 65.0,
     "hujan": 66.0,
     "trigger": null
    },
-   "indeks": 87,
+   "indeks": 81,
    "status": "Kondisi baik",
    "hujan_mm": 8.6,
    "hujan_malam_mm": 0.3,
-   "km_lambat": 0,
+   "km_lambat": 2,
    "yakin": "tinggi",
    "alasan": [
-    "Hujan 9 mm"
+    "Hujan 9 mm",
+    "2 KM DT jalan pelan (13 km/jam ke bawah)"
    ],
    "kurang": []
   },
@@ -1536,11 +1535,11 @@
     "rit_lambat": 14.0,
     "speed": 85.0,
     "berhenti": 65.0,
-    "km_lambat": 2.0,
+    "km_lambat": 0.0,
     "hujan": 24.0,
     "trigger": null
    },
-   "indeks": 45,
+   "indeks": 44,
    "status": "Perlu perbaikan",
    "hujan_mm": 19.0,
    "hujan_malam_mm": 14.9,
@@ -1571,19 +1570,19 @@
     "rit_lambat": 23.0,
     "speed": 88.0,
     "berhenti": 72.0,
-    "km_lambat": 0.0,
+    "km_lambat": 39.0,
     "hujan": 84.0,
     "trigger": null
    },
-   "indeks": 58,
+   "indeks": 65,
    "status": "Perlu perhatian",
    "hujan_mm": 3.9,
    "hujan_malam_mm": 1.9,
-   "km_lambat": 7,
+   "km_lambat": 4,
    "yakin": "tinggi",
    "alasan": [
     "Hujan 4 mm, 2 mm semalam",
-    "7 KM DT jalan pelan (13 km/jam ke bawah)"
+    "4 KM DT jalan pelan (13 km/jam ke bawah)"
    ],
    "kurang": []
   },
@@ -1614,11 +1613,11 @@
    "status": "Perlu perbaikan",
    "hujan_mm": 27.3,
    "hujan_malam_mm": 10.9,
-   "km_lambat": 3,
+   "km_lambat": 2,
    "yakin": "tinggi",
    "alasan": [
     "Hujan 27 mm, 11 mm semalam",
-    "3 KM DT jalan pelan (13 km/jam ke bawah)",
+    "2 KM DT jalan pelan (13 km/jam ke bawah)",
     "1 rit rata-rata 7 jam 12 mnt",
     "DT berhenti 31% waktu"
    ],
@@ -1643,19 +1642,19 @@
     "rit_lambat": 83.0,
     "speed": 100.0,
     "berhenti": 64.0,
-    "km_lambat": 58.0,
+    "km_lambat": 39.0,
     "hujan": 72.0,
     "trigger": null
    },
-   "indeks": 80,
+   "indeks": 76,
    "status": "Kondisi baik",
    "hujan_mm": 7.0,
    "hujan_malam_mm": 5.4,
-   "km_lambat": 1,
+   "km_lambat": 2,
    "yakin": "tinggi",
    "alasan": [
     "Hujan 7 mm, 5 mm semalam",
-    "1 KM DT jalan pelan (13 km/jam ke bawah)"
+    "2 KM DT jalan pelan (13 km/jam ke bawah)"
    ],
    "kurang": []
   },
@@ -1678,11 +1677,11 @@
     "rit_lambat": 19.0,
     "speed": 79.0,
     "berhenti": 61.0,
-    "km_lambat": 12.0,
+    "km_lambat": 7.0,
     "hujan": 78.0,
     "trigger": null
    },
-   "indeks": 55,
+   "indeks": 54,
    "status": "Perlu perhatian",
    "hujan_mm": 5.5,
    "hujan_malam_mm": 4.9,
@@ -1713,11 +1712,11 @@
     "rit_lambat": 19.0,
     "speed": 99.0,
     "berhenti": 60.0,
-    "km_lambat": 30.0,
+    "km_lambat": 26.0,
     "hujan": 87.0,
     "trigger": null
    },
-   "indeks": 64,
+   "indeks": 63,
    "status": "Perlu perhatian",
    "hujan_mm": 3.2,
    "hujan_malam_mm": 0.3,
@@ -1891,11 +1890,11 @@
     "rit_lambat": 38.0,
     "speed": 93.0,
     "berhenti": 80.0,
-    "km_lambat": 29.0,
+    "km_lambat": 23.0,
     "hujan": 38.0,
     "trigger": null
    },
-   "indeks": 61,
+   "indeks": 60,
    "status": "Perlu perhatian",
    "hujan_mm": 15.5,
    "hujan_malam_mm": 15.0,
@@ -1926,19 +1925,19 @@
     "rit_lambat": 0.0,
     "speed": null,
     "berhenti": null,
-    "km_lambat": 44.0,
+    "km_lambat": 0.0,
     "hujan": 69.0,
     "trigger": null
    },
-   "indeks": 37,
+   "indeks": 26,
    "status": "Perlu perbaikan",
    "hujan_mm": 7.8,
    "hujan_malam_mm": 0.4,
-   "km_lambat": 1,
+   "km_lambat": 3,
    "yakin": "sedang",
    "alasan": [
     "Hujan 8 mm",
-    "1 KM DT jalan pelan (13 km/jam ke bawah)",
+    "3 KM DT jalan pelan (13 km/jam ke bawah)",
     "1 rit rata-rata 3 jam 57 mnt"
    ],
    "kurang": [
@@ -1964,19 +1963,19 @@
     "rit_lambat": 74.0,
     "speed": 100.0,
     "berhenti": 87.0,
-    "km_lambat": 47.0,
+    "km_lambat": 61.0,
     "hujan": 4.0,
     "trigger": null
    },
-   "indeks": 69,
+   "indeks": 71,
    "status": "Perlu perhatian",
    "hujan_mm": 23.9,
    "hujan_malam_mm": 14.0,
-   "km_lambat": 3,
+   "km_lambat": 2,
    "yakin": "tinggi",
    "alasan": [
     "Hujan 24 mm, 14 mm semalam",
-    "3 KM DT jalan pelan (13 km/jam ke bawah)"
+    "2 KM DT jalan pelan (13 km/jam ke bawah)"
    ],
    "kurang": []
   },
@@ -1999,19 +1998,19 @@
     "rit_lambat": 6.0,
     "speed": 87.0,
     "berhenti": 31.0,
-    "km_lambat": 26.0,
+    "km_lambat": 70.0,
     "hujan": 22.0,
     "trigger": null
    },
-   "indeks": 43,
-   "status": "Perlu perbaikan",
+   "indeks": 50,
+   "status": "Perlu perhatian",
    "hujan_mm": 19.5,
    "hujan_malam_mm": 5.2,
-   "km_lambat": 2,
+   "km_lambat": 1,
    "yakin": "tinggi",
    "alasan": [
     "Hujan 20 mm, 5 mm semalam",
-    "2 KM DT jalan pelan (13 km/jam ke bawah)",
+    "1 KM DT jalan pelan (13 km/jam ke bawah)",
     "DT berhenti 28% waktu"
    ],
    "kurang": []
@@ -2114,11 +2113,11 @@
    "status": "Perlu perbaikan",
    "hujan_mm": 10.8,
    "hujan_malam_mm": 9.2,
-   "km_lambat": 4,
+   "km_lambat": 3,
    "yakin": "rendah",
    "alasan": [
     "Hujan 11 mm, 9 mm semalam",
-    "4 KM DT jalan pelan (13 km/jam ke bawah)"
+    "3 KM DT jalan pelan (13 km/jam ke bawah)"
    ],
    "kurang": [
     "data rit hari ini tidak wajar",
@@ -2144,18 +2143,19 @@
     "rit_lambat": null,
     "speed": 100.0,
     "berhenti": 98.0,
-    "km_lambat": 100.0,
+    "km_lambat": 86.0,
     "hujan": 69.0,
     "trigger": null
    },
-   "indeks": 92,
+   "indeks": 88,
    "status": "Kondisi baik",
    "hujan_mm": 7.8,
    "hujan_malam_mm": 4.2,
-   "km_lambat": 0,
+   "km_lambat": 1,
    "yakin": "sedang",
    "alasan": [
-    "Hujan 8 mm, 4 mm semalam"
+    "Hujan 8 mm, 4 mm semalam",
+    "1 KM DT jalan pelan (13 km/jam ke bawah)"
    ],
    "kurang": [
     "data rit belum masuk"
@@ -2218,9 +2218,9 @@
     "berhenti": 97.0,
     "km_lambat": 100.0,
     "hujan": 0.0,
-    "trigger": 42.0
+    "trigger": 25.0
    },
-   "indeks": 68,
+   "indeks": 64,
    "status": "Perlu perhatian",
    "hujan_mm": 33.4,
    "hujan_malam_mm": 9.6,
@@ -2228,7 +2228,7 @@
    "yakin": "sedang",
    "alasan": [
     "Hujan 33 mm, 10 mm semalam",
-    "7 titik jalan merah masih terbuka"
+    "9 titik jalan merah masih terbuka"
    ],
    "kurang": [
     "data rit belum masuk"
@@ -3560,11 +3560,11 @@
    ],
    [
     17,
-    55,
-    13.0,
-    12.5,
-    8,
-    8
+    63,
+    14.4,
+    11.1,
+    9,
+    9
    ],
    [
     18,
@@ -4209,14 +4209,6 @@
     3
    ],
    [
-    19,
-    58,
-    20.0,
-    33.3,
-    3,
-    3
-   ],
-   [
     21,
     80,
     15.2,
@@ -4285,6 +4277,14 @@
     0,
     null,
     100.0,
+    3,
+    3
+   ],
+   [
+    20,
+    92,
+    18.0,
+    0.0,
     3,
     3
    ]
@@ -4517,11 +4517,11 @@
    ],
    [
     22,
-    67,
-    12.0,
+    73,
+    13.5,
     0.0,
-    3,
-    3
+    4,
+    4
    ],
    [
     23,
@@ -4685,11 +4685,11 @@
    ],
    [
     11,
-    84,
-    26.0,
-    12.5,
-    8,
-    8
+    86,
+    25.6,
+    11.1,
+    9,
+    9
    ],
    [
     12,
@@ -5634,10 +5634,10 @@
    [
     20,
     100,
-    28.0,
+    23.5,
     0.0,
-    3,
-    3
+    4,
+    4
    ]
   ],
   "2026-11-17": [
@@ -6113,9 +6113,9 @@
    [
     23,
     72,
-    15.2,
-    6.3,
-    63,
+    15.1,
+    6.2,
+    64,
     3
    ]
   ],
@@ -6163,9 +6163,9 @@
    [
     9,
     93,
-    23.9,
-    5.6,
-    108,
+    24.0,
+    5.5,
+    109,
     8
    ],
    [
@@ -6285,9 +6285,9 @@
    [
     1,
     97,
-    22.0,
+    22.1,
     2.2,
-    46,
+    45,
     3
    ],
    [
@@ -6317,9 +6317,9 @@
    [
     6,
     100,
-    28.5,
+    28.4,
     0.0,
-    36,
+    37,
     1
    ],
    [
@@ -6332,8 +6332,8 @@
    ],
    [
     9,
-    95,
-    18.7,
+    96,
+    19.0,
     0.0,
     31,
     4
