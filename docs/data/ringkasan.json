@@ -1,32 +1,17 @@
 {
  "nama_jalan": "ALR (BSR - 107)",
- "data_dari": "2026-11-25 11:43:00",
- "data_sampai": "2026-11-26 11:43:00",
- "n_unit": 39,
- "n_titik": 2688,
+ "data_dari": "2026-11-25 15:43:00",
+ "data_sampai": "2026-11-26 15:43:00",
+ "n_unit": 35,
+ "n_titik": 2693,
  "jumlah_segmen": {
-  "hijau": 94,
+  "hijau": 88,
   "abu": 26,
-  "kuning": 16,
-  "merah": 8,
+  "kuning": 20,
+  "merah": 10,
   "kosong": 1
  },
  "trigger": [
-  {
-   "sta_awal": 2.6,
-   "sta_akhir": 2.8,
-   "seg": [
-    13
-   ],
-   "unit": [],
-   "alasan": "9 unit lewat pelan, kecepatan paling pelan 12.9 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
-   "speed_terendah": 12.9,
-   "sta_tengah": 2.7,
-   "lat": -3.626979,
-   "lon": 103.710094,
-   "kode": "STA02600",
-   "judul": "[TRIGGER] Cek jalan STA 2+600 - 2+800"
-  },
   {
    "sta_awal": 6.2,
    "sta_akhir": 6.6,
@@ -35,8 +20,8 @@
     32
    ],
    "unit": [],
-   "alasan": "11 unit lewat pelan, kecepatan paling pelan 11.7 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
-   "speed_terendah": 11.7,
+   "alasan": "11 unit lewat pelan, kecepatan paling pelan 11.4 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
+   "speed_terendah": 11.4,
    "sta_tengah": 6.4,
    "lat": -3.638793,
    "lon": 103.686651,
@@ -44,19 +29,20 @@
    "judul": "[TRIGGER] Cek jalan STA 6+200 - 6+600"
   },
   {
-   "sta_awal": 8.8,
+   "sta_awal": 8.6,
    "sta_akhir": 9.0,
    "seg": [
+    43,
     44
    ],
    "unit": [],
-   "alasan": "10 unit lewat pelan, kecepatan paling pelan 8.1 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
-   "speed_terendah": 8.1,
-   "sta_tengah": 8.9,
-   "lat": -3.646278,
-   "lon": 103.671079,
-   "kode": "STA08800",
-   "judul": "[TRIGGER] Cek jalan STA 8+800 - 9+000"
+   "alasan": "11 unit lewat pelan, kecepatan paling pelan 8 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
+   "speed_terendah": 8.0,
+   "sta_tengah": 8.8,
+   "lat": -3.645582,
+   "lon": 103.671291,
+   "kode": "STA08600",
+   "judul": "[TRIGGER] Cek jalan STA 8+600 - 9+000"
   },
   {
    "sta_awal": 9.6,
@@ -64,16 +50,29 @@
    "seg": [
     48
    ],
-   "unit": [
-    "WHL 062"
-   ],
-   "alasan": "1 unit melambat/tertahan, kecepatan paling pelan 7.7 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
-   "speed_terendah": 7.7,
+   "unit": [],
+   "alasan": "9 unit lewat pelan, kecepatan paling pelan 7.4 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
+   "speed_terendah": 7.4,
    "sta_tengah": 9.7,
    "lat": -3.650164,
    "lon": 103.667204,
    "kode": "STA09600",
    "judul": "[TRIGGER] Cek jalan STA 9+600 - 9+800"
+  },
+  {
+   "sta_awal": 11.0,
+   "sta_akhir": 11.2,
+   "seg": [
+    55
+   ],
+   "unit": [],
+   "alasan": "9 unit lewat pelan, kecepatan paling pelan 12.2 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
+   "speed_terendah": 12.2,
+   "sta_tengah": 11.1,
+   "lat": -3.658442,
+   "lon": 103.669854,
+   "kode": "STA11000",
+   "judul": "[TRIGGER] Cek jalan STA 11+000 - 11+200"
   },
   {
    "sta_awal": 13.8,
@@ -98,16 +97,31 @@
     128
    ],
    "unit": [],
-   "alasan": "10 unit lewat pelan, kecepatan paling pelan 12.7 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
-   "speed_terendah": 12.7,
+   "alasan": "10 unit lewat pelan, kecepatan paling pelan 12.2 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
+   "speed_terendah": 12.2,
    "sta_tengah": 25.7,
    "lat": -3.718274,
    "lon": 103.615691,
    "kode": "STA25600",
    "judul": "[TRIGGER] Cek jalan STA 25+600 - 25+800"
+  },
+  {
+   "sta_awal": 26.0,
+   "sta_akhir": 26.2,
+   "seg": [
+    130
+   ],
+   "unit": [],
+   "alasan": "10 unit lewat pelan, kecepatan paling pelan 12.7 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
+   "speed_terendah": 12.7,
+   "sta_tengah": 26.1,
+   "lat": -3.720867,
+   "lon": 103.616449,
+   "kode": "STA26000",
+   "judul": "[TRIGGER] Cek jalan STA 26+000 - 26+200"
   }
  ],
  "label_trigger": "trigger",
  "label_laporan": "laporan-jalan",
- "dibuat": "2026-11-26 11:50 WIB"
+ "dibuat": "2026-11-26 15:52 WIB"
 }
