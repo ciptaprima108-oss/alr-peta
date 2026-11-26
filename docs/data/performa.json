@@ -2205,9 +2205,9 @@
    "median_km": null,
    "n_lambat": null,
    "pct_lambat": null,
-   "gps_speed": 21.9,
-   "gps_pct_berhenti": 0.5,
-   "gps_unit": 9,
+   "gps_speed": 20.3,
+   "gps_pct_berhenti": 1.2,
+   "gps_unit": 11,
    "kosong_menit": null,
    "muat_bsr_menit": null,
    "bongkar_107_menit": null,
@@ -2215,20 +2215,20 @@
     "durasi": null,
     "rit_lambat": null,
     "speed": 100.0,
-    "berhenti": 99.0,
+    "berhenti": 97.0,
     "km_lambat": 100.0,
     "hujan": 0.0,
-    "trigger": 50.0
+    "trigger": 42.0
    },
-   "indeks": 70,
+   "indeks": 68,
    "status": "Perlu perhatian",
-   "hujan_mm": 24.9,
+   "hujan_mm": 33.4,
    "hujan_malam_mm": 9.6,
    "km_lambat": 0,
    "yakin": "sedang",
    "alasan": [
-    "Hujan 25 mm, 10 mm semalam",
-    "6 titik jalan merah masih terbuka"
+    "Hujan 33 mm, 10 mm semalam",
+    "7 titik jalan merah masih terbuka"
    ],
    "kurang": [
     "data rit belum masuk"
@@ -6349,10 +6349,42 @@
    [
     11,
     100,
-    24.1,
+    22.7,
     0.0,
-    153,
+    186,
+    8
+   ],
+   [
+    12,
+    79,
+    16.6,
+    5.3,
+    132,
+    4
+   ],
+   [
+    13,
+    84,
+    17.0,
+    2.7,
+    148,
     7
+   ],
+   [
+    14,
+    89,
+    17.6,
+    0.8,
+    251,
+    6
+   ],
+   [
+    15,
+    100,
+    24.0,
+    0.0,
+    135,
+    6
    ]
   ]
  },
