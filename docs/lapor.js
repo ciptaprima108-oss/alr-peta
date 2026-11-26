@@ -190,6 +190,16 @@
   // ---------- isi form: pilihan, foto ----------
   const nilai = (f) => [...$("laporForm").querySelectorAll(`.pilih[data-f="${f}"] button.aktif`)].map((b) => b.dataset.v);
   const kodeAlat = (a) => ({ "Motor grader": "MG", "Excavator": "EX", "Vibro / compactor": "VB", "Water truck": "WT", "Dump truck": "DT", "Bulldozer": "BD", "Wheel loader": "WL" }[a] || "XX");
+  // "1.234,5" = 1234.5 ; "1.240" = 1240 (titik ribuan) ; "1234.5" = 1234.5
+  const angkaHm = (v) => { let t = String(v || "").trim().replace(/\s/g, ""); if (!t) return null; if (t.includes(",")) t = t.replace(/\./g, "").replace(",", "."); else if (/^\d{1,3}(\.\d{3})+$/.test(t)) t = t.replace(/\./g, ""); const n = parseFloat(t); return isFinite(n) && n >= 0 ? n : null; };
+  function hitungHm() {
+    document.querySelectorAll("#lpAlatNo [data-alat]").forEach((x) => {
+      const a = angkaHm(x.querySelector(".lp-hm1")?.value), b = angkaHm(x.querySelector(".lp-hm2")?.value), el = x.querySelector(".lp-hm-jam"); if (!el) return;
+      el.className = "lp-hm-jam" + (a != null && b != null && b < a ? " salah" : "");
+      el.textContent = a == null || b == null ? "" : b < a ? "HM akhir lebih kecil dari HM awal. Cek lagi angkanya." : `Alat jalan ${koma(Math.round((b - a) * 10) / 10)} jam`;
+    });
+  }
+  document.addEventListener("input", (e) => { if (e.target.closest?.("#lpAlatNo .lp-hm")) hitungHm(); });
   function aturTampil() {
     const f = $("laporForm"); if (!f || !st) return;
     const status = nilai("status")[0] || "";
@@ -201,8 +211,10 @@
     if ($("lpKegLain")) $("lpKegLain").hidden = !nilai("kegiatan").includes("Lainnya");
     const an = $("lpAlatNo");
     if (an) {
-      const lama = {}; an.querySelectorAll("[data-alat]").forEach((x) => { lama[x.dataset.alat] = x.querySelector(".lp-no")?.value || ""; lama[x.dataset.alat + "#"] = x.querySelector(".lp-nama")?.value || ""; });
-      an.innerHTML = nilai("alat").map((a) => `<label class="lp-alat" data-alat="${esc(a)}"><span>${a === "Lainnya" ? "Alat lain" : esc(a)}</span>${a === "Lainnya" ? `<input class="lp-input lp-nama" placeholder="Nama alat" value="${esc(lama[a + "#"] || "")}">` : ""}<input class="lp-input lp-no" placeholder="No. lambung, contoh ${kodeAlat(a)}-001" autocapitalize="characters" value="${esc(lama[a] || "")}"></label>`).join("");
+      const lama = {}; an.querySelectorAll("[data-alat]").forEach((x) => { lama[x.dataset.alat] = x.querySelector(".lp-no")?.value || ""; lama[x.dataset.alat + "#"] = x.querySelector(".lp-nama")?.value || ""; lama[x.dataset.alat + "1"] = x.querySelector(".lp-hm1")?.value || ""; lama[x.dataset.alat + "2"] = x.querySelector(".lp-hm2")?.value || ""; });
+      an.innerHTML = nilai("alat").map((a) => `<div class="lp-alat" data-alat="${esc(a)}"><span>${a === "Lainnya" ? "Alat lain" : esc(a)}</span>${a === "Lainnya" ? `<input class="lp-input lp-nama" placeholder="Nama alat" value="${esc(lama[a + "#"] || "")}">` : ""}<input class="lp-input lp-no" placeholder="No. lambung, contoh ${kodeAlat(a)}-001" autocapitalize="characters" value="${esc(lama[a] || "")}">
+        <div class="lp-hm"><label>HM awal <em>wajib</em><input class="lp-input lp-hm1" inputmode="decimal" placeholder="contoh 1234,5" value="${esc(lama[a + "1"] || "")}"></label><label>HM akhir <em>wajib</em><input class="lp-input lp-hm2" inputmode="decimal" placeholder="contoh 1240,0" value="${esc(lama[a + "2"] || "")}"></label></div><p class="lp-hm-jam"></p></div>`).join("");
+      hitungHm();
     }
     const trig = +($("lpTrig")?.value || 0);
     const tw = $("lpTutupWrap");
@@ -317,7 +329,13 @@
       d.sta1 = angkaSta("lpSta1") ?? l?.sta ?? null; d.sta2 = angkaSta("lpSta2"); d.sta = d.sta1;
       d.operator = ($("lpOperator")?.value || "").trim(); d.kegiatan = nilai("kegiatan").map((k) => k === "Lainnya" ? ($("lpKegLain")?.value || "").trim() : k).filter(Boolean);
       if (nilai("kegiatan").includes("Lainnya") && !($("lpKegLain")?.value || "").trim()) salah.push("Tulis kegiatan lainnya.");
-      d.alat = [...document.querySelectorAll("#lpAlatNo [data-alat]")].map((x) => { const nm = x.dataset.alat === "Lainnya" ? (x.querySelector(".lp-nama")?.value || "").trim() || "Alat lain" : x.dataset.alat; const no = (x.querySelector(".lp-no")?.value || "").trim().toUpperCase(); return no ? `${nm} ${no}` : nm; });
+      d.alat_hm = [];
+      d.alat = [...document.querySelectorAll("#lpAlatNo [data-alat]")].map((x) => { const nm = x.dataset.alat === "Lainnya" ? (x.querySelector(".lp-nama")?.value || "").trim() || "Alat lain" : x.dataset.alat; const no = (x.querySelector(".lp-no")?.value || "").trim().toUpperCase();
+        const nama = no ? `${nm} ${no}` : nm, h1 = angkaHm(x.querySelector(".lp-hm1")?.value), h2 = angkaHm(x.querySelector(".lp-hm2")?.value);
+        if (h1 == null || h2 == null) salah.push(`Isi HM awal dan HM akhir untuk ${nama}.`);
+        else if (h2 < h1) salah.push(`HM akhir ${nama} lebih kecil dari HM awal.`);
+        else d.alat_hm.push({ alat: nama, hm_awal: h1, hm_akhir: h2, jam: Math.round((h2 - h1) * 10) / 10 });
+        return nama; });
       d.mulai = $("lpMulai").value; d.selesai = $("lpSelesai").value; d.status = nilai("status")[0] || "";
       const b = barang(); if (b && b !== "Tidak pakai") { d.barang = b; d.jumlah = parseFloat(String($("lpJumlah").value).replace(",", ".")) || 0; d.satuan = $("lpSatuan").value; }
       if (!d.kegiatan.length) salah.push("Pilih minimal satu kegiatan.");
@@ -325,7 +343,7 @@
       foto = [...st.foto.sebelum, ...st.foto.sesudah];
       const rentang = d.sta1 != null ? `STA ${fmtSta(d.sta1)}${d.sta2 != null ? " - " + fmtSta(d.sta2) : ""}` : "STA ?";
       judul = `[PEKERJAAN RM] ${rentang}: ${d.kegiatan.join(", ")}`;
-      baris = [["Kegiatan", d.kegiatan.join(", ")], ["Alat", d.alat.join(", ")], ["Operator", d.operator], ["Jam kerja", d.mulai || d.selesai ? `${d.mulai || "?"} sampai ${d.selesai || "?"}` : ""],
+      baris = [["Kegiatan", d.kegiatan.join(", ")], ["Alat", d.alat.map((a) => { const h = d.alat_hm.find((x) => x.alat === a); return h ? `${a} (HM ${koma(h.hm_awal)} sampai ${koma(h.hm_akhir)}, ${koma(h.jam)} jam)` : a; }).join("; ")], ["Operator", d.operator], ["Jam kerja", d.mulai || d.selesai ? `${d.mulai || "?"} sampai ${d.selesai || "?"}` : ""],
         ["Material", d.barang ? `${koma(d.jumlah)} ${d.satuan} ${d.barang}` : ""], ["Status", d.status]];
       d.tutup_trigger = false;          // temuan ditutup tim inspeksi lewat validasi, bukan oleh RM
     }
@@ -510,7 +528,7 @@
     if (d.jenis === "inspeksi") return `<div class="lp-chips">${chip(d.kendala)}</div>${d.catatan ? `<p class="lp-k-isi">${esc(d.catatan)}</p>` : ""}`;
     if (d.jenis === "logistik") return `<p class="lp-k-besar">${koma(d.jumlah)} ${esc(d.satuan)} <b>${esc(d.barang)}</b></p><p class="lp-k-isi">${d.sta != null ? "Ke STA " + fmtSta(d.sta) : ""}${d.kapan ? `, dibutuhkan ${esc(d.kapan.toLowerCase())}` : ""}${d.catatan ? `. ${esc(d.catatan)}` : ""}</p>${
       (i._up || []).map((u) => `<p class="lp-k-up"><svg class="ik"><use href="#i-cek"/></svg>${esc(u.status)} oleh ${esc(u.pelapor)}, ${WIB(u.waktu)}</p>`).join("")}`;
-    return `<div class="lp-chips">${chip(d.kegiatan)}</div><p class="lp-k-isi">${[d.alat?.length ? "Alat: " + d.alat.join(", ") : "", d.operator ? "Operator: " + d.operator : "", d.mulai || d.selesai ? `Jam ${d.mulai || "?"} sampai ${d.selesai || "?"}` : "", d.barang ? `Material: ${koma(d.jumlah)} ${d.satuan} ${d.barang}` : ""].filter(Boolean).map(esc).join(". ")}</p>${d.catatan ? `<p class="lp-k-isi">${esc(d.catatan)}</p>` : ""}`;
+    return `<div class="lp-chips">${chip(d.kegiatan)}</div><p class="lp-k-isi">${[d.alat?.length ? "Alat: " + d.alat.map((a) => { const h = (d.alat_hm || []).find((x) => x.alat === a); return h ? `${a} (HM ${koma(h.hm_awal)} sampai ${koma(h.hm_akhir)}, ${koma(h.jam)} jam)` : a; }).join("; ") : "", d.operator ? "Operator: " + d.operator : "", d.mulai || d.selesai ? `Jam ${d.mulai || "?"} sampai ${d.selesai || "?"}` : "", d.barang ? `Material: ${koma(d.jumlah)} ${d.satuan} ${d.barang}` : ""].filter(Boolean).map(esc).join(". ")}</p>${d.catatan ? `<p class="lp-k-isi">${esc(d.catatan)}</p>` : ""}`;
   }
   let SARING = "semua", PER = { p: "7", dari: null, sampai: null };
   const tglIso = (d) => new Date(d).toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta" });
@@ -585,7 +603,7 @@
     return { "No": i.number, "Jenis": JENIS[j].nama, "Tanggal": w.toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", day: "2-digit", month: "2-digit", year: "numeric" }),
       "Jam (WIB)": w.toLocaleTimeString("id-ID", { timeZone: "Asia/Jakarta", hour: "2-digit", minute: "2-digit" }).replace(".", ":"), "Pelapor": d.pelapor || "", "Tim": d.tim || "", "STA": lok,
       "No. laporan": d.no || "", "Kendala / kegiatan": (d.kendala || d.kegiatan || d.kategori || []).join(", ") || (d.barang && j === "logistik" ? d.barang : ""), "Tingkat / status": statusLap(i)[0],
-      "Barang / material": d.barang || "", "Jumlah": d.jumlah ?? "", "Satuan": d.satuan || "", "Alat": (d.alat || []).join(", "), "Operator": d.operator || "",
+      "Barang / material": d.barang || "", "Jumlah": d.jumlah ?? "", "Satuan": d.satuan || "", "Alat": (d.alat || []).join(", "), "HM alat": (d.alat_hm || []).map((h) => `${h.alat}: ${h.hm_awal} - ${h.hm_akhir} (${h.jam} jam)`).join("; "), "Operator": d.operator || "",
       "Jam kerja": d.mulai || d.selesai ? `${d.mulai || "?"} - ${d.selesai || "?"}` : "", "Catatan": d.catatan || "", "Trigger": d.trigger ? "#" + d.trigger : "",
       "Update terakhir": up ? `${up.status} oleh ${up.pelapor}` : "", "Koordinat": d.lat != null ? `${d.lat}, ${d.lon}` : "", "Foto": i._gambar.join(" ") };
   }

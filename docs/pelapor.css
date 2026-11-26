@@ -138,3 +138,20 @@ body.mode-pelapor #lpKeLap, body.mode-pelapor .lp-trig-aksi { display: none !imp
 .ts-buka { min-height: 52px; border-radius: 16px; background: linear-gradient(180deg, #1A66C9, #0B4EA2); color: #fff; font: 700 18px var(--isi); }
 .ts-status { margin: 0; font: 500 14px/1.4 var(--isi); color: var(--pudar); }
 .ts-segar { padding: 0; background: none; color: var(--biru); font: 700 14px var(--isi); text-decoration: underline; }
+
+/* garis tahap temuan */
+.pl-garis { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); }
+.pl-garis li { position: relative; display: grid; justify-items: center; gap: 4px; font: 600 13px/1.2 var(--isi); color: var(--pudar); text-align: center; }
+.pl-garis li::before { content: ""; position: absolute; top: 8px; left: -50%; width: 100%; height: 3px; background: var(--garis); }
+.pl-garis li:first-child::before { display: none; }
+.pl-garis i { position: relative; z-index: 1; width: 18px; height: 18px; border-radius: 50%; background: var(--kertas); border: 3px solid var(--garis); }
+.pl-garis .sudah i { background: #1F8A4C; border-color: #1F8A4C; }
+.pl-garis .sudah::before, .pl-garis .kini::before { background: #1F8A4C; }
+.pl-garis .kini i { border-color: #E08A00; background: #E08A00; box-shadow: 0 0 0 4px rgba(224,138,0,.25); }
+.pl-garis .kini { color: var(--tinta); font-weight: 700; }
+.ts-kalimat { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.ts-kalimat li { padding: 10px 12px 10px 14px; border-radius: 14px; background: var(--debu); border-left: 6px solid #5A6A85; font: 500 17px/1.35 var(--isi); }
+.ts-kalimat b { font: 700 20px var(--judul); }
+.ts-kalimat .t-merah { border-color: #D62828; } .ts-kalimat .t-biru { border-color: #1556C7; } .ts-kalimat .t-kuning { border-color: #E08A00; } .ts-kalimat .t-hijau { border-color: #1F8A4C; }
+.menu-semua { display: block; width: 100%; margin-top: 10px; min-height: 44px; border-radius: 14px; background: transparent; color: var(--biru); font: 700 15px var(--isi); text-decoration: underline; }
+.menu [hidden], .lapor-cepat [hidden], .lap-buat [hidden] { display: none !important; }
