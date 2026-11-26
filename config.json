@@ -17,27 +17,27 @@
     {
       "nama": "Area 107 / parkir unit",
       "sta_awal": 0.0,
-      "sta_akhir": 0.5
+      "sta_akhir": 0.46
     },
     {
       "nama": "Stockpile Utara & antrean pintu BSR",
-      "sta_awal": 26.2,
+      "sta_awal": 25.93,
       "sta_akhir": 29.0
     },
     {
       "nama": "Area parkir / menginap",
-      "sta_awal": 23.6,
-      "sta_akhir": 24.8
+      "sta_awal": 23.08,
+      "sta_akhir": 24.4
     },
     {
-      "nama": "Parkir unit dekat 107 (STA 3+000 - 3+200)",
-      "sta_awal": 3.0,
-      "sta_akhir": 3.2
+      "nama": "Parkir unit dekat 107 (STA 2+780 - 2+970)",
+      "sta_awal": 2.78,
+      "sta_akhir": 2.97
     },
     {
-      "nama": "Parkir unit dekat 107 (STA 3+600 - 3+900)",
-      "sta_awal": 3.6,
-      "sta_akhir": 3.9
+      "nama": "Parkir unit dekat 107 (STA 3+340 - 3+620)",
+      "sta_awal": 3.34,
+      "sta_akhir": 3.62
     }
   ],
   "titik_penting": [
