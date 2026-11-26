@@ -112,13 +112,17 @@
   const A = () => window.ALR_alur;
   const URUT_RM = { dikirim: 0, ulang: 1, rm: 2, diterima: 3, kerja: 4, minta: 5 };
   const chip = (s) => { const x = A()?.TAHAP[s]; return x ? `<span class="pl-tahap t-${x.w}">${esc(x.t)}</span>` : ""; };
+  // garis tahap: di mana temuan ini sekarang
+  const LANGKAH = ["Dilaporkan", "RM kerja", "RM selesai", "Divalidasi"];
+  const POSISI = { cek: 0, rm: 1, ulang: 1, kerja: 1, minta: 1, dikirim: 1, diterima: 1, validasi: 3 };
+  const garis = (s) => { const p = POSISI[s] ?? 0; return `<ol class="pl-garis">${LANGKAH.map((t, n) => `<li class="${n < p ? "sudah" : n === p ? "kini" : ""}"><i></i><span>${t}</span></li>`).join("")}</ol>`; };
   function kartuTemuan(t, tombol) {
     return `<div class="pl-temuan" data-n="${t.nomor}">
       <div class="pl-t-isi">${t.foto ? `<button type="button" class="pl-t-foto" data-lihat-foto="${esc(t.foto)}"><img src="${esc(t.foto)}" loading="lazy" alt="Foto" onerror="this.parentNode.remove()"></button>` : `<span class="pl-t-foto kosong">${t.trig ? "🚨" : "📷"}</span>`}
         <div>${chip(t.s)}<b>${esc(t.judul)}</b><span>${esc(t.isi)}${t.tingkat ? " · " + esc(t.tingkat) : ""}</span>
         <small>${t.pelapor ? esc(t.pelapor) + ", " : ""}${jam(t.waktu)} · #${t.nomor}${t.x?.oleh || t.x?.pelapor ? ` · terakhir: ${esc(t.x.oleh || t.x.pelapor)}` : ""}${t.x?.proses ? " · sedang dikirim" : ""}</small>
         ${t.s === "ulang" && t.x?.catatan ? `<em>Catatan inspeksi: ${esc(t.x.catatan)}</em>` : ""}</div></div>
-      ${tombol ? `<div class="pl-t-aksi">${tombol}</div>` : ""}</div>`;
+      ${garis(t.s)}${tombol ? `<div class="pl-t-aksi">${tombol}</div>` : ""}</div>`;
   }
   const tb = (kelas, data, teks) => `<button type="button" class="pl-ta ${kelas}" ${data}>${teks}</button>`;
   function bagianAlur(peran) {
@@ -186,20 +190,36 @@
   (document.querySelector("#beranda .isi-beranda") || document.body).prepend(kotak);
   function gambarTugas() {
     const u = pengguna();
-    if (!u || document.body.classList.contains("mode-pelapor") || !A()) { kotak.hidden = true; return; }
+    if (!u || document.body.classList.contains("mode-pelapor") || !A()) { kotak.hidden = true; if (!u) aturMenu(null); return; }
     const pilih = u.uji ? `<div class="ts-peran"><span>Uji coba sebagai:</span>${Object.entries(PERAN_NAMA).map(([k, t]) => `<button type="button" data-peran-uji="${k}" class="${u.peran === k ? "aktif" : ""}">${t}</button>`).join("")}</div>` : "";
     let isi;
     if (u.peran === "pantau") {
       const semua = A().temuan(), hit = (f) => semua.filter(f).length, T = A().TAHAP;
-      const baris = [["Perlu dicek inspeksi", hit((t) => t.s === "cek"), "merah"], ["Di RM", hit((t) => T[t.s]?.siapa === "rm"), "biru"],
-        ["Tunggu material", hit((t) => t.s === "minta") + "", "kuning"], ["Tunggu validasi", hit((t) => t.s === "validasi"), "hijau"]];
-      isi = `<h3 class="pl-sub">Alur temuan jalan</h3><div class="ts-angka">${baris.map(([t, n, w]) => `<div class="t-${w}"><b>${n}</b><span>${t}</span></div>`).join("")}</div>
+      const baris = [[hit((t) => t.s === "cek"), "trigger GPS menunggu dicek tim inspeksi", "merah"], [hit((t) => T[t.s]?.siapa === "rm"), "temuan sedang di RM", "biru"],
+        [hit((t) => t.s === "minta"), "temuan menunggu material dari Logistik", "kuning"], [hit((t) => t.s === "validasi"), "pekerjaan RM menunggu validasi inspeksi", "hijau"]].filter(([n]) => n);
+      isi = `<h3 class="pl-sub">Alur temuan jalan</h3>${baris.length ? `<ul class="ts-kalimat">${baris.map(([n, t, w]) => `<li class="t-${w}"><b>${n}</b> ${t}</li>`).join("")}</ul>` : `<div class="pl-info"><span>✅</span><p>Tidak ada temuan yang masih jalan.</p></div>`}
         <button type="button" class="ts-buka" data-buka="keputusan">Lihat semua temuan</button>`;
     } else isi = bagianAlur(u.peran);
     const st = STATUS_DATA.gagal ? `⚠️ Data terbaru belum bisa diambil (${esc(STATUS_DATA.gagal)}), tampil data ${STATUS_DATA.t ? "jam " + jamSaja(STATUS_DATA.t) : "lama"}` : STATUS_DATA.t ? `Data diperbarui jam ${jamSaja(STATUS_DATA.t)}${STATUS_DATA.simpanan ? " (simpanan HP)" : ""}` : "Memuat data...";
     kotak.innerHTML = `<div class="ki-kepala"><b>Tugas saya · ${esc(PERAN_NAMA[u.peran])}</b><small>${esc(u.nama)}</small></div>${pilih}<div class="ts-isi">${isi}</div>
       <p class="ts-status">${st} · <button type="button" class="ts-segar" data-segar>Segarkan</button></p>`;
     kotak.hidden = false;
+    aturMenu(u.peran);
+  }
+  // menu dan tombol lapor di Beranda mengikuti peran; "Tampilkan semua menu" membuka sisanya
+  const MENU = { rm: ["trigger", "km", "km200", "hujan", "laporan"], logistik: ["laporan", "km", "hujan"], inspeksi: ["trigger", "km", "km200", "hujan", "grafik", "laporan"] };
+  const LAPOR = { rm: ["rm", "logistik"], logistik: ["logistik"], inspeksi: ["inspeksi", "lainnya"] };
+  let menuSemua = false;
+  function aturMenu(peran) {
+    const menu = $("menu"); if (!menu) return;
+    const boleh = MENU[peran], lap = LAPOR[peran];
+    let ada = false;
+    menu.querySelectorAll(".mi").forEach((b) => { const k = b.dataset.buka + (b.dataset.pita || ""); const h = !!boleh && !menuSemua && !boleh.includes(k); b.hidden = h; ada = ada || h || (!!boleh && menuSemua && !boleh.includes(k)); });
+    document.querySelectorAll(".lapor-cepat [data-lapor], .lap-buat [data-lapor]").forEach((b) => { b.hidden = !!lap && !menuSemua && !lap.includes(b.dataset.lapor); });
+    let t = $("menuSemua");
+    if (!t) { t = document.createElement("button"); t.type = "button"; t.id = "menuSemua"; t.className = "menu-semua"; menu.after(t);
+      t.addEventListener("click", () => { klik(); menuSemua = !menuSemua; aturMenu(pengguna()?.peran); }); }
+    t.hidden = !boleh; t.textContent = menuSemua ? "Tampilkan menu saya saja" : "Tampilkan semua menu";
   }
   const STATUS_DATA = { t: 0, simpanan: false, gagal: "" };
   const jamSaja = (t) => new Date(t).toLocaleTimeString("id-ID", { timeZone: "Asia/Jakarta", hour: "2-digit", minute: "2-digit" }).replace(/\./g, ":");
