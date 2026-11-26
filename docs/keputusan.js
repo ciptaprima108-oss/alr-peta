@@ -48,19 +48,22 @@
   }
 
   function kartu(b) {
-    const i = b.i, d = b.d || {}, foto = i._gambar?.[0], k = b.kep;
+    const i = b.i, d = b.d || {}, foto = i._gambar?.[0], k = b.kep, al = ALUR[i.number], ta = al && window.ALR_alur.TAHAP[al.s];
     const tombol = Object.entries(AKSI).map(([a, x]) => `<button type="button" class="kp-a" style="--w:${x.w}" data-kep="${a}" data-n="${i.number}"><i>${x.ik}</i>${x.t}</button>`).join("");
     return `<article class="kp-kartu${k ? " sudah" : ""}" data-n="${i.number}">
       <div class="kp-isi">${foto ? `<button type="button" class="kp-foto" data-lihat-foto="${esc(foto)}"><img src="${esc(foto)}" loading="lazy" alt="Foto laporan" onerror="this.parentNode.remove()"></button>` : `<span class="kp-foto kosong">${b.jenis === "trigger" ? "🚨" : "📷"}</span>`}
         <div><span class="kp-tingkat t-${b.tingkat[1]}">${esc(b.tingkat[0])}</span>
           <b>${esc(b.judul)}</b><p>${esc(b.sub)}</p>
           <small>${b.jenis === "trigger" ? `Trigger #${i.number}` : `${esc(d.pelapor || "")}${d.tim ? " (" + esc(d.tim) + ")" : ""}`} · ${WIB(b.waktu)}${d.no ? ` · ${esc(d.no)}` : ""}</small></div></div>
+      ${ta ? `<p class="kp-alur t-${ta.w}">Tahap: <b>${esc(ta.t)}</b></p>` : ""}
       ${k ? `<p class="kp-sudah">${AKSI[k.aksi]?.ik || "✔"} <b>${esc(AKSI[k.aksi]?.lengkap || k.aksi)}</b> oleh ${esc(k.oleh)}, ${WIB(k.waktu)}${k.proses ? " · sedang diproses" : ""}</p>` : ""}
       <div class="kp-aksi">${tombol}</div></article>`;
   }
 
+  let ALUR = {};
   function tampil() {
     const el = $("listKep"); if (!el) return;
+    ALUR = {}; (window.ALR_alur?.temuan() || []).forEach((t) => { ALUR[t.nomor] = t; t.ikut.forEach((n) => ALUR[n] = t); });
     const semua = butir(), perlu = semua.filter((b) => !b.kep), sudah = semua.filter((b) => b.kep);
     const badge = $("ubinKep"); if (badge) { badge.hidden = !perlu.length; badge.textContent = perlu.length; }
     if ($("kepJml")) $("kepJml").innerHTML = `<button type="button" data-kep-saring="perlu" class="${SARING === "perlu" ? "aktif" : ""}">Perlu keputusan <b>${perlu.length}</b></button><button type="button" data-kep-saring="sudah" class="${SARING === "sudah" ? "aktif" : ""}">Sudah diputuskan <b>${sudah.length}</b></button>`;
@@ -107,4 +110,5 @@
     tulis(PROSES, p);
     tampil();
   });
+  window.addEventListener("alr:alur", () => adaData && tampil());
 })();

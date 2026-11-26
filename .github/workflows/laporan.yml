@@ -17,17 +17,24 @@ concurrency:
 jobs:
   laporan:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 62
     steps:
       - uses: actions/checkout@v4
         with:
           sparse-checkout: |
             scripts
             docs/lapor.json
+      # dijalankan jadwal: jaga ~55 menit, cek laporan tiap 1 menit (jadwal GitHub sendiri cuma ~sejam sekali)
+      - run: python scripts/jaga_laporan.py
+        if: github.event_name == 'schedule'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # dijalankan manual: sekali jalan
       - run: python scripts/ambil_laporan.py
+        if: github.event_name != 'schedule'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: python scripts/tulis_tiket.py
-        if: always()
+        if: always() && github.event_name != 'schedule'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

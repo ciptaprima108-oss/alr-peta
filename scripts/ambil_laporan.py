@@ -159,6 +159,7 @@ def main():
         except urllib.error.HTTPError as e:
             print(f"  gagal memicu peta.yml: {e.code}")
     print(f"Laporan baru: {baru}")
+    return baru
 
 
 if __name__ == "__main__":
