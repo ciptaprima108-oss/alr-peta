@@ -86,3 +86,10 @@ body.mode-pelapor #lpKeLap, body.mode-pelapor .lp-trig-aksi { display: none !imp
 .kp-kosong p { margin: 0; font: 500 17px var(--isi); color: var(--pudar); }
 @media (min-width: 900px) { #listKep { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 14px; } .kp-aksi { grid-template-columns: repeat(4, 1fr); } }
 .kp-ulang { margin-top: 14px; min-height: 52px; padding: 0 26px; border-radius: 14px; background: #1556C7; color: #fff; font: 700 18px var(--isi); }
+.pl-jml { display: inline-block; min-width: 30px; margin-left: 6px; padding: 0 9px; border-radius: 99px; background: #D62828; color: #fff; font: 700 18px var(--isi); text-align: center; }
+.pl-tugas { display: grid; gap: 10px; }
+.pl-tugas > div { display: grid; gap: 4px; padding: 14px; border-radius: 18px; background: var(--kertas); box-shadow: var(--bayang); border-left: 6px solid #1556C7; }
+.pl-tugas b { font: 700 21px/1.15 var(--judul); }
+.pl-tugas span { font: 500 16px/1.35 var(--isi); }
+.pl-tugas small { font: 500 14px var(--isi); color: var(--pudar); }
+.pl-kerja { margin-top: 6px; min-height: 54px; border-radius: 14px; background: #1F8A4C; color: #fff; font: 700 18px var(--isi); }
