@@ -198,8 +198,8 @@
   function periksa(daftar) {
     const diam = pertamaKali && Date.now() - mulai < 20000;   // pertama kali buka aplikasi: catat saja, jangan bunyi
     window.dispatchEvent(new CustomEvent("alr:daftar", { detail: daftar }));
-    const baru = daftar.filter((x) => !diam && dilihat && !dilihat.includes(x.kunci));
-    dilihat = [...new Set([...(dilihat || []), ...daftar.map((x) => x.kunci)])].slice(-400); simpan.set(DILIHAT, dilihat);
+    const baru = daftar.filter((x) => !diam && dilihat && !dilihat.includes(x.kunci) && !(x.alias && dilihat.includes(x.alias)));
+    dilihat = [...new Set([...(dilihat || []), ...daftar.flatMap((x) => x.alias ? [x.kunci, x.alias] : [x.kunci])])].slice(-400); simpan.set(DILIHAT, dilihat);
     if (!baru.length) return;
     const satu = baru[0], judul = baru.length > 1 ? `${baru.length} pemberitahuan baru` : satu.judul;
     toast(judul, baru.length > 1 ? baru.map((x) => x.judul).join(", ") : satu.isi, "lonceng", () => buka(satu.layar));
@@ -212,10 +212,23 @@
     return (ring.trigger || []).map((t) => ({ kunci: `sta-${t.sta_awal}-${t.sta_akhir}`, layar: "trigger",
       judul: `ALR: Jalan merah STA ${fmtSta(t.sta_awal)}`, isi: t.alasan, ucap: `ALR. Ada jalan merah di ${ucapSta(t.sta_awal)}. Mohon dicek.` }));
   }
+  // laporan punya rid (dari aplikasi/WA): kunci "rid-..." dipakai juga oleh data Supabase, jadi tidak berbunyi dua kali
+  const kunciLap = (i) => { const m = String(i._teks || i.body || "").match(/"rid":"([a-z0-9]+)"/); return m ? { kunci: "rid-" + m[1], alias: "issue-" + i.number } : { kunci: "issue-" + i.number }; };
+  // laporan yang baru dikirim langsung tercatat di Supabase (sebelum jadi tiket GitHub 5-60 menit kemudian): lonceng langsung bunyi
+  const NAMA_JENIS = { inspeksi: "inspeksi", logistik: "logistik", rm: "pekerjaan RM", lainnya: "hujan / lainnya" };
+  async function dariSupabase() {
+    if (!window.ALR_db || !(await window.ALR_db.aktif())) return [];
+    const sejak = new Date(Date.now() - 2 * 864e5).toISOString();
+    const rows = await window.ALR_db.minta(`laporan?select=rid,jenis,judul,pelapor,tim,waktu&rid=not.is.null&waktu=gte.${sejak}&order=waktu.desc&limit=50`) || [];
+    return rows.map((x) => ({ kunci: "rid-" + x.rid, layar: "laporan", judul: `ALR: Laporan ${NAMA_JENIS[x.jenis] || ""} baru`.replace(/\s+/g, " "),
+      isi: `${String(x.judul || "").replace(/^\[[A-Z ]+\]\s*/, "")}${x.pelapor ? " · " + x.pelapor : ""}` }));
+  }
+  const cekSupabase = () => dariSupabase().then((d) => d.length && periksa(d)).catch(() => {});
+  setTimeout(cekSupabase, 6000); window.ALR_cekLonceng = cekSupabase;
   function dariTiket(trig, lap) {
     nTrig = trig.filter((i) => i.state === "open").length || nTrig; nLap = lap.filter((i) => i.state === "open").length; angkaUbin();
     return [...trig.filter((i) => i.state === "open").map((i) => ({ kunci: "issue-" + i.number, layar: "trigger", judul: `ALR: Trigger baru #${i.number}`, isi: i.title.replace(/^\[TRIGGER\]\s*/i, ""), ucap: `ALR. Ada trigger baru. ${i.title.replace(/^\[TRIGGER\]\s*/i, "").replace(/STA (\d+)\+(\d)\d\d/g, "KM $1 koma $2").split(":")[0]}.` })),
-            ...lap.map((i) => ({ kunci: "issue-" + i.number, layar: "laporan", judul: i.labels.some((l) => l.name === "logistik") ? "ALR: Laporan logistik baru" : i.labels.some((l) => l.name === "pekerjaan-rm") ? "ALR: Laporan pekerjaan RM baru" : "ALR: Laporan inspeksi baru", isi: i.title.replace(/^\[[A-Z ]+\]\s*/, ""), ucap: "ALR. Ada laporan lapangan baru." }))];
+            ...lap.map((i) => ({ ...kunciLap(i), layar: "laporan", judul: i.labels.some((l) => l.name === "logistik") ? "ALR: Laporan logistik baru" : i.labels.some((l) => l.name === "pekerjaan-rm") ? "ALR: Laporan pekerjaan RM baru" : "ALR: Laporan inspeksi baru", isi: i.title.replace(/^\[[A-Z ]+\]\s*/, ""), ucap: "ALR. Ada laporan lapangan baru." }))];
   }
   window.addEventListener("alr:ringkasan", (e) => periksa(dariRingkasan(e.detail)));
   window.addEventListener("alr:tiket", (e) => periksa(dariTiket(e.detail.trig, e.detail.lap)));
@@ -223,12 +236,9 @@
   setInterval(async () => {
     if (document.visibilityState !== "visible") return;
     try { const r = await (await fetch("data/ringkasan.json", { cache: "no-store" })).json(); periksa(dariRingkasan(r)); } catch {}
-    try {
-      const is = (await (await fetch("https://api.github.com/repos/ciptaprima108-oss/alr-peta/issues?state=open&per_page=50")).json()).filter((i) => !i.pull_request);
-      const lbl = (i, n) => i.labels.some((l) => l.name === n);
-      periksa(dariTiket(is.filter((i) => lbl(i, "trigger")), is.filter((i) => ["laporan-jalan", "logistik", "pekerjaan-rm"].some((n) => lbl(i, n)))));
-    } catch {}
-  }, 5 * 60 * 1000);
+    cekSupabase();
+    window.ALR_muatTiket?.();         // tiket.json (tidak kena batas GitHub API), hasilnya lewat event alr:tiket
+  }, 2 * 60 * 1000);
 
   // notifikasi HP (muncul di layar kunci). iPhone: hanya kalau ALR dipasang ke Layar Utama (iOS 16.4 ke atas)
   let sw = null;

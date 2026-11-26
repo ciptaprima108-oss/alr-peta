@@ -22,7 +22,7 @@
     rm: { nama: "Pekerjaan RM", label: "pekerjaan-rm", tag: "PEKERJAAN RM", ikon: "rm" },
     lainnya: { nama: "Hujan / lainnya", label: "laporan-jalan", tag: "LAINNYA", ikon: "hujan" },
   };
-  const TIM_INSPEKSI = ["CH GPE", "WHL", "RM", "Patroli", "ALR", "Lainnya"];
+  const TIM_INSPEKSI = ["CH GPE", "WHL", "Patroli", "ALR", "Lainnya"];   // RM tidak ikut inspeksi: RM hanya mengerjakan setelah laporan disetujui
   const KATEGORI_LAIN = ["Hujan deras", "Banjir / genangan", "Kecelakaan / insiden", "Unit mogok / rusak", "Antrean panjang", "Lainnya"];
   // nomor laporan seragam: L + tanggal WIB (yymmdd) + 4 huruf acak, contoh L251125-K7QF. Dicap di foto dan jadi bukti untuk pelapor.
   const nomorBaru = () => { const t = new Date(Date.now() + 7 * 36e5).toISOString(); const a = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -439,6 +439,7 @@
       tampilAntre();
       window.ALR_umumkan?.("ALR, laporan terkirim");
       setTimeout(() => window.ALR_muatTiket?.(), 4000);
+      setTimeout(() => window.ALR_cekLonceng?.(), 3000);       // masuk lonceng / Kotak masuk sekarang, tidak menunggu jadi tiket
     } catch (err) {
       const a = simpan.get(ANTRE, []); a.push({ judul, waktu: Date.now(), paket });
       const ok = simpan.set(ANTRE, a); tampilAntre(); catatSaya(noLap, judul, "di HP");
