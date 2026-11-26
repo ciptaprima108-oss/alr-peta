@@ -1,9 +1,9 @@
 {
  "nama_jalan": "ALR (BSR - 107)",
- "data_dari": "2026-11-25 08:43:00",
- "data_sampai": "2026-11-26 08:43:00",
- "n_unit": 47,
- "n_titik": 2906,
+ "data_dari": "2026-11-25 09:33:00",
+ "data_sampai": "2026-11-26 09:33:00",
+ "n_unit": 45,
+ "n_titik": 2828,
  "jumlah_segmen": {
   "hijau": 90,
   "abu": 26,
@@ -19,8 +19,8 @@
     13
    ],
    "unit": [],
-   "alasan": "9 unit lewat pelan, kecepatan paling pelan 12.7 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
-   "speed_terendah": 12.7,
+   "alasan": "9 unit lewat pelan, kecepatan paling pelan 12.8 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
+   "speed_terendah": 12.8,
    "sta_tengah": 2.7,
    "lat": -3.626979,
    "lon": 103.710094,
@@ -53,8 +53,8 @@
    "unit": [
     "WHL 015"
    ],
-   "alasan": "1 unit melambat/tertahan, kecepatan paling pelan 7.8 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
-   "speed_terendah": 7.8,
+   "alasan": "1 unit melambat/tertahan, kecepatan paling pelan 7.7 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
+   "speed_terendah": 7.7,
    "sta_tengah": 8.8,
    "lat": -3.645582,
    "lon": 103.671291,
@@ -86,8 +86,8 @@
     55
    ],
    "unit": [],
-   "alasan": "10 unit lewat pelan, kecepatan paling pelan 11.8 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
-   "speed_terendah": 11.8,
+   "alasan": "10 unit lewat pelan, kecepatan paling pelan 11.1 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
+   "speed_terendah": 11.1,
    "sta_tengah": 11.1,
    "lat": -3.658442,
    "lon": 103.669854,
@@ -102,10 +102,8 @@
     69,
     70
    ],
-   "unit": [
-    "WHL 042"
-   ],
-   "alasan": "1 unit melambat/tertahan, kecepatan paling pelan 8 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
+   "unit": [],
+   "alasan": "11 unit lewat pelan, kecepatan paling pelan 8 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
    "speed_terendah": 8.0,
    "sta_tengah": 13.9,
    "lat": -3.67468,
@@ -131,5 +129,5 @@
  ],
  "label_trigger": "trigger",
  "label_laporan": "laporan-jalan",
- "dibuat": "2026-11-26 08:57 WIB"
+ "dibuat": "2026-11-26 09:49 WIB"
 }

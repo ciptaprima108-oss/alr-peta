@@ -2205,7 +2205,7 @@
    "median_km": null,
    "n_lambat": null,
    "pct_lambat": null,
-   "gps_speed": 21.8,
+   "gps_speed": 21.6,
    "gps_pct_berhenti": 0.5,
    "gps_unit": 4,
    "kosong_menit": null,
@@ -2217,17 +2217,17 @@
     "speed": 100.0,
     "berhenti": 99.0,
     "km_lambat": 100.0,
-    "hujan": 2.0,
+    "hujan": 0.0,
     "trigger": 42.0
    },
    "indeks": 68,
    "status": "Perlu perhatian",
-   "hujan_mm": 24.6,
-   "hujan_malam_mm": 7.9,
+   "hujan_mm": 24.9,
+   "hujan_malam_mm": 9.6,
    "km_lambat": 0,
    "yakin": "sedang",
    "alasan": [
-    "Hujan 25 mm, 8 mm semalam",
+    "Hujan 25 mm, 10 mm semalam",
     "7 titik jalan merah masih terbuka"
    ],
    "kurang": [
@@ -6329,6 +6329,14 @@
     0.0,
     5,
     1
+   ],
+   [
+    9,
+    76,
+    14.3,
+    0.0,
+    10,
+    2
    ]
   ]
  },
