@@ -2205,8 +2205,8 @@
    "median_km": null,
    "n_lambat": null,
    "pct_lambat": null,
-   "gps_speed": 21.6,
-   "gps_pct_berhenti": 0.0,
+   "gps_speed": 21.8,
+   "gps_pct_berhenti": 0.5,
    "gps_unit": 4,
    "kosong_menit": null,
    "muat_bsr_menit": null,
@@ -2215,12 +2215,12 @@
     "durasi": null,
     "rit_lambat": null,
     "speed": 100.0,
-    "berhenti": 100.0,
+    "berhenti": 99.0,
     "km_lambat": 100.0,
     "hujan": 2.0,
     "trigger": 42.0
    },
-   "indeks": 69,
+   "indeks": 68,
    "status": "Perlu perhatian",
    "hujan_mm": 24.6,
    "hujan_malam_mm": 7.9,
@@ -6277,10 +6277,58 @@
    [
     0,
     100,
-    21.6,
+    21.1,
     0.0,
-    112,
+    136,
     4
+   ],
+   [
+    1,
+    97,
+    22.0,
+    2.2,
+    46,
+    3
+   ],
+   [
+    2,
+    99,
+    20.9,
+    0.8,
+    130,
+    4
+   ],
+   [
+    3,
+    100,
+    22.1,
+    0.0,
+    36,
+    2
+   ],
+   [
+    5,
+    100,
+    21.1,
+    0.0,
+    10,
+    1
+   ],
+   [
+    6,
+    100,
+    28.5,
+    0.0,
+    36,
+    1
+   ],
+   [
+    8,
+    70,
+    12.7,
+    0.0,
+    5,
+    1
    ]
   ]
  },
