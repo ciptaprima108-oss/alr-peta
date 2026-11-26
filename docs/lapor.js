@@ -97,9 +97,10 @@
   function opsiTrigger() {
     const buka = TRIG.filter((i) => i.state === "open");
     if (!buka.length && !st.trigger) return "";
-    return bag("Terkait trigger jalan merah", `<select id="lpTrig" class="lp-input"><option value="">Tidak terkait trigger</option>${
+    const lain = st.trigger && !buka.some((i) => i.number === st.trigger) ? LAP.find((i) => i.number === st.trigger) : null;
+    return bag("Terkait temuan / trigger", `<select id="lpTrig" class="lp-input"><option value="">Tidak terkait temuan</option>${
       buka.map((i) => `<option value="${i.number}"${i.number === st.trigger ? " selected" : ""}>#${i.number} ${esc(i._lok?.label || i.title.replace(/^\[TRIGGER\]\s*/i, ""))}</option>`).join("")}${
-      st.trigger && !buka.some((i) => i.number === st.trigger) ? `<option value="${st.trigger}" selected>#${st.trigger}</option>` : ""}</select>`);
+      st.trigger && !buka.some((i) => i.number === st.trigger) ? `<option value="${st.trigger}" selected>#${st.trigger}${lain ? " " + esc(lain.title.replace(/^\[[A-Z ]+\]\s*/, "")) : ""}</option>` : ""}</select>`);
   }
   function siapa(timList, timAwal) {
     const saya = (window.ALR_PENGGUNA || []).find((p) => (p.id || p.nama) === simpan.get("alr_saya", ""));
@@ -145,8 +146,8 @@
         `<input id="lpBarangLain" class="lp-input" placeholder="Nama material lain" hidden>
         <div class="lp-dua" id="lpJumlahWrap" hidden><label>Jumlah<input id="lpJumlah" class="lp-input lp-besar" inputmode="decimal" placeholder="0"></label><label>Satuan<select id="lpSatuan" class="lp-input">${SATUAN.map((s) => `<option${s === "m³" ? " selected" : ""}>${s}</option>`).join("")}</select></label></div>`) +
       bag("Foto sebelum dan sesudah", slotFoto("sebelum", "Sebelum dikerjakan", 2, false) + slotFoto("sesudah", "Sesudah dikerjakan", 2, true)) +
-      bag("Status pekerjaan", pilih("status", STATUS_RM, { nilai: ["Selesai"] })) + catatan("contoh: grading 800 m, timbun 3 lubang, besok lanjut drainase") + opsiTrigger() +
-      `<label class="lp-cek" id="lpTutupWrap" hidden><input type="checkbox" id="lpTutup" checked> Tutup trigger ini, jalan sudah baik</label>`;
+      bag("Status pekerjaan", pilih("status", STATUS_RM, { nilai: ["Selesai"] }) + `<p class="lp-ket" data-untuk="Selesai">Setelah dikirim, tim inspeksi mengecek dan memvalidasi. Temuan ditutup setelah divalidasi.</p>`) +
+      catatan("contoh: grading 800 m, timbun 3 lubang, besok lanjut drainase") + opsiTrigger();
   }
 
   // ---------- buka form ----------
@@ -165,11 +166,26 @@
       <p class="lp-catat">Foto otomatis diberi cap tanggal, jam, lokasi GPS, STA, dan nama pelapor.</p>`;
     if (st.sta != null) { const i = $("lpSta") || $("lpSta1"); if (i) i.value = (Math.round(st.sta * 10) / 10).toFixed(1); }
     if ($("lpSelesai")) $("lpSelesai").value = new Date().toLocaleTimeString("en-GB", { timeZone: "Asia/Jakarta", hour: "2-digit", minute: "2-digit" });
+    if (jenis === "logistik" && (o.status || o.permintaan)) isiPermintaan(f, o);
     gps = null; mulaiGps(); tampilLokasi(); aturTampil();
     window.ALR_tutupSheet?.(); window.ALR_peta?.closePopup?.();
     window.ALR_buka("lapor");
   };
   window.addEventListener("alr:layar", (e) => { if (e.detail.aktif !== "lapor") hentiGps(); });
+  // Logistik menjawab permintaan: status "Dikirim", permintaan, barang, jumlah, STA langsung terisi
+  function isiPermintaan(f, o) {
+    const klikPilih = (fld, v) => { const g = f.querySelector(`.pilih[data-f="${fld}"]`), b = g && [...g.querySelectorAll("button")].find((x) => x.dataset.v === v);
+      if (b && !g.hasAttribute("data-multi")) { g.querySelectorAll("button").forEach((x) => x.classList.toggle("aktif", x === b)); } };
+    if (o.status) klikPilih("status", o.status);
+    const n = +o.permintaan || 0, p = n && LAP.find((i) => i.number === n), d = p?._d;
+    if (n && $("lpMinta")) { if (![...$("lpMinta").options].some((x) => +x.value === n)) $("lpMinta").insertAdjacentHTML("beforeend", `<option value="${n}">#${n}</option>`); $("lpMinta").value = String(n); }
+    if (d) {
+      klikPilih("barang", d.barang in BARANG ? d.barang : "Lainnya"); if (!(d.barang in BARANG) && $("lpBarangLain")) $("lpBarangLain").value = d.barang || "";
+      if ($("lpJumlah")) $("lpJumlah").value = String(d.jumlah ?? "").replace(".", ","); if ($("lpSatuan") && d.satuan) $("lpSatuan").value = d.satuan;
+      if (d.sta != null && $("lpSta")) $("lpSta").value = (Math.round(d.sta * 10) / 10).toFixed(1);
+      if (d.trigger && $("lpTrig")) { if (![...$("lpTrig").options].some((x) => +x.value === d.trigger)) $("lpTrig").insertAdjacentHTML("beforeend", `<option value="${d.trigger}">#${d.trigger}</option>`); $("lpTrig").value = String(d.trigger); }
+    }
+  }
 
   // ---------- isi form: pilihan, foto ----------
   const nilai = (f) => [...$("laporForm").querySelectorAll(`.pilih[data-f="${f}"] button.aktif`)].map((b) => b.dataset.v);
@@ -264,7 +280,7 @@
     let tim = j === "rm" ? "RM" : nilai("tim")[0] || "";
     if (tim === "Lainnya") { tim = ($("lpTimLain")?.value || "").trim(); if (!tim) salah.push("Tulis nama tim."); }
     const l = lokasiSekarang();
-    const trig = +($("lpTrig")?.value || 0) || null;
+    let trig = +($("lpTrig")?.value || 0) || null;
     const rid = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
     const d = { v: 1, rid, no: st.no, jenis: j, pelapor: nama, tim, waktu: new Date().toISOString(), trigger: trig, catatan: ($("lpCatatan")?.value || "").trim() };
     if (l?.sumber === "gps") Object.assign(d, { lat: +l.lat.toFixed(6), lon: +l.lon.toFixed(6), akurasi: l.akurasi });
@@ -291,7 +307,9 @@
       d.sta = angkaSta("lpSta") ?? l?.sta ?? null;
       if (!d.jumlah) salah.push("Isi jumlah barang.");
       if (d.status === "Permintaan") d.kapan = nilai("kapan")[0] || "";
-      else { d.permintaan = +($("lpMinta")?.value || 0) || null; d.pengantar = ($("lpUnit")?.value || "").trim(); if (d.status === "Diterima" && !st.foto.umum.length) salah.push("Ambil foto barang yang sampai."); }
+      else { d.permintaan = +($("lpMinta")?.value || 0) || null;
+        if (!trig && d.permintaan) d.trigger = trig = LAP.find((i) => i.number === d.permintaan)?._d?.trigger || null;   // jawaban Logistik ikut sampai ke temuan RM
+        d.pengantar = ($("lpUnit")?.value || "").trim(); if (d.status === "Diterima" && !st.foto.umum.length) salah.push("Ambil foto barang yang sampai."); }
       foto = st.foto.umum;
       judul = `[LOGISTIK] ${d.status} ${koma(d.jumlah)} ${d.satuan} ${d.barang}${d.sta != null ? " ke STA " + fmtSta(d.sta) : ""}`;
       baris = [["Status", d.status], ["Barang", `${koma(d.jumlah)} ${d.satuan} ${d.barang}`], ["Dibutuhkan", d.kapan], ["Pengantar", d.pengantar], ["Untuk permintaan", d.permintaan ? "#" + d.permintaan : ""]];
@@ -309,7 +327,7 @@
       judul = `[PEKERJAAN RM] ${rentang}: ${d.kegiatan.join(", ")}`;
       baris = [["Kegiatan", d.kegiatan.join(", ")], ["Alat", d.alat.join(", ")], ["Operator", d.operator], ["Jam kerja", d.mulai || d.selesai ? `${d.mulai || "?"} sampai ${d.selesai || "?"}` : ""],
         ["Material", d.barang ? `${koma(d.jumlah)} ${d.satuan} ${d.barang}` : ""], ["Status", d.status]];
-      d.tutup_trigger = !!(trig && d.status === "Selesai" && $("lpTutup")?.checked);
+      d.tutup_trigger = false;          // temuan ditutup tim inspeksi lewat validasi, bukan oleh RM
     }
     d.foto_ket = foto.map((f) => f.ket || "");
     const lokTeks = d.lat != null ? `${d.sta != null ? "STA " + fmtSta(d.sta) + ", " : ""}koordinat ${d.lat}, ${d.lon}${d.akurasi ? ` (GPS HP ±${d.akurasi} m)` : " (lokasi dari peta)"}` : d.sta != null ? `STA ${fmtSta(d.sta)}` : "-";
@@ -325,7 +343,9 @@
       const ringkas = { inspeksi: `Sudah dicek ${nama} (${tim})`, lainnya: `Dilaporkan ${nama} (${tim}): ${(d.kategori || []).join(", ")}`, logistik: `${d.status} material: ${koma(d.jumlah)} ${d.satuan} ${d.barang}`, rm: `Dikerjakan RM: ${(d.kegiatan || []).join(", ")}, status ${d.status}` }[j];
       paket.komentar.push({ nomor: trig, isi: `<!-- alr ${JSON.stringify({ v: 1, jenis: j, status: d.status || "", tahap: true, pelapor: nama, tim, waktu: d.waktu, laporan: paket.baru ? "{{NOMOR}}" : d.permintaan }).replace(/--/g, "\\u002d\\u002d")} -->\n**${ringkas}.** Laporan lengkap: #{{NOMOR}}\n\n{{FOTO}}`, tutup: !!d.tutup_trigger });
     }
-    return { salah, paket, judul, nama, tim, no: st.no };
+    // tahap alur temuan yang langsung ditampilkan di HP ini (sebelum tercatat di tiket)
+    const alur = !trig ? null : j === "inspeksi" ? "rm" : j === "rm" ? (d.status === "Selesai" ? "validasi" : "kerja") : j === "logistik" ? { Permintaan: "minta", Dikirim: "dikirim", Diterima: "diterima" }[d.status] : null;
+    return { salah, paket, judul, nama, tim, no: st.no, trig, alur, permintaan: j === "logistik" ? d.permintaan : null, status: d.status };
   }
 
   // ---------- kirim ----------
@@ -374,7 +394,7 @@
       const sumber = p.baru?.isi || p.komentar?.[0]?.isi || "";
       const m = sumber.match(/<!-- alr (.*?) -->/s); if (!m) return;
       const d = JSON.parse(m[1]);
-      if (d.jenis === "keputusan") return;            // keputusan atasan hanya komentar di tiket, bukan laporan baru
+      if (d.jenis === "keputusan" || d.jenis === "validasi") return;            // keputusan atasan hanya komentar di tiket, bukan laporan baru
       const jenis = ["inspeksi", "logistik", "rm", "lainnya"].includes(d.jenis) ? d.jenis : { "laporan-jalan": "inspeksi", logistik: "logistik", "pekerjaan-rm": "rm" }[p.baru?.label] || (p.baru ? "lainnya" : "logistik");
       const angka = (v) => (v == null || v === "" || isNaN(+v) ? null : +v);
       window.ALR_db.aktif().then((ok) => ok && window.ALR_db.simpanLaporan({
@@ -425,7 +445,7 @@
 
   $("laporForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const { salah, paket, judul, nama, tim, no: noLap } = susun();
+    const { salah, paket, judul, nama, tim, no: noLap, trig, alur, permintaan, status } = susun();
     const box = $("lpSalah");
     if (salah.length) { box.hidden = false; box.innerHTML = `<b>Belum bisa dikirim:</b><ul>${salah.map((s) => `<li>${esc(s)}</li>`).join("")}</ul>`; box.scrollIntoView({ behavior: "smooth", block: "center" }); return; }
     box.hidden = true;
@@ -435,7 +455,9 @@
     try {
       const no = await kirimPaket(paket);
       catatSaya(noLap, judul, "terkirim");
-      selesai(true, `Laporan terkirim · ${noLap}`, no === "antre" ? "Muncul di Laporan lapangan dan Kotak masuk dalam 5 sampai 15 menit." : "Sudah masuk ke Laporan lapangan dan Kotak masuk.", judul, foto);
+      if (trig && alur && !(st.jenis === "inspeksi" && paket.komentar.some((k) => k.tutup))) window.ALR_alur?.tandai(trig, alur);
+      if (permintaan && status) window.ALR_alur?.tandai("p" + permintaan, status);
+      selesai(true, `Laporan terkirim · ${noLap}`, no === "antre" ? "Muncul di Laporan lapangan dan Kotak masuk dalam 1 sampai 3 menit." : "Sudah masuk ke Laporan lapangan dan Kotak masuk.", judul, foto);
       tampilAntre();
       window.ALR_umumkan?.("ALR, laporan terkirim");
       setTimeout(() => window.ALR_muatTiket?.(), 4000);

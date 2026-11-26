@@ -93,3 +93,26 @@ body.mode-pelapor #lpKeLap, body.mode-pelapor .lp-trig-aksi { display: none !imp
 .pl-tugas span { font: 500 16px/1.35 var(--isi); }
 .pl-tugas small { font: 500 14px var(--isi); color: var(--pudar); }
 .pl-kerja { margin-top: 6px; min-height: 54px; border-radius: 14px; background: #1F8A4C; color: #fff; font: 700 18px var(--isi); }
+
+/* ---------- alur temuan: Inspeksi -> RM -> Logistik -> RM selesai -> validasi inspeksi ---------- */
+.pl-tugas2 { display: grid; gap: 12px; }
+.pl-temuan { background: var(--kertas); border-radius: 20px; padding: 14px; box-shadow: var(--bayang); display: grid; gap: 12px; }
+.pl-t-isi { display: flex; gap: 12px; align-items: flex-start; }
+.pl-t-isi > div { display: grid; gap: 4px; min-width: 0; }
+.pl-t-isi b { font: 700 22px/1.15 var(--judul); }
+.pl-t-isi span:not(.pl-tahap) { font: 500 17px/1.35 var(--isi); }
+.pl-t-isi small { font: 500 14px/1.3 var(--isi); color: var(--pudar); }
+.pl-t-isi em { font: 600 15px/1.35 var(--isi); font-style: normal; color: #B71C1C; background: var(--merah-muda, #FDECEC); padding: 6px 10px; border-radius: 10px; }
+.pl-t-foto { width: 84px; height: 84px; flex: none; border-radius: 14px; overflow: hidden; padding: 0; background: var(--debu); display: grid; place-items: center; font-size: 36px; }
+.pl-t-foto img { width: 100%; height: 100%; object-fit: cover; }
+.pl-tahap { justify-self: start; padding: 3px 10px; border-radius: 99px; font: 700 14px/1.3 var(--isi); color: #fff; background: #5A6A85; }
+.pl-tahap.t-merah { background: #D62828; } .pl-tahap.t-kuning { background: #E08A00; } .pl-tahap.t-biru { background: #1556C7; } .pl-tahap.t-hijau { background: #1F8A4C; }
+.pl-t-aksi { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+.pl-ta { min-height: 56px; border-radius: 16px; padding: 8px 10px; color: #fff; font: 700 18px/1.2 var(--isi); background: #5A6A85; }
+.pl-ta.hijau { background: #1F8A4C; } .pl-ta.kuning { background: #E08A00; } .pl-ta.merah { background: #D62828; } .pl-ta.biru { background: #1556C7; }
+.pl-ta:disabled { opacity: .5; }
+.pl-ulang-isi { display: grid; gap: 8px; }
+.pl-ulang-isi textarea { height: auto; padding: 12px 14px; font-size: 18px; }
+.pl-jalan summary { padding: 12px 4px; font: 700 19px var(--isi); color: var(--pudar); cursor: pointer; }
+.kp-alur { margin: 8px 0 0; padding: 8px 10px; border-radius: 12px; background: var(--debu); font: 600 15px/1.3 var(--isi); }
+.kp-alur.t-merah b { color: #D62828; } .kp-alur.t-kuning b { color: #B86E00; } .kp-alur.t-biru b { color: #1556C7; } .kp-alur.t-hijau b { color: #1F8A4C; }
