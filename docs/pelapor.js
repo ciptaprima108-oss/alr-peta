@@ -196,10 +196,17 @@
       isi = `<h3 class="pl-sub">Alur temuan jalan</h3><div class="ts-angka">${baris.map(([t, n, w]) => `<div class="t-${w}"><b>${n}</b><span>${t}</span></div>`).join("")}</div>
         <button type="button" class="ts-buka" data-buka="keputusan">Lihat semua temuan</button>`;
     } else isi = bagianAlur(u.peran);
-    kotak.innerHTML = `<div class="ki-kepala"><b>Tugas saya · ${esc(PERAN_NAMA[u.peran])}</b><small>${esc(u.nama)}</small></div>${pilih}<div class="ts-isi">${isi}</div>`;
+    const st = STATUS_DATA.gagal ? `⚠️ Data terbaru belum bisa diambil (${esc(STATUS_DATA.gagal)}), tampil data ${STATUS_DATA.t ? "jam " + jamSaja(STATUS_DATA.t) : "lama"}` : STATUS_DATA.t ? `Data diperbarui jam ${jamSaja(STATUS_DATA.t)}${STATUS_DATA.simpanan ? " (simpanan HP)" : ""}` : "Memuat data...";
+    kotak.innerHTML = `<div class="ki-kepala"><b>Tugas saya · ${esc(PERAN_NAMA[u.peran])}</b><small>${esc(u.nama)}</small></div>${pilih}<div class="ts-isi">${isi}</div>
+      <p class="ts-status">${st} · <button type="button" class="ts-segar" data-segar>Segarkan</button></p>`;
     kotak.hidden = false;
   }
+  const STATUS_DATA = { t: 0, simpanan: false, gagal: "" };
+  const jamSaja = (t) => new Date(t).toLocaleTimeString("id-ID", { timeZone: "Asia/Jakarta", hour: "2-digit", minute: "2-digit" }).replace(/\./g, ":");
+  window.addEventListener("alr:tiket", (e) => { STATUS_DATA.simpanan = !!e.detail.simpanan; STATUS_DATA.t = e.detail.simpanan || Date.now(); if (!e.detail.simpanan) STATUS_DATA.gagal = ""; if (!kotak.querySelector(".pl-ulang-isi:not([hidden])")) gambarTugas(); });
+  window.addEventListener("alr:tiket-gagal", (e) => { STATUS_DATA.gagal = e.detail?.pesan || "sinyal"; gambarTugas(); });
   kotak.addEventListener("click", (e) => {
+    if (e.target.closest("[data-segar]")) { klik(); e.target.closest("[data-segar]").textContent = "Memuat..."; segarkan(true); return; }
     const pu = e.target.closest("[data-peran-uji]");
     if (pu) { klik(); tulis("alr_peran_uji", pu.dataset.peranUji); tulis("alr_alur_lihat_" + pu.dataset.peranUji, null); gambarTugas(); segarkan(true); return; }
     const bk = e.target.closest("[data-buka]");
