@@ -2218,9 +2218,9 @@
     "berhenti": 97.0,
     "km_lambat": 100.0,
     "hujan": 0.0,
-    "trigger": 17.0
+    "trigger": 0.0
    },
-   "indeks": 63,
+   "indeks": 59,
    "status": "Perlu perhatian",
    "hujan_mm": 29.0,
    "hujan_malam_mm": 9.6,
@@ -2228,7 +2228,7 @@
    "yakin": "sedang",
    "alasan": [
     "Hujan 29 mm, 10 mm semalam",
-    "10 titik jalan merah masih terbuka"
+    "13 titik jalan merah masih terbuka"
    ],
    "kurang": [
     "data rit belum masuk"
