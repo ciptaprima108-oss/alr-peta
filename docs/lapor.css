@@ -213,3 +213,5 @@ input[type="time"].lp-input::-webkit-date-and-time-value { text-align: left; }
 .lp-hm-jam { margin: 0; font: 700 15px var(--isi); color: #1F8A4C; }
 .lp-hm-jam:empty { display: none; }
 .lp-hm-jam.salah { color: #D62828; }
+.lp-antre .lp-putar { flex: none; }
+.lp-antre-kirim { display: block; width: 100%; min-height: 50px; margin-bottom: 12px; border: 0; border-radius: 14px; background: #6B4A00; color: #fff; font: 700 17px var(--isi); }
