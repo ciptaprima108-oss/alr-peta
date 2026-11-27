@@ -1,14 +1,14 @@
 {
  "nama_jalan": "ALR (BSR - 107)",
- "data_dari": "2026-11-26 08:12:00",
- "data_sampai": "2026-11-27 08:12:00",
- "n_unit": 38,
- "n_titik": 1621,
+ "data_dari": "2026-11-26 10:08:00",
+ "data_sampai": "2026-11-27 10:08:00",
+ "n_unit": 39,
+ "n_titik": 1570,
  "jumlah_segmen": {
   "hijau": 82,
   "abu": 26,
-  "kuning": 18,
-  "merah": 16,
+  "merah": 18,
+  "kuning": 16,
   "kosong": 3
  },
  "trigger": [
@@ -34,8 +34,8 @@
     12
    ],
    "unit": [],
-   "alasan": "8 unit lewat pelan, kecepatan paling pelan 11.8 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
-   "speed_terendah": 11.8,
+   "alasan": "7 unit lewat pelan, kecepatan paling pelan 12.5 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
+   "speed_terendah": 12.5,
    "sta_tengah": 2.5,
    "lat": -3.626967,
    "lon": 103.71012,
@@ -49,8 +49,8 @@
     29
    ],
    "unit": [],
-   "alasan": "9 unit lewat pelan, kecepatan paling pelan 12.3 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
-   "speed_terendah": 12.3,
+   "alasan": "9 unit lewat pelan, kecepatan paling pelan 11.4 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
+   "speed_terendah": 11.4,
    "sta_tengah": 5.9,
    "lat": -3.638755,
    "lon": 103.686923,
@@ -59,18 +59,19 @@
   },
   {
    "sta_awal": 8.0,
-   "sta_akhir": 8.2,
+   "sta_akhir": 8.4,
    "seg": [
-    40
+    40,
+    41
    ],
    "unit": [],
-   "alasan": "7 unit lewat pelan, kecepatan paling pelan 12.9 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
-   "speed_terendah": 12.9,
-   "sta_tengah": 8.1,
-   "lat": -3.645149,
-   "lon": 103.671471,
+   "alasan": "8 unit lewat pelan, kecepatan paling pelan 8.8 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
+   "speed_terendah": 8.8,
+   "sta_tengah": 8.2,
+   "lat": -3.645878,
+   "lon": 103.671188,
    "kode": "STA08000",
-   "judul": "[TRIGGER] Cek jalan STA 8+000 - 8+200"
+   "judul": "[TRIGGER] Cek jalan STA 8+000 - 8+400"
   },
   {
    "sta_awal": 8.8,
@@ -181,37 +182,26 @@
   },
   {
    "sta_awal": 25.2,
-   "sta_akhir": 25.4,
-   "seg": [
-    126
-   ],
-   "unit": [],
-   "alasan": "8 unit lewat pelan, kecepatan paling pelan 11.4 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
-   "speed_terendah": 11.4,
-   "sta_tengah": 25.3,
-   "lat": -3.717739,
-   "lon": 103.615531,
-   "kode": "STA25200",
-   "judul": "[TRIGGER] Cek jalan STA 25+200 - 25+400"
-  },
-  {
-   "sta_awal": 25.6,
    "sta_akhir": 26.0,
    "seg": [
+    126,
+    127,
     128,
     129
    ],
-   "unit": [],
-   "alasan": "10 unit lewat pelan, kecepatan paling pelan 8.7 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
+   "unit": [
+    "WHL 016"
+   ],
+   "alasan": "1 unit melambat/tertahan, kecepatan paling pelan 8.7 km/jam. Kemungkinan jalan jelek, licin, atau macet.",
    "speed_terendah": 8.7,
-   "sta_tengah": 25.8,
-   "lat": -3.720742,
-   "lon": 103.616468,
-   "kode": "STA25600",
-   "judul": "[TRIGGER] Cek jalan STA 25+600 - 26+000"
+   "sta_tengah": 25.6,
+   "lat": -3.719594,
+   "lon": 103.616264,
+   "kode": "STA25200",
+   "judul": "[TRIGGER] Cek jalan STA 25+200 - 26+000"
   }
  ],
  "label_trigger": "trigger",
  "label_laporan": "laporan-jalan",
- "dibuat": "2026-11-27 08:55 WIB"
+ "dibuat": "2026-11-27 11:17 WIB"
 }
