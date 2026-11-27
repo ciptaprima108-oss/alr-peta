@@ -155,3 +155,5 @@ body.mode-pelapor #lpKeLap, body.mode-pelapor .lp-trig-aksi { display: none !imp
 .ts-kalimat .t-merah { border-color: #D62828; } .ts-kalimat .t-biru { border-color: #1556C7; } .ts-kalimat .t-kuning { border-color: #E08A00; } .ts-kalimat .t-hijau { border-color: #1F8A4C; }
 .menu-semua { display: block; width: 100%; margin-top: 10px; min-height: 44px; border-radius: 14px; background: transparent; color: var(--biru); font: 700 15px var(--isi); text-decoration: underline; }
 .menu [hidden], .lapor-cepat [hidden], .lap-buat [hidden] { display: none !important; }
+.pl-st { justify-self: start; font: 700 14px var(--isi); font-style: normal; padding: 2px 10px; border-radius: 99px; }
+.pl-st.tunggu { background: #FFF4D6; color: #6B4A00; } .pl-st.ok { background: var(--hijau-muda, #E3F4E8); color: #1F8A4C; }

@@ -263,7 +263,7 @@
   }
   async function stempel(file, ket) {
     const { im, u } = await bacaGambar(file);
-    const sk = Math.min(1, 1600 / Math.max(im.naturalWidth, im.naturalHeight));
+    const sk = Math.min(1, 1280 / Math.max(im.naturalWidth, im.naturalHeight));   // cukup tajam untuk bukti, ringan untuk sinyal lemah
     const W = Math.round(im.naturalWidth * sk), H = Math.round(im.naturalHeight * sk);
     const c = document.createElement("canvas"); c.width = W; c.height = H;
     const g = c.getContext("2d"); g.drawImage(im, 0, 0, W, H); URL.revokeObjectURL(u);
@@ -280,7 +280,7 @@
     g.fillStyle = "#E11D2E"; g.fillRect(0, H - tinggi, Math.round(W * 0.5), Math.max(3, fs / 6)); g.fillStyle = "#fff"; g.fillRect(Math.round(W * 0.5), H - tinggi, W, Math.max(3, fs / 6));
     g.textBaseline = "top";
     baris.forEach((t, i) => { g.font = `${i === 0 ? 700 : 500} ${i === 0 ? Math.round(fs * 1.05) : fs}px Barlow, Arial, sans-serif`; g.fillStyle = i === 0 ? "#FFD54F" : "#fff"; g.fillText(t, pad, H - tinggi + pad + i * lh, W - pad * 2); });
-    const data = c.toDataURL("image/jpeg", 0.8);
+    const data = c.toDataURL("image/jpeg", 0.7);
     return { url: data, b64: data.split(",")[1], waktu, lat: l?.lat ?? null, lon: l?.lon ?? null, ket };
   }
 
@@ -368,7 +368,12 @@
 
   // ---------- kirim ----------
   let CFG = null; const TERKIRIM = "alr_terkirim";
-  const muatCfg = () => CFG || (CFG = fetch("lapor.json", { cache: "no-cache" }).then((r) => r.ok ? r.json() : {}).catch(() => ({})));
+  // alamat kirim disimpan di HP supaya tetap ada saat aplikasi dibuka tanpa sinyal; kegagalan tidak diingat
+  async function muatCfg() {
+    if (CFG) return CFG;
+    try { const r = await fetch("lapor.json", { cache: "no-cache" }); if (!r.ok) throw 0; CFG = await r.json(); simpan.set("alr_cfg_lapor", CFG); return CFG; }
+    catch { return simpan.get("alr_cfg_lapor", {}); }
+  }
   async function lewatToken(p) {
     const gh = window.ALR_gh, R = REPO(), bln = new Date().toISOString().slice(0, 7);
     const url = [];
@@ -388,8 +393,10 @@
     return nomor;
   }
   async function lewatRelay(url, p) {
-    const r = await fetch(url, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(p) });
-    const j = await r.json();
+    const ctl = new AbortController(), batas = setTimeout(() => ctl.abort(), 60000 + 45000 * (p.foto?.length || 0));   // sinyal E/2G: beri waktu, tapi jangan menggantung selamanya
+    let j;
+    try { const r = await fetch(url, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(p), signal: ctl.signal }); j = await r.json(); }
+    finally { clearTimeout(batas); }
     if (!j.ok) throw new Error(j.pesan || "relay menolak");
     if (j.nomor) return j.nomor;
     const t = simpan.get(TERKIRIM, []); t.push({ rid: p.rid, judul: (p.baru?.judul || "Update laporan"), waktu: Date.now() }); simpan.set(TERKIRIM, t.slice(-30));
@@ -426,11 +433,58 @@
   }
 
   // ---------- antrean di HP (kalau belum terkirim) ----------
+  // Daftar antrean (ringan) ada di localStorage; isi laporan + foto disimpan di IndexedDB,
+  // karena localStorage hanya muat ±2,5 MB di iPhone (2 foto saja sudah penuh, lalu muncul "Memori HP penuh").
   const ANTRE = "alr_antrean";
+  const gudang = (() => {
+    let p;
+    const buka = () => p || (p = new Promise((ok, no) => { const r = indexedDB.open("alr-antrean", 1); r.onupgradeneeded = () => r.result.createObjectStore("paket"); r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error); }));
+    const jalan = (mode, f) => buka().then((db) => new Promise((ok, no) => { const tx = db.transaction("paket", mode), q = f(tx.objectStore("paket")); tx.oncomplete = () => ok(q?.result); tx.onerror = tx.onabort = () => no(tx.error); }));
+    return { set: (k, v) => jalan("readwrite", (o) => o.put(v, k)), get: (k) => jalan("readonly", (o) => o.get(k)), del: (k) => jalan("readwrite", (o) => o.delete(k)) };
+  })();
+  const DI_INGATAN = new Map();           // cadangan terakhir kalau HP menolak menyimpan: tetap dicoba kirim selama aplikasi terbuka
+  const SEDANG = new Set();               // rid yang sedang dikirim
+  navigator.storage?.persist?.().catch(() => {});
   window.ALR_kirimPaket = kirimPaket;
-  window.ALR_antre = (paket, judul) => { const a = simpan.get(ANTRE, []); a.push({ judul, waktu: Date.now(), paket }); const ok = simpan.set(ANTRE, a); tampilAntre(); return ok; };
-  // riwayat laporan dari HP ini (bukti untuk pelapor: nomor laporan + jam)
-  const catatSaya = (no, judul, status) => { const r = simpan.get("alr_lapor_saya", []); r.unshift({ no, judul, status, waktu: Date.now() }); simpan.set("alr_lapor_saya", r.slice(0, 30)); window.dispatchEvent(new CustomEvent("alr:lapor-saya")); };
+  async function antre(paket, judul, no) {
+    const rid = paket.rid || (paket.rid = Date.now().toString(36) + Math.random().toString(36).slice(2, 8));
+    const butir = { rid, judul, no: no || "", waktu: Date.now() };
+    let aman = true;
+    if (paket.foto?.length) { try { await gudang.set(rid, paket); } catch { butir.paket = paket; } } else butir.paket = paket;
+    const a = simpan.get(ANTRE, []).filter((x) => x.rid !== rid); a.push(butir);
+    if (!simpan.set(ANTRE, a)) { aman = false; DI_INGATAN.set(rid, paket); delete butir.paket; simpan.set(ANTRE, a); }
+    tampilAntre(); window.dispatchEvent(new CustomEvent("alr:lapor-saya"));
+    return aman;
+  }
+  window.ALR_antre = (paket, judul) => { antre(paket, judul).then(() => setTimeout(() => kirimAntre(true), 1500)); return true; };
+  const ambilPaket = async (x) => x.paket || DI_INGATAN.get(x.rid) || await gudang.get(x.rid).catch(() => null);
+  const buang = (rid) => { simpan.set(ANTRE, simpan.get(ANTRE, []).filter((x) => x.rid !== rid)); DI_INGATAN.delete(rid); gudang.del(rid).catch(() => {}); };
+  // riwayat laporan dari HP ini (bukti untuk pelapor: nomor laporan + jam + status)
+  const catatSaya = (no, judul, status) => { const r = simpan.get("alr_lapor_saya", []).filter((x) => x.no !== no); r.unshift({ no, judul, status, waktu: Date.now() }); simpan.set("alr_lapor_saya", r.slice(0, 30)); window.dispatchEvent(new CustomEvent("alr:lapor-saya")); };
+  const tandaiSaya = (no, status) => { if (!no) return; const r = simpan.get("alr_lapor_saya", []); const x = r.find((y) => y.no === no); if (x) { x.status = status; x.terkirim = Date.now(); simpan.set("alr_lapor_saya", r); } window.dispatchEvent(new CustomEvent("alr:lapor-saya")); };
+  // kirim satu laporan dari antrean; true = sudah masuk server
+  async function kirimSatu(rid) {
+    if (SEDANG.has(rid)) return false;
+    const x = simpan.get(ANTRE, []).find((y) => y.rid === rid); if (!x) return true;
+    SEDANG.add(rid); tampilAntre();
+    try {
+      const paket = await ambilPaket(x);
+      if (!paket) { buang(rid); return true; }
+      await kirimPaket(paket);
+      buang(rid); tandaiSaya(x.no, "terkirim");
+      return true;
+    } catch { return false; }
+    finally { SEDANG.delete(rid); tampilAntre(); }
+  }
+  let antreJalan = false;
+  async function kirimAntre(diam) {
+    if (antreJalan) return; const a = simpan.get(ANTRE, []); if (!a.length) return;
+    if (!navigator.onLine) { if (!diam) toast("ALR: Belum ada sinyal", "Laporan aman di HP, terkirim otomatis begitu ada sinyal."); return; }
+    antreJalan = true; let masuk = 0;
+    try { for (const x of a) { if (await kirimSatu(x.rid)) masuk++; else if (!navigator.onLine) break; } } finally { antreJalan = false; }
+    if (masuk) { toast("ALR: Laporan terkirim", `${masuk} laporan dari HP ini sudah masuk.`); window.ALR_umumkan?.("ALR, laporan terkirim"); setTimeout(() => window.ALR_muatTiket?.(), 3000); setTimeout(() => window.ALR_cekLonceng?.(), 3000); }
+    else if (!diam) toast("ALR: Belum bisa kirim", "Sinyal masih lemah. Dicoba lagi otomatis.");
+  }
   function tampilAntre() {
     const el = $("antrean"); if (!el) return;
     const a = simpan.get(ANTRE, []);
@@ -438,20 +492,21 @@
     const proses = simpan.get(TERKIRIM, []).filter((x) => !sudah.has(x.rid) && Date.now() - x.waktu < 2 * 864e5);
     simpan.set(TERKIRIM, proses);
     el.hidden = !a.length && !proses.length;
-    el.innerHTML = proses.map((x) => `<div class="lp-antre lp-proses"><span class="lp-putar"></span><div><b>${esc(x.judul.replace(/^\[[A-Z ]+\]\s*/, ""))}</b><span>Terkirim ${WIB(x.waktu)}. Sedang diproses, muncul di daftar dalam 5 sampai 15 menit.</span></div></div>`).join("") + (a.length ? `<div class="lp-antre"><svg class="ik"><use href="#i-jam"/></svg><div><b>${a.length} laporan belum terkirim</b><span>Tersimpan di HP ini. Dikirim otomatis saat ada sinyal.</span></div>
-      <button type="button" id="btnKirimAntre">Kirim sekarang</button></div>` : "");
-  }
-  async function kirimAntre(diam) {
-    const a = simpan.get(ANTRE, []); if (!a.length) return;
-    const sisa = [];
-    for (const x of a) { try { await kirimPaket(x.paket); } catch (e) { sisa.push(x); } }
-    simpan.set(ANTRE, sisa); tampilAntre();
-    if (sisa.length < a.length) { toast("ALR: Laporan terkirim", `${a.length - sisa.length} laporan dari HP ini sudah masuk.`); setTimeout(() => window.ALR_muatTiket?.(), 3000); }
-    else if (!diam) toast("ALR: Belum bisa kirim", "Coba lagi nanti saat sinyal bagus.");
+    el.innerHTML = a.map((x) => `<div class="lp-antre"><${SEDANG.has(x.rid) ? 'span class="lp-putar"></span' : 'svg class="ik"><use href="#i-jam"/></svg'}><div><b>${esc(String(x.judul || "Laporan").replace(/^\[[A-Z ]+\]\s*/, ""))}</b>
+        <span>${x.no ? esc(x.no) + " · " : ""}${SEDANG.has(x.rid) ? "Sedang mengirim..." : "Menunggu sinyal"} · dibuat ${WIB(x.waktu)}. Aman di HP ini.</span></div></div>`).join("") +
+      (a.length ? `<button type="button" id="btnKirimAntre" class="lp-antre-kirim">Kirim sekarang (${a.length})</button>` : "") +
+      proses.map((x) => `<div class="lp-antre lp-proses"><span class="lp-putar"></span><div><b>${esc(x.judul.replace(/^\[[A-Z ]+\]\s*/, ""))}</b><span>Terkirim ${WIB(x.waktu)}. Muncul di daftar dalam 1 sampai 3 menit.</span></div></div>`).join("");
   }
   document.addEventListener("click", (e) => { if (e.target.closest("#btnKirimAntre")) { klik(); kirimAntre(false); } });
   window.addEventListener("online", () => kirimAntre(true));
-  setTimeout(() => { tampilAntre(); kirimAntre(true); }, 4000);
+  document.addEventListener("visibilitychange", () => document.visibilityState === "visible" && kirimAntre(true));
+  setInterval(() => kirimAntre(true), 45000);          // sinyal datang dan pergi: coba lagi terus selama aplikasi terbuka
+  // laporan lama yang fotonya masih di localStorage dipindah ke IndexedDB supaya ada ruang lagi
+  (async () => { const a = simpan.get(ANTRE, []); let ubah = false;
+    for (const x of a) { if (!x.rid) { x.rid = x.paket?.rid || Date.now().toString(36) + Math.random().toString(36).slice(2, 8); ubah = true; }
+      if (x.paket?.foto?.length) { try { await gudang.set(x.rid, x.paket); delete x.paket; ubah = true; } catch {} } }
+    if (ubah) simpan.set(ANTRE, a);
+    tampilAntre(); setTimeout(() => kirimAntre(true), 3000); })();
 
   async function bagikan(judul, foto) {
     try {
@@ -470,21 +525,25 @@
     simpan.set("alr_lapor_nama", nama); if (tim) simpan.set("alr_lapor_tim_" + st.jenis, tim);
     const btn = $("lpKirim"); btn.disabled = true; btn.innerHTML = `<span class="lp-putar"></span>Mengirim...`;
     const foto = [...st.foto.umum, ...st.foto.sebelum, ...st.foto.sesudah];
-    try {
-      const no = await kirimPaket(paket);
-      catatSaya(noLap, judul, "terkirim");
-      if (trig && alur && !(st.jenis === "inspeksi" && paket.komentar.some((k) => k.tutup))) window.ALR_alur?.tandai(trig, alur);
-      if (permintaan && status) window.ALR_alur?.tandai("p" + permintaan, status);
-      selesai(true, `Laporan terkirim · ${noLap}`, no === "antre" ? "Muncul di Laporan lapangan dan Kotak masuk dalam 1 sampai 3 menit." : "Sudah masuk ke Laporan lapangan dan Kotak masuk.", judul, foto);
-      tampilAntre();
+    // 1) simpan dulu di HP (laporan + foto), 2) baru kirim. Jadi laporan tidak hilang walau sinyal putus di tengah.
+    const aman = await antre(paket, judul, noLap);
+    catatSaya(noLap, judul, "di HP");
+    if (trig && alur && !(st.jenis === "inspeksi" && paket.komentar.some((k) => k.tutup))) window.ALR_alur?.tandai(trig, alur);
+    if (permintaan && status) window.ALR_alur?.tandai("p" + permintaan, status);
+    const kirim = navigator.onLine ? kirimSatu(paket.rid) : Promise.resolve(false);
+    const hasil = await Promise.race([kirim, new Promise((ok) => setTimeout(() => ok("lama"), 20000))]);
+    if (hasil === true) {
+      selesai(true, `Laporan terkirim · ${noLap}`, "Muncul di Laporan lapangan dan Kotak masuk dalam 1 sampai 3 menit.", judul, foto);
       window.ALR_umumkan?.("ALR, laporan terkirim");
       setTimeout(() => window.ALR_muatTiket?.(), 4000);
       setTimeout(() => window.ALR_cekLonceng?.(), 3000);       // masuk lonceng / Kotak masuk sekarang, tidak menunggu jadi tiket
-    } catch (err) {
-      const a = simpan.get(ANTRE, []); a.push({ judul, waktu: Date.now(), paket });
-      const ok = simpan.set(ANTRE, a); tampilAntre(); catatSaya(noLap, judul, "di HP");
-      const sebab = err.message === "belum-ada-jalur" ? "Jalur kirim laporan belum disambungkan oleh admin." : err.message === "offline" ? "Tidak ada sinyal." : "Server belum bisa dihubungi.";
-      selesai(false, ok ? `Laporan disimpan di HP · ${noLap}` : "Laporan belum terkirim", `${sebab} ${ok ? "Akan dikirim otomatis nanti." : "Memori HP penuh, bagikan ke WhatsApp dulu."} Bisa juga dibagikan ke grup WhatsApp sekarang.`, judul, foto);
+    } else if (hasil === "lama") {
+      selesai(false, `Laporan disimpan di HP · ${noLap}`, "Sinyal lemah, jadi pengiriman diteruskan di belakang. Kamu boleh lanjut kerja. Kalau sudah masuk, HP akan bunyi dan statusnya berubah jadi Terkirim.", judul, foto);
+      kirim.then((ok) => { if (ok) { toast("ALR: Laporan terkirim", `${noLap} sudah masuk.`); window.ALR_umumkan?.("ALR, laporan terkirim"); setTimeout(() => window.ALR_muatTiket?.(), 3000); } });
+    } else {
+      selesai(false, aman ? `Laporan disimpan di HP · ${noLap}` : `Laporan belum tersimpan · ${noLap}`,
+        aman ? `${navigator.onLine ? "Sinyal belum cukup untuk mengirim." : "Tidak ada sinyal."} Laporan dan fotonya aman di HP ini, dan terkirim otomatis begitu ada sinyal. Tidak perlu diisi ulang.`
+          : "HP ini menolak menyimpan data (biasanya mode Penyamaran/Private, atau penyimpanan browser dimatikan). Jangan tutup aplikasi: laporan tetap dicoba kirim. Supaya aman, bagikan ke WhatsApp sekarang.", judul, foto);
     }
   });
   function selesai(ok, judul, isi, teks, foto) {

@@ -40,8 +40,8 @@
         <p class="pl-tanya">${rm ? "Lapor lainnya" : "Mau lapor apa?"}</p>
         <div class="pl-tombol">${TOMBOL.filter(([j]) => !rm || TOMBOL_RM.includes(j)).map(([j, t, k, w, ik]) => `<button type="button" class="pl-b" style="--w:${w}" data-pl="${j}"><span class="pl-gb">${window.ALR_ikon3d?.(ik) || ""}</span><span><b>${t}</b><small>${k}</small></span></button>`).join("")}</div>
         <div class="pl-info"><span>📷</span><p>Foto langsung dari kamera. <b>No. laporan, jam, tanggal, lokasi GPS, dan STA</b> dicap otomatis di foto.</p></div>
-        ${antre ? `<div class="pl-info kuning"><span>📶</span><p><b>${antre} laporan masih di HP.</b> Terkirim otomatis begitu ada sinyal.</p></div>` : ""}
-        ${riwayat.length ? `<h3 class="pl-sub">Laporan saya</h3><div class="pl-riwayat">${riwayat.map((r) => `<div><b>${esc(r.no || "-")}</b><span>${esc(String(r.judul || "").replace(/^\[[A-Z ]+\]\s*/, ""))}</span><small>${jam(r.waktu)} · ${r.status === "di HP" ? "menunggu sinyal" : "terkirim"}</small></div>`).join("")}</div>` : ""}
+        ${antre ? `<div class="pl-info kuning"><span>📶</span><p><b>${antre} laporan menunggu sinyal.</b> Aman di HP ini, terkirim otomatis begitu ada sinyal.</p></div>` : ""}
+        ${riwayat.length ? `<h3 class="pl-sub">Laporan saya</h3><div class="pl-riwayat">${riwayat.map((r) => `<div><b>${esc(r.no || "-")}</b><span>${esc(String(r.judul || "").replace(/^\[[A-Z ]+\]\s*/, ""))}</span><small>${jam(r.waktu)}</small><em class="pl-st ${r.status === "di HP" ? "tunggu" : "ok"}">${r.status === "di HP" ? "⏳ Menunggu sinyal" : "✔ Terkirim"}</em></div>`).join("")}</div>` : ""}
         <button type="button" class="pl-masuk" id="plMasuk">Masuk sebagai pengguna ALR (No. ID + PIN)</button>
       </div>`;
   }
