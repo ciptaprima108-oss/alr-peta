@@ -2254,17 +2254,54 @@
     "berhenti": 97.0,
     "km_lambat": 100.0,
     "hujan": 22.0,
-    "trigger": 50.0
+    "trigger": null
    },
-   "indeks": 74,
-   "status": "Perlu perhatian",
+   "indeks": 80,
+   "status": "Kondisi baik",
    "hujan_mm": 19.4,
    "hujan_malam_mm": 6.6,
    "km_lambat": 0,
    "yakin": "sedang",
    "alasan": [
-    "Hujan 19 mm, 7 mm semalam",
-    "6 titik jalan merah masih terbuka"
+    "Hujan 19 mm, 7 mm semalam"
+   ],
+   "kurang": [
+    "data rit belum masuk"
+   ]
+  },
+  {
+   "tanggal": "2026-11-28",
+   "n_trip": null,
+   "median_menit": null,
+   "p90_menit": null,
+   "median_km": null,
+   "n_lambat": null,
+   "pct_lambat": null,
+   "gps_speed": 14.6,
+   "gps_pct_berhenti": 9.0,
+   "gps_unit": 5,
+   "kosong_menit": null,
+   "muat_bsr_menit": null,
+   "bongkar_107_menit": null,
+   "skor": {
+    "durasi": null,
+    "rit_lambat": null,
+    "speed": 55.0,
+    "berhenti": 78.0,
+    "km_lambat": 5.0,
+    "hujan": 0.0,
+    "trigger": 42.0
+   },
+   "indeks": 36,
+   "status": "Perlu perbaikan",
+   "hujan_mm": 51.5,
+   "hujan_malam_mm": 42.2,
+   "km_lambat": 4,
+   "yakin": "sedang",
+   "alasan": [
+    "Hujan 52 mm, 42 mm semalam",
+    "4 KM DT jalan pelan (13 km/jam ke bawah)",
+    "7 titik jalan merah masih terbuka"
    ],
    "kurang": [
     "data rit belum masuk"
@@ -6519,6 +6556,48 @@
     16.7,
     6,
     1
+   ]
+  ],
+  "2026-11-28": [
+   [
+    8,
+    71,
+    18.1,
+    16.7,
+    6,
+    2
+   ],
+   [
+    10,
+    41,
+    12.4,
+    22.2,
+    9,
+    2
+   ],
+   [
+    11,
+    65,
+    11.7,
+    0.0,
+    7,
+    1
+   ],
+   [
+    12,
+    88,
+    18.9,
+    5.6,
+    18,
+    2
+   ],
+   [
+    13,
+    63,
+    13.5,
+    8.3,
+    36,
+    2
    ]
   ]
  },
