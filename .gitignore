@@ -1,3 +1,8 @@
 trigger_baru.json
 __pycache__/
 data/gps/live_tracksolid.csv
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/*.jks
